@@ -1,0 +1,12 @@
+name: KitPvP
+author: mal0ne_23
+description: KitPvP for AvengeTech
+version: 1.0.0
+api: [3.0.0-ALPHA7]
+main: kitpvp\KitPvP
+depend: Core
+
+permissions:
+ kitpvp.perm:
+  description: Kitpvp perm blahblah
+  default: true

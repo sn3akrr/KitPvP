@@ -23,7 +23,8 @@ class Kit extends Command implements PluginIdentifiableCommand{
 	public function execute(CommandSender $sender, string $label, array $args){
 		$kits = KitPvP::getInstance()->getKits();
 		if($kits->hasKit($sender)){
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You already have a kit equipped!");
+			$sender->sendErrorUi("You already have a kit equipped!");
+			//$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You already have a kit equipped!");
 			return;
 		}
 		if(count($args) !== 1){
@@ -36,16 +37,19 @@ class Kit extends Command implements PluginIdentifiableCommand{
 			return;
 		}
 		if(!$kit->hasRequiredRank($sender)){
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You must be at least rank ".strtoupper($kit->getRequiredRank())." to use this kit! Purchase this rank at ".TextFormat::YELLOW."buy.atpe.co");
+			$sender->sendErrorUi("You must be at least rank ".strtoupper($kit->getRequiredRank())." to use this kit! Purchase this rank at ".TextFormat::YELLOW."buy.atpe.co");
+			//$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You must be at least rank ".strtoupper($kit->getRequiredRank())." to use this kit! Purchase this rank at ".TextFormat::YELLOW."buy.atpe.co");
 			return;
 		}
 		if(!$kit->hasEnoughCurrency($sender)){
+			$sender->sendErrorUi("You do not have enough Techits to equip this kit! (".$kit->getPrice().")");
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You do not have enough Techits to equip this kit! (".$kit->getPrice().")");
 			return;
 		}
 		if($kit->hasPlayerCooldown($sender)){
 			$cooldown = $kit->getPlayerCooldown($sender);
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."This kit has a cooldown! You can equip it again in ".$cooldown." play".($cooldown > 1 ? "s" : "")."!");
+			$sender->sendErrorUi("This kit has a cooldown! You can equip it again in ".$cooldown." play".($cooldown > 1 ? "s" : "")."!");
+			//$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."This kit has a cooldown! You can equip it again in ".$cooldown." play".($cooldown > 1 ? "s" : "")."!");
 			return;
 		}
 		if(isset($kits->confirm[$sender->getName()])){

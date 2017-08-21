@@ -2,10 +2,7 @@
 
 use pocketmine\level\Position;
 use pocketmine\utils\TextFormat;
-use pocketmine\network\mcpe\protocol\{
-	AddEntityPacket,
-	RemoveEntityPacket //maybe?
-};
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\entity\{
 	Entity,
@@ -140,7 +137,7 @@ class Slay{
 
 	public function damageAs(Player $damager, Player $victim, $damage){
 		$ev = new EntityDamageByEntityEvent($damager, $victim, 1, $damage, 0);
-		$victim->attack($ev);
+		$victim->attack($damage, $ev);
 	}
 
 	public function resetPlayer(Player $player){
@@ -154,9 +151,7 @@ class Slay{
 		$pk = new AddEntityPacket();
 		$pk->type = 93;
 		$pk->entityRuntimeId = Entity::$entityCount++;
-		$pk->x = $pos->x;
-		$pk->y = $pos->y;
-		$pk->z = $pos->z;
+		$pk->position = $pos->asVector3();
 		$pk->yaw = 0;
 		$pk->pitch = 0;
 		foreach($pos->getLevel()->getPlayers() as $p){

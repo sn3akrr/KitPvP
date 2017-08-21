@@ -8,7 +8,7 @@ use pocketmine\Player;
 use pocketmine\item\Item;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\Projectile;
 
 use kitpvp\KitPvP;
 
@@ -27,7 +27,7 @@ class ThrownConcussionGrenade extends Projectile{
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 		if($this->closed){
 			return false;
 		}
@@ -57,18 +57,15 @@ class ThrownConcussionGrenade extends Projectile{
 				$hasUpdate = true;
 			}
 		}
+		return $hasUpdate;
 	}
 
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->type = ThrownConcussionGrenade::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
+		$pk->position = $this->asVector3();
+		$pk->motion = $this->getMotion();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 		parent::spawnTo($player);

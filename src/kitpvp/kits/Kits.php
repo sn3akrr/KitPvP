@@ -21,6 +21,22 @@ use kitpvp\combat\special\other\Spell;
 use kitpvp\kits\event\KitUnequipEvent;
 use kitpvp\combat\special\SpecialIds as SID;
 
+use kitpvp\combat\special\items\{
+	BookOfSpells,
+	ConcussionGrenade,
+	BrassKnuckles,
+	Gun,
+	ReflexHammer,
+	Defibrillator,
+	Syringe,
+	ThrowingKnife,
+	Shuriken,
+	EnderPearl,
+	Decoy,
+	Flamethrower,
+	MaloneSword
+};
+
 use core\AtPlayer as Player;
 
 class Kits{
@@ -67,7 +83,8 @@ class Kits{
 			], [
 				"Curse" => "5% chance of attackers being poisoned"
 			], [
-				Item::get(SID::BOOK_OF_SPELLS)
+				//Item::get(SID::BOOK_OF_SPELLS)
+				new BookOfSpells(),
 			]),
 
 			"spy" => new KitObject("spy", "default", 20, [
@@ -86,7 +103,8 @@ class Kits{
 				"Stealth Mode" => "Invisibility when holding still or sneaking",
 				"Last Chance" => "Knocks back players and 5 second invisibility when low on health"
 			], [
-				Item::get(SID::CONCUSSION_GRENADE,0,3)
+				//Item::get(SID::CONCUSSION_GRENADE,0,3)
+				new ConcussionGrenade(0, 3)
 			]),
 
 			"scout" => new KitObject("scout", "default", 30, [
@@ -104,7 +122,8 @@ class Kits{
 				"Double Jump" => "Self explanitory",
 				"Bounceback" => "25% chance players attacking you will get recoil knockback"
 			], [
-				Item::get(SID::BRASS_KNUCKLES)
+				//Item::get(SID::BRASS_KNUCKLES)
+				new BrassKnuckles()
 			]),
 
 			"assault" => new KitObject("assault", "default", 40, [
@@ -121,7 +140,8 @@ class Kits{
 			], [
 				"Adrenaline" => "Increased jump and speed boost when low on health"
 			], [
-				Item::get(SID::GUN)
+				//Item::get(SID::GUN)
+				new Gun()
 			], 1),
 
 			"medic" => new KitObject("medic", "blaze", 10, [
@@ -137,9 +157,12 @@ class Kits{
 				"Miracle" => "Regains 2.5 hearts when low on health one time",
 				"Recover" => "Slowly regenerate health over time"
 			], [
-				Item::get(SID::REFLEX_HAMMER),
-				Item::get(SID::DEFIBRILLATOR),
-				Item::get(SID::SYRINGE)
+				//Item::get(SID::REFLEX_HAMMER),
+				//Item::get(SID::DEFIBRILLATOR),
+				//Item::get(SID::SYRINGE)
+				new ReflexHammer(),
+				new Defibrillator(),
+				new Syringe(),
 			], 1),
 
 			"archer" => new KitObject("archer", "ghast", 20, [
@@ -159,8 +182,10 @@ class Kits{
 			], [
 				"Aim Assist" => "Bow automatically aims on nearby target (TODO)"
 			], [
-				Item::get(SID::THROWING_KNIFE),
-				Item::get(SID::SHURIKEN)
+				//Item::get(SID::THROWING_KNIFE),
+				//Item::get(SID::SHURIKEN)
+				new ThrowingKnife(),
+				new Shuriken(),
 			], 1),
 
 			"enderman" => new KitObject("enderman", "enderman", 30, [
@@ -177,8 +202,10 @@ class Kits{
 				"Slender" => "All enemies nearby are blinded when you're low on health, one time use",
 				"Arrow Dodge" => "25% chance of arrow attacks to be dodged"
 			], [
-				Item::get(SID::ENDER_PEARL,0,16),
-				Item::get(SID::DECOY,0,8)
+				//Item::get(SID::ENDER_PEARL,0,16),
+				//Item::get(SID::DECOY,0,8)
+				new EnderPearl(0,16),
+				new Decoy(0,8),
 			], 1),
 
 			"pyromancer" => new KitObject("pyromancer", "wither", 40, [
@@ -195,7 +222,8 @@ class Kits{
 			], [
 				"Fire Aura" => "Enemies nearby are slowly damaged when nearby"
 			], [
-				Item::get(SID::FLAMETHROWER)
+				//Item::get(SID::FLAMETHROWER)
+				new FlameThrower(),
 			], 2),
 
 			"m4l0ne23" => new KitObject("m4l0ne23", "enderdragon", 50, [
@@ -210,7 +238,8 @@ class Kits{
 				"Health Boost" => "2 extra hearts",
 				"Bounceback" => "25% chance players attacking you will get recoil knockback"
 			], [
-				Item::get(SID::MALONE_SWORD)
+				//Item::get(SID::MALONE_SWORD)
+				new MaloneSword(),
 			], 3),
 
 		] as $name => $class) $this->kits[$name] = $class;

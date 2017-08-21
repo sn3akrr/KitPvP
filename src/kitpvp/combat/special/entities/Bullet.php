@@ -6,7 +6,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\Projectile;
 
 class Bullet extends Projectile{
 
@@ -23,7 +23,7 @@ class Bullet extends Projectile{
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 		if($this->closed){
 			return false;
 		}
@@ -39,7 +39,6 @@ class Bullet extends Projectile{
 			$this->close();
 			$hasUpdate = true;
 		}
-
 		return $hasUpdate;
 	}
 
@@ -47,12 +46,8 @@ class Bullet extends Projectile{
 		$pk = new AddEntityPacket();
 		$pk->type = Bullet::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
+		$pk->position = $this->asVector3();
+		$pk->motion = $this->getMotion();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 		parent::spawnTo($player);

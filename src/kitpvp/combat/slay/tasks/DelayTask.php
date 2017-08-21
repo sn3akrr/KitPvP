@@ -16,33 +16,35 @@ class DelayTask extends PluginTask{
 
 	public function onRun(int $currentTick){
 		$slay = KitPvP::getInstance()->getCombat()->getSlay();
-		foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
-			if(isset($slay->delay[$player->getName()])){
-				$delay = $slay->delay[$player->getName()];
-				switch($delay){
-					case 5:
-						$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::RED."||||||||||||||||||||".TextFormat::GRAY."]");
-					break;
-					case 4:
-						$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||".TextFormat::RED."||||||||||||||||".TextFormat::GRAY."]");
-					break;
-					case 3:
-						$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||||||".TextFormat::RED."||||||||||||".TextFormat::GRAY."]");
-					break;
-					case 2:
-						$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||||||||||".TextFormat::RED."||||||||".TextFormat::GRAY."]");
-					break;
-					case 1:
-						$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||||||||||||||".TextFormat::RED."||||".TextFormat::GRAY."]");
-					break;
-					case 0:
-						$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||||||||||||||||||".TextFormat::GRAY."]");
-					break;
-				}
-				$slay->delay[$player->getName()]--;
-				if($slay->delay[$player->getName()] < 0){
-					unset($slay->delay[$player->getName()]);
-					$player->addActionBarMessage(" ");
+		if(!empty($slay->delay)){
+			foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
+				if(isset($slay->delay[$player->getName()])){
+					$delay = $slay->delay[$player->getName()];
+					switch($delay){
+						case 5:
+							$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::RED."||||||||||||||||||||".TextFormat::GRAY."]");
+						break;
+						case 4:
+							$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||".TextFormat::RED."||||||||||||||||".TextFormat::GRAY."]");
+						break;
+						case 3:
+							$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||||||".TextFormat::RED."||||||||||||".TextFormat::GRAY."]");
+						break;
+						case 2:
+							$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||||||||||".TextFormat::RED."||||||||".TextFormat::GRAY."]");
+						break;
+						case 1:
+							$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||||||||||||||".TextFormat::RED."||||".TextFormat::GRAY."]");
+						break;
+						case 0:
+							$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||||||||||||||||||".TextFormat::GRAY."]");
+						break;
+					}
+					$slay->delay[$player->getName()]--;
+					if($slay->delay[$player->getName()] < 0){
+						unset($slay->delay[$player->getName()]);
+						$player->addActionBarMessage(" ");
+					}
 				}
 			}
 		}

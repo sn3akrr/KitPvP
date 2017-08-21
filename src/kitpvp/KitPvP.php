@@ -7,8 +7,7 @@ use kitpvp\{
 	combat\Combat,
 	kits\Kits,
 	leaderboard\Leaderboard,
-	nuke\Nuke,
-	sparring\Sparring
+	nuke\Nuke
 };
 
 class KitPvP extends PluginBase{
@@ -22,7 +21,6 @@ class KitPvP extends PluginBase{
 	public $combat;
 	public $kits;
 	public $nuke;
-	public $sparring;
 
 	public function onEnable(){
 		self::$instance = $this;
@@ -48,7 +46,6 @@ class KitPvP extends PluginBase{
 		$this->arena = new Arena($this);
 		$this->leaderboard = new Leaderboard($this);
 		$this->nuke = new Nuke($this);
-		//$this->sparring = new Sparring($this);
 
 		$this->combat = new Combat($this);
 		$this->kits = new Kits($this);
@@ -89,10 +86,6 @@ class KitPvP extends PluginBase{
 
 	public function getNuke(){
 		return $this->nuke;
-	}
-
-	public function getSparring(){
-		return $this->sparring;
 	}
 
 }

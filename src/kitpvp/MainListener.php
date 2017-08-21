@@ -66,7 +66,6 @@ class MainListener implements Listener{
 
 	public function onQuit(PlayerQuitEvent $e){
 		$this->plugin->getKits()->setEquipped($e->getPlayer(), false);
-		//$this->plugin->getSparring()->onQuit($e->getPlayer());
 	}
 
 	public function onInteract(PlayerInteractEvent $e){

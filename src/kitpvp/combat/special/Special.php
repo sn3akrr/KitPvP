@@ -38,7 +38,7 @@ use kitpvp\combat\special\entities\{
 
 use core\AtPlayer as Player;
 
-class Special implements SpecialIds{
+class Special{
 
 	const TYPE_INTERACT = 0;
 	const TYPE_ATTACK = 1;
@@ -55,7 +55,6 @@ class Special implements SpecialIds{
 		$this->plugin = $plugin;
 		$this->combat = $combat;
 
-		$this->registerWeapons();
 		$this->registerSpells();
 		$plugin->getServer()->getPluginManager()->registerEvents(new EventListener($plugin, $this), $plugin);
 		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new SpecialTask($plugin), 10);
@@ -75,22 +74,6 @@ class Special implements SpecialIds{
 				) $entity->close();
 			}
 		}  
-	}
-
-	public function registerWeapons(){
-		Item::$list[self::BOOK_OF_SPELLS] = [0 => new BookOfSpells()];
-		Item::$list[self::CONCUSSION_GRENADE] = [0 => new ConcussionGrenade()];
-		Item::$list[self::BRASS_KNUCKLES] = [0 => new BrassKnuckles()];
-		Item::$list[self::GUN] = [0 => new Gun()];
-		Item::$list[self::REFLEX_HAMMER] = [0 => new ReflexHammer()];
-		Item::$list[self::DEFIBRILLATOR] = [0 => new Defibrillator()];
-		Item::$list[self::SYRINGE] = [0 => new Syringe()];
-		Item::$list[self::THROWING_KNIFE] = [0 => new ThrowingKnife()];
-		Item::$list[self::SHURIKEN] = [0 => new Shuriken()];
-		Item::$list[self::ENDER_PEARL] = [0 => new EnderPearl()];
-		Item::$list[self::DECOY] = [0 => new Decoy()];
-		Item::$list[self::FLAMETHROWER] = [0 => new Flamethrower()];
-		Item::$list[self::MALONE_SWORD] = [0 => new MaloneSword()];
 	}
 
 	public function registerSpells(){
@@ -121,9 +104,7 @@ class Special implements SpecialIds{
 
 		$pk = new LevelEventPacket();
 		$pk->evid = 3501;
-		$pk->x = $player->x;
-		$pk->y = $player->y;
-		$pk->z = $player->z;
+		$pk->position = $player->asVector3();
 		$pk->data = 0;
 		foreach($player->getLevel()->getPlayers() as $p) $p->dataPacket($pk);
 

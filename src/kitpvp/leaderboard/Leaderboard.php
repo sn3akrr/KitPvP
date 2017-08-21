@@ -88,10 +88,10 @@ class Leaderboard{
 
 	public function reset($date){
 		foreach([
-			"UPDATE kills SET $date='0'",
-			"UPDATE deaths SET $date='0'",
-			"UPDATE assists SET $date='0'",
-			"UPDATE revenge SET $date='0'",
+			"UPDATE leaderboard_kills SET $date='0'",
+			"UPDATE leaderboard_deaths SET $date='0'",
+			"UPDATE leaderboard_assists SET $date='0'",
+			"UPDATE leaderboard_revenge SET $date='0'",
 		] as $query) $this->database->query($query);
 	}
 

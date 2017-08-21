@@ -32,8 +32,6 @@ class Nuke{
 		$this->setTime();
 		$this->setWaitTime();
 
-		Item::$list[self::SHUTDOWN_CODE_ITEM] = [0 => new ShutdownCode()];
-
 		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new NukeTick($plugin), 1);
 	}
 
@@ -73,7 +71,7 @@ class Nuke{
 
 	public function dropShutdownCodes(){
 		for($i = 0; $i <= 2; $i++){
-			$item = Item::get(self::SHUTDOWN_CODE_ITEM,0,1);
+			$item = new ShutdownCode();
 			$item->setCustomName(TextFormat::GRAY."Shutdown code: ".$this->getRandomShutdownCode());
 			$level = $this->plugin->getServer()->getLevelByName("KitArena");
 			$x = mt_rand(105,150);
@@ -92,9 +90,10 @@ class Nuke{
 		}
 		foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
 			$count = 0;
-			for($i = 0; $i <= $player->getInventory()->getSize(); $i++){
+			for($i = 0, $size = $player->getInventory()->getSize(); $i < $size; $i++){
 				$item = $player->getInventory()->getItem($i);
-				if($item->getId() == 600 || $item->getId() == Item::PAPER){
+				if($item instanceof ShutdownCode){
+					echo "Item found as shutdown code", PHP_EOL;
 					$player->getInventory()->setItem($i, Item::get(0));
 					$count += $item->getCount();
 				}

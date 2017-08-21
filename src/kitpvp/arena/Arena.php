@@ -2,7 +2,6 @@
 
 use pocketmine\level\Position;
 use pocketmine\utils\TextFormat;
-use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 
 use kitpvp\KitPvP;
 use core\AtPlayer as Player;
@@ -51,8 +50,7 @@ class Arena{
 			new Position(96,71,154,$level),
 		];
 		$tpto = $positions[mt_rand(0,count($positions) - 1)];
-		//$player->teleport($tpto);
-		$player->delayTp($tpto);
+		$player->teleport($tpto);
 
 		$combat = $this->plugin->getCombat();
 		$combat->getBodies()->addAllBodies($player);
@@ -69,8 +67,7 @@ class Arena{
 	public function exitArena(Player $player){
 		$tpto = new Position(129.5,22,135.5, $this->plugin->getServer()->getDefaultLevel());
 
-		//$player->teleport($tpto, 180);
-		$player->delayTp($tpto);
+		$player->teleport($tpto, 180);
 
 		$this->plugin->getCombat()->getBodies()->removeAllBodies($player);
 		$this->plugin->getKits()->setEquipped($player, false);

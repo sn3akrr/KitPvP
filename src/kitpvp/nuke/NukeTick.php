@@ -3,10 +3,6 @@
 use pocketmine\scheduler\PluginTask;
 use pocketmine\item\Item;
 use pocketmine\utils\TextFormat;
-use pocketmine\network\mcpe\protocol\{
-	LevelSoundEventPacket,
-	ChangeDimensionPacket
-};
 
 use kitpvp\KitPvP;
 
@@ -56,7 +52,7 @@ class NukeTick extends PluginTask{
 						$count = 0;
 						foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
 							if($this->plugin->getArena()->inArena($player)){
-								if(!$player->getInventory()->contains(Item::get(600,0,10))){
+								if(!$player->getInventory()->contains(new ShutdownCode(0,10))){
 									$this->plugin->getCombat()->getSlay()->processSuicide($player);
 									$player->sendMessage(TextFormat::AQUA."Nuke> ".TextFormat::RED."You didn't collect enough shutdown codes, killed by Nuke Impact");
 									$count++;

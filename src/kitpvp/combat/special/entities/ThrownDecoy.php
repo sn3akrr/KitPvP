@@ -6,7 +6,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\Projectile;
 use kitpvp\KitPvP;
 
 class ThrownDecoy extends Projectile{
@@ -24,7 +24,7 @@ class ThrownDecoy extends Projectile{
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 		if($this->closed){
 			return false;
 		}
@@ -55,12 +55,8 @@ class ThrownDecoy extends Projectile{
 		$pk = new AddEntityPacket();
 		$pk->type = ThrownDecoy::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
+		$pk->position = $this->asVector3();
+		$pk->motion = $this->getMotion();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 		parent::spawnTo($player);

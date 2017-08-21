@@ -294,4 +294,5 @@ class KitObject{
 		$no = [322];
 		return !isset($no[$item->getId()]);
 	}
+
 }

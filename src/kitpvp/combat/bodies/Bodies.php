@@ -4,8 +4,7 @@ use pocketmine\network\mcpe\protocol\{
 	AddPlayerPacket,
 	MobArmorEquipmentPacket,
 	PlayerListPacket,
-	//MoveEntityPacket,
-	//SetEntityMotionPacket,
+	types\PlayerListEntry,
 	RemoveEntityPacket
 };
 use pocketmine\utils\UUID;
@@ -14,6 +13,7 @@ use pocketmine\entity\{
 	Human
 };
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
@@ -49,6 +49,7 @@ class Bodies{
 			$x = (int) $thing->x;
 			$y = (int) $thing->y;
 			$z = (int) $thing->z;
+			$pos = $thing->asVector3()->floor();
 			$yaw = $thing->yaw;
 			$pitch = $thing->pitch;
 		}else{
@@ -62,6 +63,7 @@ class Bodies{
 			$x = (int) $this->bodies[$eid]["x"];
 			$y = (int) $this->bodies[$eid]["y"];
 			$z = (int) $this->bodies[$eid]["z"];
+			$pos = new Vector3($this->bodies[$eid]["x"],$this->bodies[$eid]["y"],$this->bodies[$eid]["z"]);
 			$yaw = $this->bodies[$eid]["yaw"];
 			$pitch = $this->bodies[$eid]["pitch"];
 		}
@@ -69,12 +71,9 @@ class Bodies{
 		$pk->uuid = $uuid;
 		$pk->username = "dead body " . $eid;
 		$pk->entityRuntimeId = $eid;
-		$pk->x = $x;
-		$pk->y = $y;
-		$pk->z = $z;
+		$pk->position = $pos;
 		$pk->pitch = $pitch;
-		$pk->headYaw = $yaw;
-		$pk->yaw = $yaw;
+		$pk->headYaw = $pk->yaw = $yaw;
 		$pk->item = $item;
 		$flags = 0;
 		$flags |= 1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG;
@@ -96,11 +95,11 @@ class Bodies{
 
 		$pk3 = new PlayerListPacket();
 		$pk3->type = PlayerListPacket::TYPE_ADD;
-		$pk3->entries[] = [$uuid, $eid, $name, $skinid, $skindata];
+		$pk3->entries[] = PlayerListEntry::createAdditionEntry($uuid, $eid, $name, $skinid, $skindata);
 
 		$pk4 = new PlayerListPacket();
 		$pk4->type = PlayerListPacket::TYPE_REMOVE;
-		$pk4->entries[] = [$uuid];
+		$pk4->entries[] = PlayerListEntry::createRemovalEntry($uuid);
 
 		if(empty($players)){
 			foreach($this->plugin->getServer()->getOnlinePlayers() as $pl){

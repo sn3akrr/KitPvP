@@ -61,6 +61,7 @@ class EventListener implements Listener{
 					$player->addEffect($effect);
 				}
 			}
+			$player->getAttributeMap()->getAttribute(7)->markSynchronized(false);
 		}
 	}
 

@@ -27,12 +27,12 @@ class ThrownConcussionGrenade extends Projectile{
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
 
-	public function onUpdate(int $currentTick) : bool{
+	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){
 			return false;
 		}
 
-		$hasUpdate = parent::onUpdate($currentTick);
+		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->age > 1200){
 			$this->close();

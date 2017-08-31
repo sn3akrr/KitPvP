@@ -3,7 +3,8 @@
 class ThrowingKnife extends SpecialWeapon{
 
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::FEATHER, $meta, $count, "Throwing Knife");
+		parent::__construct(self::FEATHER, $meta, "Throwing Knife");
+		$this->setCount($count);
 	}
 
 	public function isConsumable(){

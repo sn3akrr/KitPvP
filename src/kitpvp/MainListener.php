@@ -2,8 +2,6 @@
 
 use pocketmine\event\Listener;
 use pocketmine\event\player\{
-	PlayerPreLoginEvent,
-	PlayerLoginEvent,
 	PlayerJoinEvent,
 	PlayerMoveEvent,
 	PlayerDropItemEvent,
@@ -27,23 +25,6 @@ class MainListener implements Listener{
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
-	}
-
-	public function onPreLogin(PlayerPreLoginEvent $e){
-		$id = Core::getInstance()->getNetwork()->getIdentifier();
-		if(count($this->plugin->getServer()->getOnlinePlayers()) >= 70){
-			switch($id){
-				case "kitpvp-1":
-					$player->transferTo("kitpvp-2");
-				break;
-				case "kitpvp-2":
-					$player->transferTo("kitpvp-3");
-				break;
-				case "kitpvp-3":
-					$player->transferTo("lobby-1");
-				break;
-			}
-		}
 	}
 
 	public function onJoin(PlayerJoinEvent $e){

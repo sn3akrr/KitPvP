@@ -11,10 +11,6 @@ use pocketmine\entity\{
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
-use kitpvp\combat\slay\tasks\{
-	InvincibilityTask,
-	DelayTask
-};
 
 use core\AtPlayer as Player;
 use core\Core;
@@ -35,9 +31,6 @@ class Slay{
 		$this->plugin = $plugin;
 		$this->combat = $combat;
 		$this->lb = $plugin->getLeaderboard();
-
-		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new InvincibilityTask($plugin), 20);
-		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new DelayTask($plugin), 2);
 	}
 
 	public function isDelayed(Player $player){

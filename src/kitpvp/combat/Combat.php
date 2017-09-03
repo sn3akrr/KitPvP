@@ -35,6 +35,7 @@ class Combat{
 		$this->teams = new Teams($plugin, $this);
 
 		$plugin->getServer()->getPluginManager()->registerEvents(new EventListener($plugin, $this), $plugin);
+		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new CombatTask($plugin), 1);
 	}
 
 	public function close(){

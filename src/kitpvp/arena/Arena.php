@@ -11,17 +11,16 @@ class Arena{
 
 	public $plugin;
 
+	public $positions;
+
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
+		$this->registerPositions();
 	}
 
-	public function inArena(Player $player){
-		return $player->getLevel()->getName() == "KitArena";
-	}
-
-	public function tpToArena(Player $player){
+	public function registerPositions(){
 		$level = $this->plugin->getServer()->getLevelByName("KitArena");
-		$positions = [
+		$this->positions = [
 			new Position(152,75,89,$level),
 			new Position(128,58,113,$level),
 			new Position(128,57,124,$level),
@@ -49,25 +48,32 @@ class Arena{
 			new Position(87,70,122,$level),
 			new Position(96,71,154,$level),
 		];
-		$tpto = $positions[mt_rand(0,count($positions) - 1)];
-		$player->teleport($tpto);
+	}
+
+	public function getRandomPosition(){
+		return $this->positions[mt_rand(0,count($this->positions) - 1)];
+	}
+
+	public function inArena(Player $player){
+		return $player->getLevel()->getName() == "KitArena";
+	}
+
+	public function tpToArena(Player $player){
+		$player->teleport($this->getRandomPosition());
 
 		$combat = $this->plugin->getCombat();
 		$combat->getBodies()->addAllBodies($player);
-
 		$combat->getSlay()->setInvincible($player);
 
-		$kit = $this->plugin->getKits();
-		if(!$kit->hasKit($player)){
-			$kit->getKit("noob")->equip($player);
-			$player->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."You were automatically given the default kit!");
+		$kits = $this->plugin->getKits();
+		if(!$kits->hasKit($player)){
+			$kits->getKit("noob")->equip($player);
+			$player->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."You were automatically given the Noob kit!");
 		}
 	}
 
 	public function exitArena(Player $player){
-		$tpto = new Position(129.5,22,135.5, $this->plugin->getServer()->getDefaultLevel());
-
-		$player->teleport($tpto, 180);
+		$player->teleport(new Position(129.5,22,135.5, $this->plugin->getServer()->getDefaultLevel()), 180);
 
 		$this->plugin->getCombat()->getBodies()->removeAllBodies($player);
 		$this->plugin->getKits()->setEquipped($player, false);

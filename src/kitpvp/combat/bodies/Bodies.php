@@ -17,7 +17,6 @@ use pocketmine\math\Vector3;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
-use kitpvp\combat\bodies\tasks\DespawnBodyTask;
 
 use core\AtPlayer as Player;
 
@@ -33,13 +32,10 @@ class Bodies{
 	public function __construct(KitPvP $plugin, Combat $combat){
 		$this->plugin = $plugin;
 		$this->combat = $combat;
-
-		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new DespawnBodyTask($plugin), 20);
 	}
 
 	public function addBody($thing, $players = []){
 		if($thing instanceof Player){
-			$name = $thing->getName();
 			$eid = Entity::$entityCount++;
 			$uuid = UUID::fromRandom();
 			$skinid = $thing->getSkinId();
@@ -53,7 +49,6 @@ class Bodies{
 			$yaw = $thing->yaw;
 			$pitch = $thing->pitch;
 		}else{
-			$name = "";
 			$eid = $thing;
 			$uuid = $this->bodies[$eid]["uuid"];
 			$skinid = $this->bodies[$eid]["skinid"];
@@ -67,9 +62,10 @@ class Bodies{
 			$yaw = $this->bodies[$eid]["yaw"];
 			$pitch = $this->bodies[$eid]["pitch"];
 		}
+
 		$pk = new AddPlayerPacket();
 		$pk->uuid = $uuid;
-		$pk->username = "dead body " . $eid;
+		$pk->username = "";
 		$pk->entityRuntimeId = $eid;
 		$pk->position = $pos;
 		$pk->pitch = $pitch;
@@ -95,7 +91,7 @@ class Bodies{
 
 		$pk3 = new PlayerListPacket();
 		$pk3->type = PlayerListPacket::TYPE_ADD;
-		$pk3->entries[] = PlayerListEntry::createAdditionEntry($uuid, $eid, $name, $skinid, $skindata);
+		$pk3->entries[] = PlayerListEntry::createAdditionEntry($uuid, $eid, "", $skinid, $skindata);
 
 		$pk4 = new PlayerListPacket();
 		$pk4->type = PlayerListPacket::TYPE_REMOVE;
@@ -141,6 +137,7 @@ class Bodies{
 
 	public function destroyBody($eid){
 		unset($this->bodies[$eid]);
+
 		$pk = new RemoveEntityPacket();
 		$pk->entityUniqueId = $eid;
 		foreach($this->plugin->getServer()->getOnlinePlayers() as $player) $player->dataPacket($pk);

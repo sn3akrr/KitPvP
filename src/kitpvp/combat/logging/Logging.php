@@ -2,7 +2,6 @@
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
-use kitpvp\combat\logging\tasks\LoggingTask;
 
 use core\AtPlayer as Player;
 
@@ -18,8 +17,6 @@ class Logging{
 	public function __construct(KitPvP $plugin, Combat $combat){
 		$this->plugin = $plugin;
 		$this->combat = $combat;
-
-		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new LoggingTask($plugin), 20);
 	}
 
 	public function inCombat(Player $player){

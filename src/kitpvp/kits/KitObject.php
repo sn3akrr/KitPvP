@@ -138,10 +138,8 @@ class KitObject{
 			}
 		}
 		foreach($this->getEffects() as $effect){
-			if($effect instanceof Effect){
-				$effect->setDuration(20 * 999999);
-				$player->addEffect($effect);
-			}
+			$effect->setDuration(20 * 999999);
+			$player->addEffect($effect);
 		}
 		if(!$replenish){
 			foreach($this->getSpecial() as $special){

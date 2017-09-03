@@ -30,22 +30,4 @@ class EventListener implements Listener{
 		$this->teams->closeTeamRequestsFrom($player);
 	}
 
-	/*public function onDmg(EntityDamageEvent $e){
-		$teams = $this->teams;
-		$victim = $e->getEntity();
-		if($victim instanceof Player){
-			if($e instanceof EntityDamageByEntityEvent){
-				$killer = $e->getDamager();
-				if($killer instanceof Player){
-					if($teams->inTeam($victim) && $teams->inTeam($killer)){
-						if($teams->getPlayerTeamUid($victim) == $teams->getPlayerTeamUid($killer)){
-							$e->setCancelled(true);
-							$killer->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::RED.$victim->getName()." is on your team!");
-						}
-					}
-				}
-			}
-		}
-	}*/
-
 }

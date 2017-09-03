@@ -2,6 +2,7 @@
 
 use pocketmine\scheduler\PluginTask;
 use pocketmine\utils\TextFormat;
+use pocketmine\Player;
 
 use kitpvp\KitPvP;
 
@@ -57,9 +58,9 @@ class CombatTask extends PluginTask{
 
 		if($this->runs %2 == 0){
 			if(!empty($slay->delay)){
-				foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
-					if(isset($slay->delay[$player->getName()])){
-						$delay = $slay->delay[$player->getName()];
+				foreach($slay->delay as $name => $delay){
+					$player = $this->plugin->getServer()->getPlayerExact($name);
+					if($player instanceof Player){
 						switch($delay){
 							case 5:
 								$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::RED."||||||||||||||||||||".TextFormat::GRAY."]");
@@ -80,9 +81,9 @@ class CombatTask extends PluginTask{
 								$player->addActionBarMessage(TextFormat::GRAY."[".TextFormat::GREEN."||||||||||||||||||||".TextFormat::GRAY."]");
 							break;
 						}
-						$slay->delay[$player->getName()]--;
-						if($slay->delay[$player->getName()] < 0){
-							unset($slay->delay[$player->getName()]);
+						$slay->delay[$name]--;
+						if($slay->delay[$name] < 0){
+							unset($slay->delay[$name]);
 							$player->addActionBarMessage(" ");
 						}
 					}

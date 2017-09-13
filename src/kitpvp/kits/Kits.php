@@ -7,6 +7,7 @@ use pocketmine\entity\{
 };
 use pocketmine\utils\Color;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
+use pocketmine\Player;
 
 use kitpvp\KitPvP;
 use kitpvp\kits\commands\{
@@ -37,7 +38,7 @@ use kitpvp\combat\special\items\{
 	MaloneSword
 };
 
-use core\AtPlayer as Player;
+use core\stats\User;
 
 class Kits{
 
@@ -49,8 +50,9 @@ class Kits{
 	public $confirm = [];
 	public $equipped = [];
 
-	//Kit ability data
 	public $ability = [];
+
+	public $kp = [];
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
@@ -77,7 +79,6 @@ class Kits{
 			],[]),
 
 			"witch" => new KitObject("witch", "default", 10, [
-				//Splash potions, poison, damage, healing
 				Item::get(272,0,1),
 				Item::get(322,0,1),
 				Item::get(366,0,6),
@@ -91,13 +92,11 @@ class Kits{
 			], [
 				"Curse" => "5% chance of attackers being poisoned"
 			], [
-				//Item::get(SID::BOOK_OF_SPELLS)
 				new BookOfSpells(),
 			]),
 
 			"spy" => new KitObject("spy", "default", 20, [
-				Item::get(267,0,1), //ADD SHARPNESS AND KNOCKBACK
-				//POTION OF INVISIBILITY
+				Item::get(267,0,1),
 				Item::get(364,0,2),
 				Item::get(320,0,4),
 
@@ -111,12 +110,11 @@ class Kits{
 				"Stealth Mode" => "Invisibility when holding still or sneaking",
 				"Last Chance" => "Knocks back players and 5 second invisibility when low on health"
 			], [
-				//Item::get(SID::CONCUSSION_GRENADE,0,3)
 				new ConcussionGrenade(0, 3)
 			]),
 
 			"scout" => new KitObject("scout", "default", 30, [
-				Item::get(267,0,1), //ADD SHARPNESS AND KNOCKBACK
+				Item::get(267,0,1),
 				Item::get(320,0,4),
 				Item::get(364,0,2),
 
@@ -130,7 +128,6 @@ class Kits{
 				"Double Jump" => "Self explanitory",
 				"Bounceback" => "25% chance players attacking you will get recoil knockback"
 			], [
-				//Item::get(SID::BRASS_KNUCKLES)
 				new BrassKnuckles()
 			]),
 
@@ -148,12 +145,10 @@ class Kits{
 			], [
 				"Adrenaline" => "Increased jump and speed boost when low on health"
 			], [
-				//Item::get(SID::GUN)
 				new Gun()
 			], 1),
 
 			"medic" => new KitObject("medic", "blaze", 10, [
-				//Splash potion of healing, potion of healing II
 				Item::get(267,0,1),
 				Item::get(260,0,16),
 
@@ -165,16 +160,13 @@ class Kits{
 				"Miracle" => "Regains 2.5 hearts when low on health one time",
 				"Recover" => "Slowly regenerate health over time"
 			], [
-				//Item::get(SID::REFLEX_HAMMER),
-				//Item::get(SID::DEFIBRILLATOR),
-				//Item::get(SID::SYRINGE)
 				new ReflexHammer(),
 				new Defibrillator(),
 				new Syringe(),
 			], 1),
 
 			"archer" => new KitObject("archer", "ghast", 20, [
-				Item::get(261,0,1), //ADD POWER+PUNCH+INFINITY
+				Item::get(261,0,1),
 				Item::get(262,0,64),
 				Item::get(272,0,1),
 				Item::get(260,0,16),
@@ -190,8 +182,6 @@ class Kits{
 			], [
 				"Aim Assist" => "Bow automatically aims on nearby target (TODO)"
 			], [
-				//Item::get(SID::THROWING_KNIFE),
-				//Item::get(SID::SHURIKEN)
 				new ThrowingKnife(),
 				new Shuriken(),
 			], 1),
@@ -210,8 +200,6 @@ class Kits{
 				"Slender" => "All enemies nearby are blinded when you're low on health, one time use",
 				"Arrow Dodge" => "25% chance of arrow attacks to be dodged"
 			], [
-				//Item::get(SID::ENDER_PEARL,0,16),
-				//Item::get(SID::DECOY,0,8)
 				new EnderPearl(0,16),
 				new Decoy(0,8),
 			], 1),
@@ -230,7 +218,6 @@ class Kits{
 			], [
 				"Fire Aura" => "Enemies nearby are slowly damaged when nearby"
 			], [
-				//Item::get(SID::FLAMETHROWER)
 				new FlameThrower(),
 			], 2),
 
@@ -246,7 +233,6 @@ class Kits{
 				"Health Boost" => "2 extra hearts",
 				"Bounceback" => "25% chance players attacking you will get recoil knockback"
 			], [
-				//Item::get(SID::MALONE_SWORD)
 				new MaloneSword(),
 			], 3),
 
@@ -288,6 +274,82 @@ class Kits{
 			$list[] = $kit->getName();
 		}
 		return $list;
+	}
+
+	//Kit passes
+	public function getKitPasses($player){
+		$xuid = (new User($player))->getXuid();
+
+		$statement = $this->database->prepare("SELECT passes FROM kits_kitpasses WHERE xuid=?");
+		$statement->bind_param("i", $xuid);
+		$statement->bind_result($passes);
+		if($statement->execute()){
+			$statement->fetch();
+		}
+		$statement->close();
+
+		return $passes ?? 0;
+	}
+
+	public function setKitPasses($player, $amount){
+		$xuid = (new User($player))->getXuid();
+
+		$z = 0;
+		$statement = $this->database->prepare("INSERT INTO kits_kitpasses(xuid, passes, cooldown) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE passes=VALUES(passes)");
+		$statement->bind_param("iii", $xuid, $amount, $z);
+		$statement->execute();
+		$statement->close();
+	}
+
+	public function addKitPasses($player,  $amount){
+		$amount = $this->getKitPasses($player) + $amount;
+		$this->setKitPasses($player, $amount);
+	}
+
+	public function takeKitPasses($player, $amount){
+		$amount = $this->getKitPasses($player) - $amount;
+		$this->setKitPasses($player, $amount);
+	}
+
+	public function setPassCooldown($player){
+		$xuid = (new User($player))->getXuid();
+		$statement = $this->database->prepare("UPDATE kits_kitpasses SET cooldown=? WHERE xuid=?");
+		$statement->bind_param("i", $xuid);
+		$statement->execute();
+		$statement->close();
+	}
+
+	public function hasPassCooldown($player){
+		$xuid = (new User($player))->getXuid();
+		$statement = $this->database->prepare("SELECT cooldown FROM kits_kitpasses WHERE xuid=?");
+		$statement->bind_param("i", $xuid);
+		$statement->bind_result($cooldown);
+		if($statement->execute()){
+			$statement->fetch();
+		}
+		$statement->close();
+
+		return ($cooldown ?? 0) > 0;
+	}
+
+	public function toggleKitPass(Player $player){
+		if(isset($this->kp[$player->getName()])){
+			$this->kp[$player->getName()] = true;
+			return true;
+		}else{
+			unset($this->kp[$player->getName()]);
+			return false;
+		}
+	}
+
+	public function hasKitPassActive(Player $player){
+		return isset($this->kp[$player->getName()]);
+	}
+
+	public function consumeKitPass(Player $player){
+		unset($this->kp[$player->getName()]);
+		$this->takeKitPasses($player, 1);
+		$this->setPassCooldown($player);
 	}
 
 	// special stuffs \\

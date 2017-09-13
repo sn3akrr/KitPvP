@@ -130,7 +130,7 @@ class Slay{
 
 	public function damageAs(Player $damager, Player $victim, $damage){
 		$ev = new EntityDamageByEntityEvent($damager, $victim, 1, $damage, 0);
-		$victim->attack($damage, $ev);
+		$victim->attack($ev);
 	}
 
 	public function resetPlayer(Player $player){

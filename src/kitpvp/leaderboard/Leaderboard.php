@@ -125,6 +125,7 @@ class Leaderboard{
 			return $text;
 		}
 
+		$text = TextFormat::GREEN.$value.". ".TextFormat::RED."No stats found!";
 		if($statement = $this->database->query("SELECT xuid, $date FROM leaderboard_$type ORDER BY $date DESC LIMIT 5")){
 			$key = 1;
 			while($array = $statement->fetch_array()){
@@ -134,8 +135,6 @@ class Leaderboard{
 				}
 				$key++;
 			}
-		}else{
-			$text = TextFormat::GREEN.$value.". ".TextFormat::RED."No stats found!";
 		}
 		return $text;
 	}

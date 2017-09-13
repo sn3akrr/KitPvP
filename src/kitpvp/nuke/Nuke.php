@@ -92,7 +92,7 @@ class Nuke{
 			$count = 0;
 			for($i = 0, $size = $player->getInventory()->getSize(); $i < $size; $i++){
 				$item = $player->getInventory()->getItem($i);
-				if($item instanceof ShutdownCode){
+				if(stristr($item->getName(), "shutdown") != false){
 					echo "Item found as shutdown code", PHP_EOL;
 					$player->getInventory()->setItem($i, Item::get(0));
 					$count += $item->getCount();

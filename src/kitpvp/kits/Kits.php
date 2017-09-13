@@ -41,6 +41,9 @@ use core\AtPlayer as Player;
 
 class Kits{
 
+	public $plugin;
+	public $database;
+
 	public $kits;
 
 	public $confirm = [];
@@ -51,6 +54,11 @@ class Kits{
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
+		$this->database = $plugin->database;
+
+		foreach([
+			"CREATE TABLE IF NOT EXISTS kits_kitpasses(xuid BIGINT(16) NOT NULL UNIQUE, passes INT NOT NULL, cooldown INT NOT NULL)",
+		] as $query) $this->database->query($query);
 
 		foreach([
 			"kit" => new Kit($plugin, "kit", "Equip a kit!"),

@@ -101,14 +101,13 @@ class KitObject{
 		$rh = Core::getInstance()->getStats()->getRank()->getRankHierarchy($this->getRequiredRank());
 
 		if($player->getName() == "Imyourfriend007" || $player->getName() == "ShadowEagleMCPE" || $player->getName() == "DerpyCake21") return true;
-		if($player->getName() == "SMN" && $rh <= 4) return true;
 
 		if($rh > $prh) return false;
 		return true;
 	}
 
 	public function hasEnoughCurrency(Player $player){
-		return $player->getTechits() >= $this->getPrice();
+		return $player->getTechits() >= $this->getPrice() || KitPvP::getInstance()->getKits()->hasKitPassActive($player);
 	}
 
 	public function refund(Player $player){
@@ -147,9 +146,17 @@ class KitObject{
 			}
 			Server::getInstance()->getPluginManager()->callEvent(new KitEquipEvent($player, $this));
 			KitPvP::getInstance()->getKits()->setEquipped($player, true, $this->getName());
-			$player->takeTechits($this->getPrice());
+			if(!KitPvP::getInstance()->getKits()->hasKitPassActive($player)) $player->takeTechits($this->getPrice());
 			$player->getLevel()->addSound(new AnvilFallSound($player), [$player]);
 			Core::getInstance()->getEntities()->getFloatingText()->forceUpdate($player);
+			if(!KitPvP::getInstance()->getKits()->hasKitPassActive($player)){
+				$player->takeTechits($this->getPrice());
+				if(KitPvP::getInstance()->getKits()->hasPassCooldown($player)){
+					KitPvP::getInstance()->getKits()->subtractPassCooldown($player);
+				}
+			}else{
+				KitPvP::getInstance()->getKits()->consumeKitPass($player);
+			}
 		}else{
 			foreach($this->getSpecial() as $special){
 				if(!$special->isConsumable()) $player->getInventory()->addItem($special);

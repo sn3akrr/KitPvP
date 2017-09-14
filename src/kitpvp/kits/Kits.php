@@ -5,7 +5,7 @@ use pocketmine\entity\{
 	Entity,
 	Effect
 };
-use pocketmine\utils\Color;
+use pocketmine\utils\TextFormat;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\Player;
 
@@ -313,7 +313,18 @@ class Kits{
 
 	public function setPassCooldown($player){
 		$xuid = (new User($player))->getXuid();
+		$f = 5;
+
 		$statement = $this->database->prepare("UPDATE kits_kitpasses SET cooldown=? WHERE xuid=?");
+		$statement->bind_param("ii", $f, $xuid);
+		$statement->execute();
+		$statement->close();
+	}
+
+	public function subtractPassCooldown($player){
+		$xuid = (new User($player))->getXuid();
+
+		$statement = $this->database->prepare("UPDATE kits_kitpasses SET cooldown=cooldown-1 WHERE xuid=?");
 		$statement->bind_param("i", $xuid);
 		$statement->execute();
 		$statement->close();
@@ -350,6 +361,8 @@ class Kits{
 		unset($this->kp[$player->getName()]);
 		$this->takeKitPasses($player, 1);
 		$this->setPassCooldown($player);
+
+		$player->sendMessage(TextFormat::LIGHT_PURPLE."You used one kit pass! The kit you equipped was free of charge!");
 	}
 
 	// special stuffs \\

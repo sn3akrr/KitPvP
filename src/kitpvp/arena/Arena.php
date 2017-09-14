@@ -2,15 +2,16 @@
 
 use pocketmine\level\Position;
 use pocketmine\utils\TextFormat;
+use pocketmine\Player;
 
 use kitpvp\KitPvP;
-use core\AtPlayer as Player;
+
+use core\vote\Vote;
 use core\Core;
 
 class Arena{
 
 	public $plugin;
-
 	public $positions;
 
 	public function __construct(KitPvP $plugin){
@@ -77,6 +78,10 @@ class Arena{
 
 		$this->plugin->getCombat()->getBodies()->removeAllBodies($player);
 		$this->plugin->getKits()->setEquipped($player, false);
+
+		if(mt_rand(0,10) == 1){
+			Vote::sendVoteAd($player);
+		}
 	}
 
 }

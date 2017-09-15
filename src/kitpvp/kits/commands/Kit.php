@@ -6,6 +6,7 @@ use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\utils\TextFormat;
 
 use kitpvp\KitPvP;
+use kitpvp\kits\uis\KitConfirmUi;
 
 use core\AtPlayer as Player;
 use core\Core;
@@ -23,8 +24,7 @@ class Kit extends Command implements PluginIdentifiableCommand{
 	public function execute(CommandSender $sender, string $label, array $args){
 		$kits = KitPvP::getInstance()->getKits();
 		if($kits->hasKit($sender)){
-			$sender->sendErrorUi("You already have a kit equipped!");
-			//$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You already have a kit equipped!");
+			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You already have a kit equipped!");
 			return;
 		}
 		if(count($args) !== 1){
@@ -37,35 +37,19 @@ class Kit extends Command implements PluginIdentifiableCommand{
 			return;
 		}
 		if(!$kit->hasRequiredRank($sender)){
-			$sender->sendErrorUi("You must be at least rank ".strtoupper($kit->getRequiredRank())." to use this kit! Purchase this rank at ".TextFormat::YELLOW."buy.atpe.co");
-			//$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You must be at least rank ".strtoupper($kit->getRequiredRank())." to use this kit! Purchase this rank at ".TextFormat::YELLOW."buy.atpe.co");
+			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You must be at least rank ".strtoupper($kit->getRequiredRank())." to use this kit! Purchase this rank at ".TextFormat::YELLOW."buy.atpe.co");
 			return;
 		}
 		if(!$kit->hasEnoughCurrency($sender)){
-			$sender->sendErrorUi("You do not have enough Techits to equip this kit! (".$kit->getPrice().")");
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You do not have enough Techits to equip this kit! (".$kit->getPrice().")");
 			return;
 		}
 		if($kit->hasPlayerCooldown($sender)){
 			$cooldown = $kit->getPlayerCooldown($sender);
-			$sender->sendErrorUi("This kit has a cooldown! You can equip it again in ".$cooldown." play".($cooldown > 1 ? "s" : "")."!");
-			//$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."This kit has a cooldown! You can equip it again in ".$cooldown." play".($cooldown > 1 ? "s" : "")."!");
+			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."This kit has a cooldown! You can equip it again in ".$cooldown." play".($cooldown > 1 ? "s" : "")."!");
 			return;
 		}
-		if(isset($kits->confirm[$sender->getName()])){
-			if($kits->confirm[$sender->getName()][0] == $kit->getName()){
-				$kit->equip($sender);
-				$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."You equipped the ".$kit->getName()." kit!");
-			}else{
-				$kits->confirm[$sender->getName()] = [$kit->getName(),time()];
-				$sender->sendMessage($kit->getVisualItemList());
-				$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."Tap again to equip the ".$kit->getName()." kit!");
-			}
-		}else{
-			$kits->confirm[$sender->getName()] = [$kit->getName(),time()];
-			$sender->sendMessage($kit->getVisualItemList());
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."Tap again to equip the ".$kit->getName()." kit!");
-		}
+		$sender->showModal(new KitConfirmUi($kit, $sender));
 	}
 
 	public function getPlugin() : \pocketmine\plugin\Plugin{

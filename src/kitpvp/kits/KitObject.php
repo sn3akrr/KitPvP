@@ -242,24 +242,27 @@ class KitObject{
 
 	public function getVisualItemList(){
 		$array = $this->getItemList();
-		$string = "This kit comes with:\n ".TextFormat::BOLD."Items:".TextFormat::RESET."\n  ";
+		$string = "This kit comes with:\n\n  ".TextFormat::BOLD."Items:".TextFormat::RESET."\n    ";
 		foreach($array as $key => $values){
 			$string .= TextFormat::GREEN."x".$values["count"]." ".TextFormat::AQUA.$values["name"].TextFormat::GRAY.", ";
 		}
+		$string .= "\n\n";
 		if(count($this->getEffects()) !== 0){
-			$string .= "\n ".TextFormat::RESET.TextFormat::BOLD."Effects:".TextFormat::RESET."\n  ";
+			$string .= "\n  ".TextFormat::RESET.TextFormat::BOLD."Effects:".TextFormat::RESET."\n    ";
 			foreach($this->getEffects() as $effect){
 				$string .= TextFormat::AQUA.$effect->getName()." ".TextFormat::YELLOW.$this->toRN($effect->getEffectLevel()).TextFormat::GRAY.", ";
 			}
+			$string .= "\n\n";
 		}
 		if(count($this->getAbilities()) !== 0){
-			$string .= "\n ".TextFormat::RESET.TextFormat::BOLD."Abilities:".TextFormat::RESET."\n";
+			$string .= "\n  ".TextFormat::RESET.TextFormat::BOLD."Abilities:".TextFormat::RESET."\n";
 			foreach($this->getAbilities() as $name => $description){
-				$string .= "  ".TextFormat::DARK_RED.$name.TextFormat::GRAY." - ".TextFormat::RED.$description."\n";
+				$string .= "    ".TextFormat::DARK_RED.$name.TextFormat::GRAY." - ".TextFormat::RED.$description."\n";
 			}
+			$string .= "\n\n";
 		}
 		if(count($this->getSpecial()) !== 0){
-			$string .= TextFormat::RESET." ".TextFormat::BOLD."Special Weapons:".TextFormat::RESET."\n  ";
+			$string .= TextFormat::RESET."  ".TextFormat::BOLD."Special Weapons:".TextFormat::RESET."\n    ";
 			foreach($this->getSpecialList() as $key => $values){
 				$string .= TextFormat::GOLD."x".$values["count"]." ".TextFormat::YELLOW.$values["name"].TextFormat::GRAY.", ";
 			}

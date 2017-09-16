@@ -246,8 +246,8 @@ class KitObject{
 		foreach($array as $key => $values){
 			$string .= TextFormat::GREEN."x".$values["count"]." ".TextFormat::AQUA.$values["name"].TextFormat::GRAY.", ";
 		}
-		$string .= "\n\n";
 		if(count($this->getEffects()) !== 0){
+			$string .= "\n\n";
 			$string .= "\n  ".TextFormat::RESET.TextFormat::BOLD."Effects:".TextFormat::RESET."\n    ";
 			foreach($this->getEffects() as $effect){
 				$string .= TextFormat::AQUA.$effect->getName()." ".TextFormat::YELLOW.$this->toRN($effect->getEffectLevel()).TextFormat::GRAY.", ";

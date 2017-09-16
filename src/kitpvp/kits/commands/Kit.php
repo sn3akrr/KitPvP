@@ -49,7 +49,10 @@ class Kit extends Command implements PluginIdentifiableCommand{
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."This kit has a cooldown! You can equip it again in ".$cooldown." play".($cooldown > 1 ? "s" : "")."!");
 			return;
 		}
-		$sender->showModal(new KitConfirmUi($kit, $sender));
+		if(!isset($this->plugin->getKits()->uic[$sender->getName()]) || $this->plugin->getKits()->uic[$sender->getName()] != time()){
+			$sender->showModal(new KitConfirmUi($kit, $sender));
+			$this->plugin->getKits()->uic[$sender->getName()] = time();
+		}
 	}
 
 	public function getPlugin() : \pocketmine\plugin\Plugin{

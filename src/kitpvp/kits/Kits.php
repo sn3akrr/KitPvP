@@ -53,6 +53,7 @@ class Kits{
 	public $ability = [];
 
 	public $kp = [];
+	public $uic = [];
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;

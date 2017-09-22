@@ -3,6 +3,8 @@
 use pocketmine\plugin\PluginBase;
 
 use kitpvp\{
+	items\Items,
+
 	arena\Arena,
 	combat\Combat,
 	kits\Kits,
@@ -43,10 +45,11 @@ class KitPvP extends PluginBase{
 		$this->getServer()->getLevelByName("KitArena")->setTime(0);
 		$this->getServer()->getLevelByName("KitArena")->stopTime();
 
+		Items::init();
+
 		$this->arena = new Arena($this);
 		$this->leaderboard = new Leaderboard($this);
 		$this->nuke = new Nuke($this);
-
 		$this->combat = new Combat($this);
 		$this->kits = new Kits($this);
 

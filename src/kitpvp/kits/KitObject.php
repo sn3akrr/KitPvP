@@ -146,7 +146,6 @@ class KitObject{
 			}
 			Server::getInstance()->getPluginManager()->callEvent(new KitEquipEvent($player, $this));
 			KitPvP::getInstance()->getKits()->setEquipped($player, true, $this->getName());
-			if(!KitPvP::getInstance()->getKits()->hasKitPassActive($player)) $player->takeTechits($this->getPrice());
 			$player->getLevel()->addSound(new AnvilFallSound($player), [$player]);
 			Core::getInstance()->getEntities()->getFloatingText()->forceUpdate($player);
 			if(!KitPvP::getInstance()->getKits()->hasKitPassActive($player)){

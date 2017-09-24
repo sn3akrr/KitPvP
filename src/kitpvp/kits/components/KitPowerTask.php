@@ -161,6 +161,10 @@ class KitPowerTask extends PluginTask{
 									}
 									$dmg = false;
 								}
+
+								if(!$player->hasEffect(Effect::SLOWNESS)){
+									$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(10000 * 10000));
+								}
 							}
 						}
 					break;

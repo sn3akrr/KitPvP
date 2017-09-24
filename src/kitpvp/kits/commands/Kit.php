@@ -4,11 +4,12 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\utils\TextFormat;
+use pocketmine\plugin\Plugin;
+use pocketmine\Player;
 
 use kitpvp\KitPvP;
 use kitpvp\kits\uis\KitConfirmUi;
 
-use core\AtPlayer as Player;
 use core\Core;
 
 class Kit extends Command implements PluginIdentifiableCommand{
@@ -55,7 +56,7 @@ class Kit extends Command implements PluginIdentifiableCommand{
 		}
 	}
 
-	public function getPlugin() : \pocketmine\plugin\Plugin{
+	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 

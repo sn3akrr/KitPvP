@@ -21,6 +21,10 @@ class KitConfirmUi extends CustomForm{
 	}
 
 	public function handle($response, Player $player){
+		if(KitPvP::getInstance()->getKits()->hasKit($player)){
+			$player->sendMessage(TextFormat::RED."You already have a kit equipped!");
+			return;
+		}
 		$this->kit->equip($player);
 		$player->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."You equipped the ".$this->kit->getName()." kit!");
 	}

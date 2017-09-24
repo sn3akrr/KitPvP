@@ -12,7 +12,9 @@ use pocketmine\Player;
 use kitpvp\KitPvP;
 use kitpvp\kits\commands\{
 	Kit,
-	ReplenishKit
+	ReplenishKit,
+	KitPass,
+	AddKitPasses
 };
 use kitpvp\kits\components\{
 	KitPowerListener,
@@ -65,7 +67,9 @@ class Kits{
 
 		foreach([
 			"kit" => new Kit($plugin, "kit", "Equip a kit!"),
-			"replenishkit" => new ReplenishKit($plugin, "replenishkit", "Replenish your kit items!")
+			"replenishkit" => new ReplenishKit($plugin, "replenishkit", "Replenish your kit items!"),
+			"kitpass" => new KitPass($plugin, "kitpass", "Toggle kit pass"),
+			"addkitpasses" => new AddKitPasses($plugin, "addkitpasses", "Give player's kit passes"),
 		] as $name => $class) $this->plugin->getServer()->getCommandMap()->register($name, $class);
 
 		foreach([
@@ -345,7 +349,7 @@ class Kits{
 	}
 
 	public function toggleKitPass(Player $player){
-		if(isset($this->kp[$player->getName()])){
+		if(!isset($this->kp[$player->getName()])){
 			$this->kp[$player->getName()] = true;
 			return true;
 		}else{

@@ -2,7 +2,10 @@
 
 use pocketmine\level\Position;
 use pocketmine\utils\TextFormat;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\{
+	AddEntityPacket,
+	RemoveEntityPacket
+};
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\entity\{
 	Entity,
@@ -143,12 +146,14 @@ class Slay{
 	public function strikeLightning(Position $pos){
 		$pk = new AddEntityPacket();
 		$pk->type = 93;
-		$pk->entityRuntimeId = Entity::$entityCount++;
+		$pk->entityRuntimeId = $eid = Entity::$entityCount++;
 		$pk->position = $pos->asVector3();
-		$pk->yaw = 0;
-		$pk->pitch = 0;
+		$pk->yaw = $pk->pitch = 0;
+		$pk2 = new RemoveEntityPacket();
+		$pk2->entityUniqueId = $eid;
 		foreach($pos->getLevel()->getPlayers() as $p){
 			$p->dataPacket($pk);
+			//$p->dataPacket($pk2);
 		}
 	}
 

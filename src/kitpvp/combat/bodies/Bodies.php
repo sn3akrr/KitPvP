@@ -10,7 +10,8 @@ use pocketmine\network\mcpe\protocol\{
 use pocketmine\utils\UUID;
 use pocketmine\entity\{
 	Entity,
-	Human
+	Human,
+	Skin
 };
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -38,8 +39,7 @@ class Bodies{
 		if($thing instanceof Player){
 			$eid = Entity::$entityCount++;
 			$uuid = UUID::fromRandom();
-			$skinid = $thing->getSkinId();
-			$skindata = $thing->getSkinData();
+			$skin = $thing->getSkin();
 			$item = $thing->getInventory()->getItemInHand();
 			$armor = $thing->getInventory()->getArmorContents();
 			$x = (int) $thing->x;
@@ -51,8 +51,7 @@ class Bodies{
 		}else{
 			$eid = $thing;
 			$uuid = $this->bodies[$eid]["uuid"];
-			$skinid = $this->bodies[$eid]["skinid"];
-			$skindata = $this->bodies[$eid]["skindata"];
+			$skin = $this->bodies[$eid]["skin"];
 			$item = $this->bodies[$eid]["item"];
 			$armor = $this->bodies[$eid]["armor"];
 			$x = (int) $this->bodies[$eid]["x"];
@@ -91,7 +90,7 @@ class Bodies{
 
 		$pk3 = new PlayerListPacket();
 		$pk3->type = PlayerListPacket::TYPE_ADD;
-		$pk3->entries[] = PlayerListEntry::createAdditionEntry($uuid, $eid, "", $skinid, $skindata);
+		$pk3->entries[] = PlayerListEntry::createAdditionEntry($uuid, $eid, "", $skin);
 
 		$pk4 = new PlayerListPacket();
 		$pk4->type = PlayerListPacket::TYPE_REMOVE;
@@ -109,8 +108,7 @@ class Bodies{
 			$this->bodies[$eid] = [
 				"time" => time() + self::BODY_LIFESPAN, //heh, lifespan of a dead body
 				"uuid" => $uuid,
-				"skinid" => $skinid,
-				"skindata" => $skindata,
+				"skin" => $skin,
 				"item" => $item,
 				"armor" => $armor,
 				"x" => $x,

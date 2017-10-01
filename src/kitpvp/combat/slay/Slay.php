@@ -149,11 +149,8 @@ class Slay{
 		$pk->entityRuntimeId = $eid = Entity::$entityCount++;
 		$pk->position = $pos->asVector3();
 		$pk->yaw = $pk->pitch = 0;
-		$pk2 = new RemoveEntityPacket();
-		$pk2->entityUniqueId = $eid;
 		foreach($pos->getLevel()->getPlayers() as $p){
 			$p->dataPacket($pk);
-			//$p->dataPacket($pk2);
 		}
 	}
 

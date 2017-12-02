@@ -8,7 +8,7 @@ use pocketmine\Player;
 use pocketmine\item\Item;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Projectile;
+use pocketmine\entity\projectile\Projectile;
 
 use kitpvp\KitPvP;
 

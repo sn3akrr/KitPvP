@@ -13,10 +13,6 @@ use pocketmine\event\entity\{
 	EntityShootBowEvent
 };
 
-use pocketmine\network\mcpe\protocol\{
-	PlayerActionPacket,
-	UseItemPacket
-};
 use pocketmine\entity\{
 	Entity,
 	Effect,
@@ -168,7 +164,7 @@ class KitPowerListener implements Listener{
 							case "witch":
 								//Curse
 								$chance = mt_rand(1,100);
-								if($chance <= 5){
+								if($chance <= 1){
 									$killer->addEffect(Effect::getEffect(Effect::POISON)->setDuration(20 * 4)->setAmplifier(2));
 								}
 							break;
@@ -231,7 +227,7 @@ class KitPowerListener implements Listener{
 											if($p->distance($player) <= 4 && $p != $player){
 												$dv = $p->getDirectionVector();
 												$p->knockback($p, 0 -$dv->x, -$dv->z, 0.8);
-												$p->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 10));
+												$p->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 7));
 											}
 										}
 										$kits->ability[$player->getName()]["slender"] = time();
@@ -303,19 +299,6 @@ class KitPowerListener implements Listener{
 		if($this->plugin->getArena()->inArena($player) && (!$this->plugin->getCombat()->getSlay()->isInvincible($player))){
 			if($this->kits->hasKit($player)){
 				$kit = $this->kits->getPlayerKit($player);
-				//Aim Assist
-				if($kit->getName() == "archer"){
-					if($packet instanceof UseItemPacket){
-						if($packet->item->getId() == Item::BOW){
-							$this->kits->ability[$player->getName()]["aim_assist"] = [time()];
-						}
-					}
-					if($packet instanceof PlayerActionPacket){
-						if($packet->action == PlayerActionPacket::ACTION_RELEASE_ITEM){
-							unset($this->kits->ability[$player->getName()]["aim_assist"]);
-						}
-					}
-				}
 			}
 		}
 	}

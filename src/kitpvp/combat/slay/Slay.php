@@ -11,11 +11,11 @@ use pocketmine\entity\{
 	Entity,
 	Projectile
 };
+use pocketmine\Player;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
 
-use core\AtPlayer as Player;
 use core\Core;
 
 class Slay{
@@ -34,6 +34,20 @@ class Slay{
 		$this->plugin = $plugin;
 		$this->combat = $combat;
 		$this->lb = $plugin->getLeaderboard();
+	}
+
+	public function tick(){
+		foreach($this->invincible as $name => $time){
+			$player = $this->plugin->getServer()->getPlayerExact($name);
+			if($player instanceof Player){
+				if($this->canRemoveInvincibility($player)){
+					$this->removeInvincibility($player);
+					$player->sendMessage(TextFormat::AQUA."Invincibility> ".TextFormat::GREEN."You are no longer invincible.");
+				}
+			}else{
+				unset($this->invincibility[$name]);
+			}
+		}
 	}
 
 	public function isDelayed(Player $player){
@@ -167,20 +181,20 @@ class Slay{
 	}
 
 	public function isInvincible(Player $player){
-		return isset($this->invincible[strtolower($player->getName())]);
+		return isset($this->invincible[$player->getName()]);
 	}
 
 	public function setInvincible(Player $player, $time = 10){
-		$this->invincible[strtolower($player->getName())] = time() + $time;
+		$this->invincible[$player->getName()] = time() + $time;
 		$player->sendMessage(TextFormat::AQUA."Invincibility> ".TextFormat::GREEN."You have ".$time." seconds of invincibility!");	
 	}
 
 	public function canRemoveInvincibility(Player $player){
-		return $this->invincible[strtolower($player->getName())] - time() <= 0;
+		return $this->invincible[$player->getName()] - time() <= 0;
 	}
 
 	public function removeInvincibility(Player $player){
-		unset($this->invincible[strtolower($player->getName())]);
+		unset($this->invincible[$player->getName()]);
 	}
 
 	public function getAssistingPlayers(Player $player){

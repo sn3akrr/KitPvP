@@ -35,6 +35,14 @@ class Bodies{
 		$this->combat = $combat;
 	}
 
+	public function tick(){
+		foreach($this->bodies as $eid => $data){
+			if($this->canDestroyBody($eid)){
+				$this->destroyBody($eid);
+			}
+		}
+	}
+
 	public function addBody($thing, $players = []){
 		if($thing instanceof Player){
 			$eid = Entity::$entityCount++;

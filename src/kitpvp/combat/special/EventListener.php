@@ -44,10 +44,11 @@ use kitpvp\combat\special\items\{
 	ReflexHammer,
 	Defibrillator,
 	Syringe,
-	ThrowingKnife,
-	Shuriken,
+	SpikedClub,
+	Kunai,
 	EnderPearl,
 	Decoy,
+	FireAxe,
 	Flamethrower,
 	MaloneSword
 };
@@ -55,7 +56,8 @@ use kitpvp\combat\special\entities\{
 	ThrownConcussionGrenade,
 	Bullet,
 	ThrownEnderpearl,
-	ThrownDecoy
+	ThrownDecoy,
+	ThrownKunai
 };
 
 use core\AtPlayer as Player;
@@ -83,8 +85,7 @@ class EventListener implements Listener{
 		if($item instanceof BookOfSpells){
 			if(!isset($this->special->special[$player->getName()]["book_of_spells"]) || ($this->special->special[$player->getName()]["book_of_spells"] + 15) - time() <= 0){
 				$count = 0;
-				$spells = $this->special->getSpells();
-				$spell = $spells[mt_rand(0,count($spells) - 1)];
+				$spell = $this->special->getRandomSpell();
 				foreach($player->getLevel()->getPlayers() as $p){
 					if($p->distance($player) <= 10 && $p != $player){
 						if($teams->inTeam($player) && $teams->inTeam($p)){
@@ -110,10 +111,25 @@ class EventListener implements Listener{
 					$cg = Entity::createEntity("ThrownConcussionGrenade", $player->getLevel(), $nbt, $player);
 					$cg->setMotion($cg->getMotion()->multiply($force));
 					$cg->spawnToAll();
-					$new = clone $item;
-					$new->setCount($new->getCount() - 1);
-					$player->getInventory()->setItemInHand($new);
+					$player->getInventory()->getItemInHand()->pop();
 					$this->special->special[$player->getName()]["concussion_grenade"] = time();
+				}
+			}
+		}
+		if($item instanceof Kunai){
+			if($e->getAction() == 3){
+				if(!isset($this->special->special[$player->getName()]["kunai"]) || ($this->special->special[$player->getName()]["kunai"] + 2) - time() <= 0){
+					$nbt = $this->createNbt($player);
+					$force = 1.25;
+					$kunai = Entity::createEntity("ThrownKunai", $player->getLevel(), $nbt, $player);
+					$kunai->setMotion($kunai->getMotion()->multiply($force));
+					$kunai->spawnToAll();
+					$kunai->setDataProperty(38, 7, $player->getId());
+					$kunai->setDataProperty(39, 3, 0.5);
+					$new = clone $item;
+					$new->setCount($item->getCount() - 1);
+					$player->getInventory()->setItemInHand($new);
+					$this->special->special[$player->getName()]["kunai"] = time();
 				}
 			}
 		}
@@ -126,9 +142,8 @@ class EventListener implements Listener{
 					$enderpearl->setMotion($enderpearl->getMotion()->multiply($force));
 					$enderpearl->spawnToAll();
 					$new = clone $item;
-					$new->setCount($new->getCount() - 1);
-					$player->getInventory()->setItemInHand($new);
-					$this->special->special[$player->getName()]["enderpearl"] = time();
+					$new->setCount($item->getCount() - 1);
+					$player->getInventory()->setItemInHand($new);					$this->special->special[$player->getName()]["enderpearl"] = time();
 				}
 			}
 		}
@@ -142,7 +157,7 @@ class EventListener implements Listener{
 					$decoy->setMotion($decoy->getMotion()->multiply($force));
 					$decoy->spawnToAll();
 					$new = clone $item;
-					$new->setCount($new->getCount() - 1);
+					$new->setCount($item->getCount() - 1);
 					$player->getInventory()->setItemInHand($new);
 				}
 			}
@@ -196,24 +211,36 @@ class EventListener implements Listener{
 						return;
 					}
 					//FIX BOOK OF SPELLS B
+					if($item instanceof FryingPan){
+						$e->setKnockback(0.9);
+						$e->setDamage(mt_rand(1,4));
+						$e->setDamage(mt_rand(1,4), 4);
+						if(mt_rand(1,3) == 1) $player->getLevel()->addSound(new AnvilFallSound($player));
+					}
 					/*if($item instanceof BookOfSpells){
+						$spell = $this->special->getRandomSpell();
 						if(!isset($this->special->special[$killer->getName()]["book_of_spells"]) || ($this->special->special[$killer->getName()]["book_of_spells"] + 10) - time() <= 0){
-							$spells = $this->special->getSpells();
-							$spell = $spells[mt_rand(0,count($spells) - 1)];
-							$spell->cast($killer, $player);
+							if($teams->inTeam($killer) && $teams->inTeam($player)){
+								if($teams->getPlayerTeamUid($killer) != $teams->getPlayerTeamUid($player)){
+									$spell->cast($killer, $player);
+								}
+							}else{
+								$spell->cast($killer, $player);
+							}
 							$this->special->special[$killer->getName()]["book_of_spells"] = time();
 						}
 					}*/
 
 					if($item instanceof BrassKnuckles){
 						$e->setKnockback(0.65);
-						$e->setDamage(mt_rand(0,2));
-						$player->getLevel()->addSound(new AnvilFallSound($player));
+						$e->setDamage(mt_rand(2,6));
+						$e->setDamage(mt_rand(2,6), 4);
+						if(mt_rand(1,3) == 1) $player->getLevel()->addSound(new AnvilFallSound($player));
 					}
 
 					if($item instanceof ReflexHammer){
-						$e->setKnockback(0.55);
-						$e->setDamage(1,3);
+						$e->setKnockback(0.65);
+						$e->setDamage(2,7);
 					}
 
 					if($item instanceof Defibrillator){
@@ -235,18 +262,28 @@ class EventListener implements Listener{
 						$player->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(1)->setDuration(20 * 5));
 						$killer->getInventory()->setItemInHand(Item::get(0));
 					}
-
+					if($item instanceof SpikedClub){
+						$e->setDamage(mt_rand(1,2));
+						$e->setDamage(mt_rand(1,2), 4);
+						$e->setKnockback(0.3);
+						$this->special->bleed($player, $killer, mt_rand(3,8));
+					}
+					if($item instanceof FireAxe){
+						$e->setDamage(mt_rand(1,3));
+						$e->setDamage(mt_rand(1,3), 4);
+						$player->setOnFire(2);
+					}
 					if($item instanceof MaloneSword){
-						$e->setKnockback(0.25);
+						$e->setKnockback(0.15);
 						$e->setDamage(mt_rand(1,3));
 						$e->setDamage(mt_rand(1,3), 4);
 						$fire_chance = mt_rand(0,100);
-						if($fire_chance <= 20){
-							$player->setOnFire(2);
+						if($fire_chance <= 7){
+							$player->setOnFire(1);
 						}
 						$wither_chance = mt_rand(0,100);
-						if($wither_chance <= 5){
-							$player->addEffect(Effect::getEffect(Effect::WITHER)->setAmplifier(1)->setDuration(20 * 3));
+						if($wither_chance <= 3){
+							$player->addEffect(Effect::getEffect(Effect::WITHER)->setAmplifier(1)->setDuration(20 * 2));
 						}
 					}
 
@@ -261,6 +298,13 @@ class EventListener implements Listener{
 						}
 						if($child instanceof Bullet){
 							$e->setDamage(3);
+							$e->setDamage(3, 4);
+						}
+						if($child instanceof ThrownKunai){
+							$e->setDamage(mt_rand(1,6));
+							$e->setDamage(mt_rand(1,6), 4);
+							$dv = $killer->asVector3()->subtract($player->asVector3())->normalize();
+							$player->knockback($killer, 0, $dv->x, $dv->z, 3);
 						}
 						if($child instanceof ThrownEnderPearl){
 							$killer->teleport($player);

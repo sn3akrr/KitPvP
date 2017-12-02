@@ -42,6 +42,12 @@ class Combat{
 		unset($this->getLogging()->logging);
 	}
 
+	public function tick(){
+		$this->getBodies()->tick();
+		$this->getLogging()->tick();
+		$this->getSlay()->tick();
+	}
+
 	public function getBodies(){
 		return $this->bodies;
 	}
@@ -76,6 +82,7 @@ class Combat{
 		$this->getStreaks()->onQuit($player);
 		$this->getSlay()->killChildren($player);
 		$this->getSlay()->unsetAssistingPlayers($player);
+		$this->getTeams()->onQuit($player);
 	}
 
 }

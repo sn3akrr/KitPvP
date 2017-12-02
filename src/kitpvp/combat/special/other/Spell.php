@@ -29,11 +29,11 @@ class Spell{
 		KitPvP::getInstance()->getCombat()->getSlay()->damageAs($witch, $victim, 2);
 		KitPvP::getInstance()->getCombat()->getSlay()->strikeLightning($victim);
 		if($spell instanceof Effect){
-			$victim->addEffect($spell->setDuration(20 * 10));
+			$victim->addEffect($spell->setDuration(20 * 7));
 		}else{
 			switch($spell){
 				case "burn":
-					$victim->setOnFire(10);
+					$victim->setOnFire(7);
 				break;
 			}
 		}

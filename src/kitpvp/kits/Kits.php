@@ -6,7 +6,10 @@ use pocketmine\entity\{
 	Effect
 };
 use pocketmine\utils\TextFormat;
-use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
+use pocketmine\network\mcpe\protocol\{
+	MobEquipmentPacket,
+	MobArmorEquipmentPacket
+};
 use pocketmine\Player;
 
 use kitpvp\KitPvP;
@@ -25,6 +28,7 @@ use kitpvp\kits\event\KitUnequipEvent;
 use kitpvp\combat\special\SpecialIds as SID;
 
 use kitpvp\combat\special\items\{
+	FryingPan,
 	BookOfSpells,
 	ConcussionGrenade,
 	BrassKnuckles,
@@ -32,10 +36,11 @@ use kitpvp\combat\special\items\{
 	ReflexHammer,
 	Defibrillator,
 	Syringe,
-	ThrowingKnife,
-	Shuriken,
+	SpikedClub,
+	Kunai,
 	EnderPearl,
 	Decoy,
+	FireAxe,
 	Flamethrower,
 	MaloneSword
 };
@@ -78,10 +83,12 @@ class Kits{
 				Item::get(366,0,4),
 				Item::get(260,0,4),
 
-				Item::get(298,0,1),
+				Item::get(314,0,1),
 				Item::get(303,0,1),
 				Item::get(317,0,1)
-			],[]),
+			],[],[],[
+				new FryingPan(),
+			]),
 
 			"witch" => new KitObject("witch", "default", 10, [
 				Item::get(272,0,1),
@@ -105,7 +112,7 @@ class Kits{
 				Item::get(364,0,2),
 				Item::get(320,0,4),
 
-				Item::get(314,0,1),
+				Item::get(298,0,1),
 				Item::get(307,0,1),
 				Item::get(309,0,1)
 			], [
@@ -157,7 +164,7 @@ class Kits{
 				Item::get(267,0,1),
 				Item::get(260,0,16),
 
-				Item::get(303,0,1),
+				Item::get(315,0,1),
 				Item::get(300,0,1),
 				Item::get(313,0,1)
 			], [], [
@@ -173,22 +180,22 @@ class Kits{
 			"archer" => new KitObject("archer", "ghast", 20, [
 				Item::get(261,0,1),
 				Item::get(262,0,64),
-				Item::get(272,0,1),
+				//Item::get(267,0,1),
 				Item::get(260,0,16),
 				Item::get(320,0,4),
 
-				Item::get(298,0,1),
-				Item::get(307,0,1),
-				Item::get(304,0,1),
-				Item::get(309,0,1)
+				Item::get(302,0,1),
+				Item::get(299,0,1),
+				Item::get(308,0,1),
+				Item::get(301,0,1)
 			], [
 				Effect::getEffect(Effect::SPEED),
-				Effect::getEFfect(Effect::JUMP)
+				Effect::getEffect(Effect::JUMP)
 			], [
-				"Aim Assist" => "Bow automatically aims on nearby target (TODO)"
+				"Aim Assist" => "Bow automatically aims on nearby target"
 			], [
-				new ThrowingKnife(),
-				new Shuriken(),
+				new SpikedClub(),
+				new Kunai(0, 3),
 			], 1),
 
 			"enderman" => new KitObject("enderman", "enderman", 30, [
@@ -205,16 +212,15 @@ class Kits{
 				"Slender" => "All enemies nearby are blinded when you're low on health, one time use",
 				"Arrow Dodge" => "25% chance of arrow attacks to be dodged"
 			], [
-				new EnderPearl(0,16),
-				new Decoy(0,8),
+				new EnderPearl(0, 16),
+				new Decoy(0, 8),
 			], 1),
 
 			"pyromancer" => new KitObject("pyromancer", "wither", 40, [
-				Item::get(267,0,1), //Fire aspect
 				Item::get(364,0,8),
 
 				Item::get(307,0,1),
-				Item::get(308,0,1),
+				Item::get(300,0,1),
 				Item::get(309,0,1)
 			], [
 				Effect::getEffect(Effect::SLOWNESS),
@@ -223,6 +229,7 @@ class Kits{
 			], [
 				"Fire Aura" => "Enemies nearby are slowly damaged when nearby"
 			], [
+				new FireAxe(),
 				new FlameThrower(),
 			], 2),
 
@@ -233,7 +240,8 @@ class Kits{
 				Item::get(310,0,1),
 				Item::get(311,0,1)
 			], [
-				Effect::getEffect(Effect::SPEED)->setAmplifier(2)
+				Effect::getEffect(Effect::SPEED)->setAmplifier(2),
+				Effect::getEffect(Effect::MINING_FATIGUE)->setAmplifier(1)
 			], [
 				"Health Boost" => "2 extra hearts",
 				"Bounceback" => "25% chance players attacking you will get recoil knockback"
@@ -266,10 +274,10 @@ class Kits{
 
 	public function setEquipped(Player $player, $equipped = true, $kitname = null){
 		if($equipped){
-			$this->equipped[strtolower($player->getName())] = $kitname;
+			$this->equipped[$player->getName()] = $kitname;
 		}else{
 			$this->plugin->getServer()->getPluginManager()->callEvent(new KitUnequipEvent($player));
-			unset($this->equipped[strtolower($player->getName())]);
+			unset($this->equipped[$player->getName()]);
 		}
 	}
 
@@ -385,6 +393,14 @@ class Kits{
 					$pk->entityRuntimeId = $player->getId();
 					$pk->slots = [Item::get(0),Item::get(0),Item::get(0),Item::get(0)];
 					$p->dataPacket($pk);
+
+					if($p != $player){
+						$pk = new MobEquipmentPacket();
+						$pk->entityRuntimeId = $player->getId();
+						$pk->item = $player->getInventory()->getItemInHand();
+						$pk->inventorySlot = $pk->hotbarSlot = $player->getInventory()->getHeldItemIndex();
+						$p->dataPacket($pk);
+					}
 				}
 			break;
 			case false:
@@ -394,6 +410,14 @@ class Kits{
 					$pk->entityRuntimeId = $player->getId();
 					$pk->slots = $player->getInventory()->getArmorContents();
 					$p->dataPacket($pk);
+
+					if($p != $player){
+						$pk = new MobEquipmentPacket();
+						$pk->entityRuntimeId = $player->getId();
+						$pk->item = Item::get(0);
+						$pk->inventorySlot = $pk->hotbarSlot = 1;
+						$p->dataPacket($pk);
+					}
 				}
 			break;
 		}

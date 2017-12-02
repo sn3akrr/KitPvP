@@ -8,7 +8,7 @@ use pocketmine\Player;
 use pocketmine\level\particle\EntityFlameParticle;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Projectile;
+use pocketmine\entity\projectile\Projectile;
 
 use kitpvp\KitPvP;
 
@@ -55,11 +55,11 @@ class Flame extends Projectile{
 						$teams = KitPvP::getInstance()->getCombat()->getTeams();
 						if($teams->inTeam($player) && $teams->inTeam($owner)){
 							if($teams->getPlayerTeamUid($player) != $teams->getPlayerTeamUid($owner)){
-								$player->setOnFire(4);
+								$player->setOnFire(2);
 								KitPvP::getInstance()->getCombat()->getSlay()->damageAs($owner, $player, 0);
 							}
 						}else{
-							$player->setOnFire(4);
+							$player->setOnFire(2);
 							KitPvP::getInstance()->getCombat()->getSlay()->damageAs($owner, $player, 0);				
 						}
 					}

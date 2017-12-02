@@ -18,36 +18,11 @@ class CombatTask extends PluginTask{
 
 	public function onRun(int $currentTick){
 		$this->runs++;
-
 		$combat = $this->plugin->getCombat();
-		$slay = $combat->getSlay();
 
 		if($this->runs %20 == 0){
+			$combat->tick();
 			foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
-				//Invincibility
-				if($slay->isInvincible($player)){
-					if($slay->canRemoveInvincibility($player)){
-						$slay->removeInvincibility($player);
-						$player->sendMessage(TextFormat::AQUA."Invincibility> ".TextFormat::GREEN."You are no longer invincible!");
-					}
-				}
-
-				$logging = $combat->getLogging();
-				if($logging->inCombat($player)){
-					if($logging->canRemoveCombat($player)){
-						$logging->removeCombat($player);
-						$player->sendMessage(TextFormat::AQUA."Logging> ".TextFormat::GREEN."You are no longer in combat mode!");
-					}
-				}
-
-				$bodies = $combat->getBodies();
-				foreach($bodies->bodies as $eid => $data){
-					if($bodies->canDestroyBody($eid)){
-						$bodies->destroyBody($eid);
-					}
-				}
-
-				//Food handling
 				if($player->getHealth() == $player->getMaxHealth()){
 					$player->setFood(20);
 				}else{
@@ -56,6 +31,7 @@ class CombatTask extends PluginTask{
 			}
 		}
 
+		$slay = $combat->getSlay();
 		if($this->runs %2 == 0){
 			if(!empty($slay->delay)){
 				foreach($slay->delay as $name => $delay){
@@ -86,6 +62,8 @@ class CombatTask extends PluginTask{
 							unset($slay->delay[$name]);
 							$player->addActionBarMessage(" ");
 						}
+					}else{
+						unset($slay->delay[$name]);
 					}
 				}
 			}

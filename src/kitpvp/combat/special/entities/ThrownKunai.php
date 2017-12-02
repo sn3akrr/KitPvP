@@ -8,15 +8,17 @@ use pocketmine\Player;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
 
-class Bullet extends Projectile{
+use kitpvp\KitPvP;
 
-	const NETWORK_ID = 76;
+class ThrownKunai extends Projectile{
 
-	public $width = 0.2;
-	public $length = 0.2;
-	public $height = 0.2;
+	const NETWORK_ID = 39;
 
-	protected $gravity = 0; //.03
+	public $width = 0.25;
+	public $length = 0.25;
+	public $height = 0.25;
+
+	protected $gravity = 0.03;
 	protected $drag = 0.01;
 
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
@@ -30,13 +32,21 @@ class Bullet extends Projectile{
 
 		$hasUpdate = parent::onUpdate($currentTick);
 
-		if($this->age > 1200 or $this->isCollided){
+		$owner = $this->getOwningEntity();
+		if(!$owner instanceof Player){
+			$this->close();
+			return true;
+		}
+		if(!KitPvP::getInstance()->getArena()->inArena($owner)){
+			$this->close();
+			return true;
+		}
+		if($this->isCollided or $this->onGround){
 			$this->close();
 			$hasUpdate = true;
 		}
-
-		if($this->onGround){
-			$this->close();
+		if($this->age > 1200){
+			$this->kill();
 			$hasUpdate = true;
 		}
 		return $hasUpdate;
@@ -44,7 +54,7 @@ class Bullet extends Projectile{
 
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-		$pk->type = Bullet::NETWORK_ID;
+		$pk->type = ThrownKunai::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();

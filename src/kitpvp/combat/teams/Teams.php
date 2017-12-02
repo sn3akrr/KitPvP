@@ -1,12 +1,11 @@
 <?php namespace kitpvp\combat\teams;
 
 use pocketmine\utils\TextFormat;
+use pocketmine\Player;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
 use kitpvp\combat\teams\commands\Team;
-
-use core\AtPlayer as Player;
 
 class Teams{
 
@@ -21,8 +20,15 @@ class Teams{
 		$this->plugin = $plugin;
 		$this->combat = $combat;
 
-		$plugin->getServer()->getPluginManager()->registerEvents(new EventListener($plugin, $this), $plugin);
 		$plugin->getServer()->getCommandMap()->register("team", new Team($plugin, "team", "Team with a player!"));
+	}
+
+	public function onQuit(Player $player){
+		if($this->inTeam($player)){
+			$this->disbandTeam($this->teams->getPlayerTeamUid($player));
+		}
+		$this->closeTeamRequestsTo($player);
+		$this->closeTeamRequestsFrom($player);
 	}
 
 	public function inTeam(Player $player){

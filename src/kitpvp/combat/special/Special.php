@@ -21,8 +21,7 @@ use kitpvp\combat\special\items\{
 	ReflexHammer,
 	Defibrillator,
 	Syringe,
-	ThrowingKnife,
-	Shuriken,
+	Kunai,
 	EnderPearl,
 	Decoy,
 	Flamethrower,
@@ -31,12 +30,13 @@ use kitpvp\combat\special\items\{
 use kitpvp\combat\special\entities\{
 	ThrownConcussionGrenade,
 	Bullet,
+	ThrownKunai,
 	ThrownEnderpearl,
 	ThrownDecoy,
 	Flame
 };
 
-use core\AtPlayer as Player;
+use pocketmine\Player;
 
 class Special{
 
@@ -50,6 +50,7 @@ class Special{
 
 	//Special weapon runs
 	public $special = [];
+	public $bleeding = [];
 
 	public function __construct(KitPvP $plugin, Combat $combat){
 		$this->plugin = $plugin;
@@ -61,6 +62,7 @@ class Special{
 
 		Entity::registerEntity(ThrownConcussionGrenade::class);
 		Entity::registerEntity(Bullet::class);
+		Entity::registerEntity(ThrownKunai::class);
 		Entity::registerEntity(ThrownEnderpearl::class);
 		Entity::registerEntity(ThrownDecoy::class);
 		Entity::registerEntity(Flame::class);
@@ -69,8 +71,10 @@ class Special{
 			foreach($level->getEntities() as $entity){
 				if(
 					$entity instanceof Bullet || 
+					$entity instanceof ThrownKunai ||
 					$entity instanceof ThrownEnderpearl ||
-					$entity instanceof ThrownDecoy
+					$entity instanceof ThrownDecoy ||
+					$entity instanceof Flame
 				) $entity->close();
 			}
 		}  
@@ -93,6 +97,10 @@ class Special{
 		return $this->spells;
 	}
 
+	public function getRandomSpell(){
+		return $this->spells[mt_rand(0, count($this->spells) - 1)];
+	}
+
 	public function cg(Player $player, Player $thrower){
 		$teams = $this->combat->getTeams();
 		if($teams->inTeam($player) && $teams->inTeam($thrower)){
@@ -110,6 +118,17 @@ class Special{
 
 		$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 8)->setAmplifier(3));
 		$player->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 8));
+	}
+
+	public function bleed(Player $player, Player $killer, $seconds){
+		$this->bleeding[$player->getName()] = [
+			"time" => time() + $seconds,
+			"attacker" => $killer
+		];
+	}
+
+	public function isBleeding(Player $player){
+		return isset($this->bleeding[$player->getName()]) && $this->bleeding[$player->getName()]["time"] > time() && $this->bleeding[$player->getName()]["attacker"] instanceof Player;
 	}
 
 }

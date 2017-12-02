@@ -6,7 +6,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Projectile;
+use pocketmine\entity\projectile\Projectile;
 
 use kitpvp\KitPvP;
 
@@ -46,7 +46,7 @@ class ThrownEnderpearl extends Projectile{
 			$this->close();
 			$hasUpdate = true;
 		}
-		if($this->age > 1200){
+		if($this->age > 30){
 			$this->kill();
 			$hasUpdate = true;
 		}

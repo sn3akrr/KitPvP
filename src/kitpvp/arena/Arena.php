@@ -74,14 +74,10 @@ class Arena{
 	}
 
 	public function exitArena(Player $player){
-		$player->teleport(new Position(129.5,22,135.5, $this->plugin->getServer()->getDefaultLevel()), 180);
+		$player->teleport(new Position(129.5,23,135.5, $this->plugin->getServer()->getDefaultLevel()), 180);
 
 		$this->plugin->getCombat()->getBodies()->removeAllBodies($player);
 		$this->plugin->getKits()->setEquipped($player, false);
-
-		if(mt_rand(0,10) == 1){
-			Vote::sendVoteAd($player);
-		}
 	}
 
 }

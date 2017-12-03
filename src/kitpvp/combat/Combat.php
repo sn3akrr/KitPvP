@@ -46,6 +46,7 @@ class Combat{
 		$this->getBodies()->tick();
 		$this->getLogging()->tick();
 		$this->getSlay()->tick();
+		$this->getTeams()->tick();
 	}
 
 	public function getBodies(){

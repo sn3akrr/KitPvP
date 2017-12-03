@@ -45,7 +45,7 @@ class ThrownKunai extends Projectile{
 			$this->close();
 			$hasUpdate = true;
 		}
-		if($this->age > 1200){
+		if($this->age > 30){
 			$this->kill();
 			$hasUpdate = true;
 		}

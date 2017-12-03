@@ -26,6 +26,102 @@ class KitPowerTask extends PluginTask{
 	public function onRun(int $currentTick){
 		$this->runs++;
 		$kits = $this->plugin->getKits();
+		foreach($kits->equipped as $name => $kitname){
+			$player = $this->plugin->getServer()->getPlayerExact($name);
+			if($player instanceof Player){
+				switch($kitname){
+					case "scout":
+						//Double Jump
+						if($player->isFlying()){
+							$player->setGamemode(1); $player->setGamemode(0);
+							$dv = $player->getDirectionVector();
+							$player->knockback($player, 0, $dv->x, $dv->z, 0.7);
+							$player->getLevel()->addSound(new GhastShootSound($player));
+							$kits->ability[$player->getName()]["double_jump"] = time() + 5;
+							$player->addActionBarMessage(TextFormat::RED."Recharging double jump... 5");
+						}
+						if(isset($kits->ability[$player->getName()]["double_jump"])){
+							if($kits->ability[$player->getName()]["double_jump"] <= time()){
+								if($player->getLevel()->getBlockIdAt($player->x, $player->y - 0.5, $player->z) != 0){
+									unset($kits->ability[$player->getName()]["double_jump"]);
+									$player->setAllowFlight(true);
+									$player->addActionBarMessage(TextFormat::GREEN."Double jump recharged.");
+								}
+							}else{
+								$player->setAllowFlight(false);
+								$player->setFlying(false);
+								$time = $kits->ability[$player->getName()]["double_jump"] - time();
+								$player->addActionBarMessage(TextFormat::RED."Recharging double jump... ".$time);
+							}
+						}
+					break;
+					case "assault":
+						//Adrenaline
+						if(isset($kits->ability[$player->getName()]["adrenaline"])){
+							if(($kits->ability[$player->getName()]["adrenaline"] + 10) - time() == 0){
+								$player->removeEffect(Effect::SPEED);
+								$player->addEffect(Effect::getEffect(Effect::SPEED)->setAmplifier(1)->setDuration(20 * 999999));
+							}
+						}
+					break;
+					case "archer":
+						$hand = $player->getInventory()->getItemInHand();
+						if($hand instanceof Bow && $player->getItemUseDuration() != -1){
+							if(!isset($kits->ability[$player->getName()]["aim_assist"])){
+								$kits->ability[$player->getName()]["aim_assist"] = ["time" => time()];
+							}
+							if(!isset($kits->ability[$player->getName()]["aim_assist"]["target"])){
+								$newtarget = [
+									"dist" => 20,
+									"player" => null
+								];
+								foreach($player->getLevel()->getPlayers() as $p){
+									$teams = $this->plugin->getCombat()->getTeams();
+									if($p != $player && $player->distance($p) <= $newtarget["dist"] && (!$teams->sameTeam($player, $p))){
+										$newtarget["dist"] = $player->distance($p);
+										$newtarget["player"] = $p;
+									}
+									if($newtarget["player"] != null){
+										$kits->ability[$player->getName()]["aim_assist"]["target"] = $newtarget["player"];
+									}
+								}
+							}else{
+								if(!isset($kits->ability[$player->getName()]["aim_assist"]["targetted"])){
+									$target = $kits->ability[$player->getName()]["aim_assist"]["target"];
+									if((!$target instanceof Player) || (!$this->plugin->getArena()->inArena($target)) || $target->distance($player) > 20){
+										unset($kits->ability[$player->getName()]["aim_assist"]["target"]);
+									}else{
+										$x = $player->x - $target->x;
+										$y = $player->y - $target->y;
+										$z = $player->z - $target->z;
+										$yaw = asin($x / sqrt($x * $x + $z * $z)) / 3.14 * 180;
+										$pitch = round(asin($y / sqrt($x * $x + $z * $z + $y * $y)) / 3.14 * 180);
+										if($z > 0) $yaw = -$yaw + 180;
+
+										$player->teleport($player, $yaw, $pitch + 0.25);
+
+										$kits->ability[$player->getName()]["aim_assist"]["targetted"] = true;
+									}
+								}
+							}
+						}else{
+							if(isset($kits->ability[$player->getName()]["aim_assist"])){
+								unset($kits->ability[$player->getName()]["aim_assist"]);
+							}
+						}
+					break;
+					case "enderman":
+						if($this->runs %3 == 0){
+							if(!isset($this->plugin->getCombat()->getSpecial()->special[$player->getName()]["decoy"])){
+								if($kits->isInvisible($player)) $kits->setInvisible($player, false);
+							}
+						}
+					break;
+				}
+			}else{
+				unset($this->equipped[$name]);
+			}
+		}
 		if($this->runs %20 == 0){
 			foreach($kits->confirm as $name => $data){
 				$player = $this->plugin->getServer()->getPlayerExact($name);
@@ -106,93 +202,6 @@ class KitPowerTask extends PluginTask{
 				}else{
 					unset($kits->equipped[$name]);
 				}
-			}
-		}
-		foreach($kits->equipped as $name => $kitname){
-			$player = $this->plugin->getServer()->getPlayerExact($name);
-			if($player instanceof Player){
-				switch($kitname){
-					case "scout":
-						//Double Jump
-						if($player->isFlying()){
-							$player->setGamemode(1); $player->setGamemode(0);
-							$dv = $player->getDirectionVector();
-							$player->knockback($player, 0, $dv->x, $dv->z, 0.7);
-							$player->getLevel()->addSound(new GhastShootSound($player));
-							$kits->ability[$player->getName()]["double_jump"] = time() + 5;
-							$player->addActionBarMessage(TextFormat::RED."Recharging double jump... 5");
-						}
-						if(isset($kits->ability[$player->getName()]["double_jump"])){
-							if($kits->ability[$player->getName()]["double_jump"] <= time()){
-								if($player->getLevel()->getBlockIdAt($player->x, $player->y - 0.5, $player->z) != 0){
-									unset($kits->ability[$player->getName()]["double_jump"]);
-									$player->setAllowFlight(true);
-									$player->addActionBarMessage(TextFormat::GREEN."Double jump recharged.");
-								}
-							}else{
-								$time = $kits->ability[$player->getName()]["double_jump"] - time();
-								$player->addActionBarMessage(TextFormat::RED."Recharging double jump... ".$time);
-							}
-						}
-					break;
-					case "assault":
-						//Adrenaline
-						if(isset($kits->ability[$player->getName()]["adrenaline"])){
-							if(($kits->ability[$player->getName()]["adrenaline"] + 10) - time() == 0){
-								$player->removeEffect(Effect::SPEED);
-								$player->addEffect(Effect::getEffect(Effect::SPEED)->setAmplifier(1)->setDuration(20 * 999999));
-							}
-						}
-					break;
-					case "archer":
-						$hand = $player->getInventory()->getItemInHand();
-						if($hand instanceof Bow && $player->getItemUseDuration() != -1){
-							if(!isset($kits->ability[$player->getName()]["aim_assist"])){
-								$kits->ability[$player->getName()]["aim_assist"] = ["time" => time()];
-							}
-							if(!isset($kits->ability[$player->getName()]["aim_assist"]["target"])){
-								foreach($player->getLevel()->getPlayers() as $p){
-									$teams = $this->plugin->getCombat()->getTeams();
-									if($p != $player && $player->distance($p) <= 20 && (($teams->inTeam($player) && $teams->inTeam($p)) && $teams->getPlayerTeamUid($player) != $teams->getPlayerTeamUid($p) || (!$teams->inTeam($p)) || (!$teams->inTeam($player)))){
-										$kits->ability[$player->getName()]["aim_assist"]["target"] = $p;
-										break 1;
-									}
-								}
-							}else{
-								if(!isset($kits->ability[$player->getName()]["aim_assist"]["targetted"])){
-									$target = $kits->ability[$player->getName()]["aim_assist"]["target"];
-									if((!$target instanceof Player) || (!$this->plugin->getArena()->inArena($target)) || $target->distance($player) > 20){
-										unset($kits->ability[$player->getName()]["aim_assist"]["target"]);
-									}else{
-										$x = $player->x - $target->x;
-										$y = $player->y - $target->y;
-										$z = $player->z - $target->z;
-										$yaw = asin($x / sqrt($x * $x + $z * $z)) / 3.14 * 180;
-										$pitch = round(asin($y / sqrt($x * $x + $z * $z + $y * $y)) / 3.14 * 180);
-										if($z > 0) $yaw = -$yaw + 180;
-
-										$player->teleport($player, $yaw, $pitch + 0.25);
-
-										$kits->ability[$player->getName()]["aim_assist"]["targetted"] = true;
-									}
-								}
-							}
-						}else{
-							if(isset($kits->ability[$player->getName()]["aim_assist"])){
-								unset($kits->ability[$player->getName()]["aim_assist"]);
-							}
-						}
-					break;
-					case "enderman":
-						if($this->runs %3 == 0){
-							if(!isset($this->plugin->getCombat()->getSpecial()->special[$player->getName()]["decoy"])){
-								if($kits->isInvisible($player)) $kits->setInvisible($player, false);
-							}
-						}
-					break;
-				}
-			}else{
-				unset($this->equipped[$name]);
 			}
 		}
 		foreach($kits->ability as $name => $data){

@@ -66,7 +66,7 @@ class Nuke{
 	}
 
 	public function setWaitTime(){
-		$this->wait_time = mt_rand(300,450);
+		$this->wait_time = mt_rand(600,750);
 	}
 
 	public function dropShutdownCodes(){

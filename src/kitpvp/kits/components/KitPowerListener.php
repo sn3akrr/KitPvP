@@ -152,11 +152,9 @@ class KitPowerListener implements Listener{
 			if($e instanceof EntityDamageByEntityEvent){
 				$killer = $e->getDamager();
 				if($killer instanceof Player){
-					if($teams->inTeam($player) && $teams->inTeam($killer)){
-						if($teams->getPlayerTeamUid($player) == $teams->getPlayerTeamUid($killer)){
-							$e->setCancelled(true);
-							return;
-						}
+					if($teams->sameTeam($player, $killer)){
+						$e->setCancelled(true);
+						return;
 					}
 					if($kits->hasKit($player)){
 						$kit = $kits->getPlayerKit($player);

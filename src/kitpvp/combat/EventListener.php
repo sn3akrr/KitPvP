@@ -97,12 +97,10 @@ class EventListener implements Listener{
 			$player->getLevel()->addParticle(new DestroyBlockParticle($player, Block::get(152)));
 			$killer = $e->getDamager();
 			if($killer instanceof Player){
-				if($teams->inTeam($player) && $teams->inTeam($killer)){
-					if($teams->getPlayerTeamUid($player) == $teams->getPlayerTeamUid($killer)){
-						$e->setCancelled(true);
-						$killer->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::RED.$player->getName()." is on your team!");
-						return;
-					}
+				if($teams->sameTeam($player, $killer)){
+					$e->setCancelled(true);
+					$killer->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::RED.$player->getName()." is on your team!");
+					return;
 				}
 				if($combat->getSlay()->isDelayed($killer)){
 					$e->setCancelled(true);

@@ -64,7 +64,7 @@ class Slay{
 
 		$teams = $this->combat->getTeams();
 		if($teams->inTeam($player)){
-			$teams->addTeamKill($teams->getPlayerTeamUid($player));
+			$teams->getPlayerTeam($player)->addKill();
 		}
 	}
 
@@ -78,7 +78,7 @@ class Slay{
 
 		$teams = $this->combat->getTeams();
 		if($teams->inTeam($player)){
-			$teams->addTeamDeath($teams->getPlayerTeamUid($player));
+			$teams->getPlayerTeam($player)->addDeath();
 		}
 	}
 

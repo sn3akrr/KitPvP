@@ -13,133 +13,123 @@ class Teams{
 	public $combat;
 
 	public $teams = [];
-	public $team_req = [];
+	public $requests = [];
+
 	public static $teamCount = 0;
+	public static $requestCount = 0;
 
 	public function __construct(KitPvP $plugin, Combat $combat){
 		$this->plugin = $plugin;
 		$this->combat = $combat;
 
-		$plugin->getServer()->getCommandMap()->register("team", new Team($plugin, "team", "Team with a player!"));
+		//$plugin->getServer()->getCommandMap()->register("team", new Team($plugin, "team", "Team with a player!"));
 	}
 
-	public function onQuit(Player $player){
-		if($this->inTeam($player)){
-			$this->disbandTeam($this->teams->getPlayerTeamUid($player));
-		}
-		$this->closeTeamRequestsTo($player);
-		$this->closeTeamRequestsFrom($player);
-	}
-
-	public function inTeam(Player $player){
-		foreach($this->teams as $uid => $things){
-			if($things["players"][0] == strtolower($player->getName())) return true;
-			if($things["players"][1] == strtolower($player->getName())) return true;
-		}
-		return false;
-	}
-
-	public function createTeam(Player $player1, Player $player2){
-		$uid = self::$teamCount++;
-		$this->teams[$uid] = [
-			"players" => [
-				strtolower($player1->getName()),
-				strtolower($player2->getName())
-			],
-			"kills" => 0,
-			"deaths" => 0,
-
-			"creation" => time(),
-		];
-		if($this->plugin->getCombat()->getSlay()->isAssistingPlayer($player1, $player2)) unset($this->plugin->getCombat()->getSlay()->assists[$player1->getName()][$player2->getName()]);
-		if($this->plugin->getCombat()->getSlay()->isAssistingPlayer($player2, $player1)) unset($this->plugin->getCombat()->getSlay()->assists[$player2->getName()][$player1->getName()]);
-	}
-
-	public function getPlayerTeamUid(Player $player){
-		if(!$this->inTeam($player)) return false;
-		foreach($this->teams as $uid => $things){
-			if($things["players"][0] == strtolower($player->getName())) return $uid;
-			if($things["players"][1] == strtolower($player->getName())) return $uid;
-		}
-	}
-
-	public function getTeamArray($uid){
-		return $this->teams[$uid] ?? false;
-	}
-
-	public function disbandTeam($uid){
-		$array = $this->getTeamArray($uid);
-		$player1 = $this->plugin->getServer()->getPlayerExact($array["players"][0]);
-		$player2 = $this->plugin->getServer()->getPlayerExact($array["players"][1]);
-
-		unset($this->teams[$uid]);
-		$player1->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::GREEN."Your team has been disbanded!");
-		$player2->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::GREEN."Your team has been disbanded!");
-	}
-
-	public function disbandTeamByPlayer(Player $player){
-		$this->disbandTeam($this->getPlayerTeamUid($player));
-	}
-
-	public function getTeamKills($uid){
-		return $this->teams[$uid]["kills"];
-	}
-
-	public function addTeamKill($uid){
-		$this->teams[$uid]["kills"]++;
-	}
-
-	public function getTeamDeaths($uid){
-		return $this->teams[$uid]["deaths"];
-	}
-
-	public function addTeamDeath($uid){
-		$this->teams[$uid]["deaths"]++;
-	}
-
-	public function getTeamCreationTime($uid){
-		return $this->teams[$uid]["creation"];
-	}
-
-	public function sendTeamRequest(Player $sender, Player $receiver){
-		$this->team_req[$sender->getName()][] = [$receiver->getName(),time()];
-		$receiver->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::GREEN."You received a team request from ".$sender->getName()."! Accept it using /team accept ".$sender->getName());
-	}
-
-	public function hasTeamRequestFrom(Player $player, Player $from){
-		if(!isset($this->team_req[$from->getName()])) return false;
-		foreach($this->team_req[$from->getName()] as $index => $data){
-			if($data[0] = $player->getName()) return true;
-		}
-		return false;
-	}
-
-	public function closeTeamRequestsTo(Player $player){
-		foreach($this->team_req as $index => $array){
-			foreach($array as $data){
-				if($data[0] = $player->getName()) unset($this->team_req[$index]);
+	public function tick(){
+		foreach($this->getRequests() as $request){
+			if($request->canTimeout()){
+				$request->timeout();
 			}
 		}
 	}
 
-	public function closeTeamRequestsFrom(Player $player){
-		unset($this->team_req[$player->getName()]);
+	public function onQuit(Player $player){
+		if($this->inTeam($player)){
+			$this->getPlayerTeam($player)->disband("Teammate quit the server");
+		}
+		foreach($this->getRequestsTo($player) as $request){
+			$request->timeout();
+		}
+		foreach($this->getRequestsFrom($player) as $request){
+			$request->timeout();
+		}
 	}
 
-	public function cancelTeamRequest(Player $sender, Player $receiver){
-
+	public function getTeams(){
+		return $this->teams;
 	}
 
-	public function acceptTeamRequest(Player $sender, Player $receiver){
-		$this->closeTeamRequestsFrom($sender);
-		$this->closeTeamRequestsFrom($receiver);
-		$this->closeTeamRequestsTo($sender);
-		$this->closeTeamRequestsTo($receiver);
-
-		$this->createTeam($sender, $receiver);
-
-		$sender->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::GREEN."You have teamed with ".$receiver->getName()."!");
-		$receiver->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::GREEN."You have teamed with ".$sender->getName()."!");
+	public function getTeam($uid){
+		return $this->teams[$uid] ?? null;
 	}
+
+	public function getPlayerTeam(Player $player){
+		foreach($this->getTeams() as $uid => $team){
+			if($team->inTeam($player)){
+				return $team;
+			}
+		}
+		return null;
+	}
+
+	public function inTeam(Player $player){
+		return $this->getPlayerTeam($player) != null;
+	}
+
+	public function sameTeam(Player $player1, Player $player2){
+		return $this->getPlayerTeam($player1) != null &&
+		$this->getPlayerTeam($player2) != null &&
+		$this->getPlayerTeam($player1) == $this->getPlayerTeam($player2);
+	}
+
+	public function createTeam(Player $player1, Player $player2){
+		$team = new Team($player1, $player2);
+		$this->teams[$team->getUid()] = $team;
+
+		foreach($this->getRequestsTo($player1) as $request){
+			$request->deny(true, false);
+		}
+		foreach($this->getRequestsFrom($player1) as $request){
+			$request->deny(false);
+		}
+
+		foreach($this->getRequestsTo($player2) as $request){
+			$request->deny(true, false);
+		}
+		foreach($this->getRequestsFrom($player2) as $request){
+			$request->deny(false);
+		}
+
+		if($this->plugin->getCombat()->getSlay()->isAssistingPlayer($player1, $player2)) unset($this->plugin->getCombat()->getSlay()->assists[$player1->getName()][$player2->getName()]);
+		if($this->plugin->getCombat()->getSlay()->isAssistingPlayer($player2, $player1)) unset($this->plugin->getCombat()->getSlay()->assists[$player2->getName()][$player1->getName()]);
+	}
+
+	public function getRequests(){
+		return $this->requests;
+	}
+
+	public function getRequest($id){
+		return $this->requests[$id] ?? null;
+	}
+
+	public function getRequestsFrom(Player $player){
+		$requests = [];
+		foreach($this->requests as $id => $request){
+			if($request->getRequester() == $player){
+				$requests[] = $request;
+			}
+		}
+		return $requests;
+	}
+
+	public function getRequestsTo(Player $player){
+		$requests = [];
+		foreach($this->requests as $id => $request){
+			if($request->getTarget() == $player){
+				$requests[] = $request;
+			}
+		}
+		return $requests;
+	}
+
+	public function createRequest(Player $requester, Player $target){
+		$arena = $this->plugin->getArena();
+		$send = false;
+		if($arena->inArena($target)) $send = true;
+
+		$request = new Request($requester, $target, $send);
+		$this->requests[$request->getId()] = $request;
+	}
+
 
 }

@@ -52,7 +52,7 @@ class MainListener implements Listener{
 	public function onInteract(PlayerInteractEvent $e){
 		$player = $e->getPlayer();
 		$block = $e->getBlock();
-		if($block->getX() == 96 && $block->getY() == 21 && $block->getZ() == 110){
+		if($block->getX() == 120 && $block->getY() == 21 && $block->getZ() == 83){
 			$lb = $this->plugin->getLeaderboard();
 			if($lb->getType($player) == 3){
 				$lb->setType($player, 0);

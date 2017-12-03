@@ -260,7 +260,7 @@ class Kits{
 	}
 
 	public function hasKit(Player $player){
-		return isset($this->equipped[strtolower($player->getName())]);
+		return isset($this->equipped[$player->getName()]);
 	}
 
 	public function getKit($name){
@@ -268,8 +268,8 @@ class Kits{
 	}
 
 	public function getPlayerKit(Player $player){
-		if(!isset($this->equipped[strtolower($player->getName())])) return new KitObject("invalid", "default", 0, [], [], [], []);
-		return $this->kits[$this->equipped[strtolower($player->getName())]];
+		if(!isset($this->equipped[$player->getName()])) return new KitObject("invalid", "default", 0, [], [], [], []);
+		return $this->kits[$this->equipped[$player->getName()]];
 	}
 
 	public function setEquipped(Player $player, $equipped = true, $kitname = null){

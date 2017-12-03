@@ -53,14 +53,9 @@ class Flame extends Projectile{
 				if($player != $owner){
 					if($player->distance($this) <= 4){
 						$teams = KitPvP::getInstance()->getCombat()->getTeams();
-						if($teams->inTeam($player) && $teams->inTeam($owner)){
-							if($teams->getPlayerTeamUid($player) != $teams->getPlayerTeamUid($owner)){
-								$player->setOnFire(2);
-								KitPvP::getInstance()->getCombat()->getSlay()->damageAs($owner, $player, 0);
-							}
-						}else{
+						if(!$teams->sameTeam($player, $owner)){
 							$player->setOnFire(2);
-							KitPvP::getInstance()->getCombat()->getSlay()->damageAs($owner, $player, 0);				
+							KitPvP::getInstance()->getCombat()->getSlay()->damageAs($owner, $player, 0);
 						}
 					}
 				}

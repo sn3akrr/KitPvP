@@ -46,7 +46,7 @@ class ThrownEnderpearl extends Projectile{
 			$this->close();
 			$hasUpdate = true;
 		}
-		if($this->age > 30){
+		if($this->age > 1200){
 			$this->kill();
 			$hasUpdate = true;
 		}

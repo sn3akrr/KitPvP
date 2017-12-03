@@ -3,6 +3,7 @@
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
+use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 
 use kitpvp\KitPvP;
@@ -30,7 +31,7 @@ class ReplenishKit extends Command implements PluginIdentifiableCommand{
 		$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."You replenished your kit!");
 	}
 
-	public function getPlugin() : \pocketmine\plugin\Plugin{
+	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 

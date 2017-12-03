@@ -22,6 +22,7 @@ class KitPvP extends PluginBase{
 	public $arena;
 	public $combat;
 	public $kits;
+	public $leaderboard;
 	public $nuke;
 
 	public function onEnable(){

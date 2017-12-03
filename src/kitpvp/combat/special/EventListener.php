@@ -97,7 +97,6 @@ class EventListener implements Listener{
 				}
 				if($count > 0) $this->special->special[$player->getName()]["book_of_spells"] = time();
 			}
-			return;
 		}
 		if($item instanceof ConcussionGrenade){
 			if($e->getAction() == 3){
@@ -144,7 +143,6 @@ class EventListener implements Listener{
 				}
 			}
 		}
-
 		if($item instanceof Decoy){
 			if($e->getAction() == 3){
 				if(!isset($this->special->special[$player->getName()]["decoy"]) || ($this->special->special[$player->getName()]["decoy"] + 1) - time() <= 0){
@@ -171,7 +169,6 @@ class EventListener implements Listener{
 					$this->special->special[$player->getName()]["gun"] = time();
 				}
 			}
-			return;
 		}
 		if($item instanceof Flamethrower){
 			if($e->getAction() == 3){
@@ -182,7 +179,6 @@ class EventListener implements Listener{
 					$this->special->special[$player->getName()]["flamethrower"] = time();
 				}
 			}
-			return;
 		}
 	}
 
@@ -206,7 +202,6 @@ class EventListener implements Listener{
 						$e->setCancelled(true);
 						return;
 					}
-					//FIX BOOK OF SPELLS B
 					if($item instanceof FryingPan){
 						$e->setKnockback(0.9);
 						if(mt_rand(1,3) == 1){
@@ -215,15 +210,17 @@ class EventListener implements Listener{
 							$e->setDamage(mt_rand(1,4), 4);
 						}
 					}
-					/*if($item instanceof BookOfSpells){
+					//FIX BOOK OF SPELLS B
+					if($item instanceof BookOfSpells){
 						$spell = $this->special->getRandomSpell();
 						if(!isset($this->special->special[$killer->getName()]["book_of_spells"]) || ($this->special->special[$killer->getName()]["book_of_spells"] + 10) - time() <= 0){
 							if(!$teams->sameTeam($player, $killer)){
 								$spell->cast($killer, $player);
+								$this->special->special[$killer->getName()]["book_of_spells"] = time();
 							}
 							$this->special->special[$killer->getName()]["book_of_spells"] = time();
 						}
-					}*/
+					}
 
 					if($item instanceof BrassKnuckles){
 						$e->setKnockback(0.65);
@@ -238,7 +235,6 @@ class EventListener implements Listener{
 						$e->setKnockback(0.65);
 						$e->setDamage(2,7);
 					}
-
 					if($item instanceof Defibrillator){
 						if(!isset($this->special->special[$player->getName()]["defibrillator"]) || ($this->special->special[$player->getName()]["defibrillator"] + 10) - time() <= 0){
 							$this->plugin->getCombat()->getSlay()->strikeLightning($player);
@@ -259,7 +255,7 @@ class EventListener implements Listener{
 							$player->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(1)->setDuration(20 * 5));
 							$new = clone $item;
 							$new->setCount($item->getCount() - 1);
-							$player->getInventory()->setItemInHand($new);
+							$killer->getInventory()->setItemInHand($new);
 						}
 					}
 					if($item instanceof SpikedClub){

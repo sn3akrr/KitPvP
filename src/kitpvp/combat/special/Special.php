@@ -103,7 +103,7 @@ class Special{
 
 	public function cg(Player $player, Player $thrower){
 		$teams = $this->combat->getTeams();
-		if($teams->inTeam($player, $thrower)){
+		if($teams->sameTeam($player, $thrower)){
 			return;
 		}
 		$this->plugin->getCombat()->getSlay()->damageAs($thrower, $player, 5);

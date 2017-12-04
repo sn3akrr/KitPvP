@@ -59,7 +59,14 @@ class MainListener implements Listener{
 			}else{
 				$lb->setType($player, $lb->getType($player) + 1);
 			}
-			Core::getInstance()->getEntities()->getFloatingText()->forceUpdate($player);
+
+			foreach(["weekly","alltime","monthly"] as $date){
+				for($i = 1; $i <= 5; $i++){
+					Core::getInstance()->getEntities()->getFloatingText()->getText($date . "-" . $i)->update($player, true);
+				}
+				Core::getInstance()->getEntities()->getFloatingText()->getText($date . "-you")->update($player, true);
+				Core::getInstance()->getEntities()->getFloatingText()->getText("leaderboard-type")->update($player, true);
+			}
 		}
 	}
 

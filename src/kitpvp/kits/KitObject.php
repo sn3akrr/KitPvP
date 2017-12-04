@@ -100,8 +100,6 @@ class KitObject{
 		$prh = Core::getInstance()->getStats()->getRank()->getRankHierarchy($player->getRank());
 		$rh = Core::getInstance()->getStats()->getRank()->getRankHierarchy($this->getRequiredRank());
 
-		if($player->getName() == "Imyourfriend007" || $player->getName() == "ShadowEagleMCPE" || $player->getName() == "DerpyCake21") return true;
-
 		if($rh > $prh) return false;
 		return true;
 	}
@@ -147,14 +145,19 @@ class KitObject{
 			Server::getInstance()->getPluginManager()->callEvent(new KitEquipEvent($player, $this));
 			KitPvP::getInstance()->getKits()->setEquipped($player, true, $this->getName());
 			$player->getLevel()->addSound(new AnvilFallSound($player), [$player]);
-			Core::getInstance()->getEntities()->getFloatingText()->forceUpdate($player);
-			if(!KitPvP::getInstance()->getKits()->hasKitPassActive($player)){
+
+			$kits = KitPvP::getInstance()->getKits();
+
+			$num = $kits->getKitNum($this->getName());
+			Core::getInstance()->getEntities()->getFloatingText()->getText("equipped-" . $num)->update($player, true);
+
+			if(!$kits->hasKitPassActive($player)){
 				$player->takeTechits($this->getPrice());
-				if(KitPvP::getInstance()->getKits()->hasPassCooldown($player)){
-					KitPvP::getInstance()->getKits()->subtractPassCooldown($player);
+				if($kits->hasPassCooldown($player)){
+					$kits->subtractPassCooldown($player);
 				}
 			}else{
-				KitPvP::getInstance()->getKits()->consumeKitPass($player);
+				$kits->consumeKitPass($player);
 			}
 		}else{
 			foreach($this->getSpecial() as $special){

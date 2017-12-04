@@ -267,6 +267,15 @@ class Kits{
 		return $this->kits[$name] ?? new KitObject("invalid", "default", 0, [], [], [], []);
 	}
 
+	public function getKitNum($name){
+		$key = 1;
+		foreach($this->kits as $n => $kit){
+			if($kit->getName() == $name) return $key;
+			$key++;
+		}
+		return -1;
+	}
+
 	public function getPlayerKit(Player $player){
 		if(!isset($this->equipped[$player->getName()])) return new KitObject("invalid", "default", 0, [], [], [], []);
 		return $this->kits[$this->equipped[$player->getName()]];

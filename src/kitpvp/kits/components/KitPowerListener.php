@@ -12,6 +12,7 @@ use pocketmine\event\entity\{
 	EntityDamageByChildEntityEvent,
 	EntityShootBowEvent
 };
+use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 
 use pocketmine\entity\{
 	Entity,
@@ -71,9 +72,7 @@ class KitPowerListener implements Listener{
 		unset($this->kits->ability[$player->getName()]);
 		unset($this->plugin->getCombat()->getSpecial()->special[$player->getName()]);
 
-		//if($this->kits->isInvisible($player)){
-			$this->kits->setInvisible($player, false); //check might make invalid..?
-		//}
+		$this->kits->setInvisible($player, false); //check might make invalid..?
 	}
 
 	public function onReplenish(KitReplenishEvent $e){

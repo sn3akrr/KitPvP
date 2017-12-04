@@ -131,7 +131,7 @@ class EventListener implements Listener{
 		}
 		if($item instanceof EnderPearl){
 			if($e->getAction() == 3){
-				if(!isset($this->special->special[$player->getName()]["enderpearl"]) || ($this->special->special[$player->getName()]["enderpearl"] + 1) - time() <= 0){
+				if(!isset($this->special->special[$player->getName()]["enderpearl"]) || ($this->special->special[$player->getName()]["enderpearl"] + 15) - time() <= 0){
 					$nbt = $this->createNbt($player);
 					$force = 1.6;
 					$enderpearl= Entity::createEntity("ThrownEnderpearl", $player->getLevel(), $nbt, $player);

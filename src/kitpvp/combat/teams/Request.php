@@ -8,6 +8,8 @@ use kitpvp\combat\teams\uis\TeamRequestUi;
 
 class Request{
 
+	const TIMEOUT = 60;
+
 	public $id;
 	public $createdtime;
 
@@ -24,9 +26,9 @@ class Request{
 		$this->createdtime = time();
 
 		$requester->sendMessage(TextFormat::GREEN . "Sent a team request to " . $target->getName());
-		$requester->sendMessage(TextFormat::GREEN . "Received a team request from " . $target->getName() . ". " . ($sendmenu ? "Please check your team menu with /team to accept or deny the request." : ""));
+		$target->sendMessage(TextFormat::GREEN . "Received a team request from " . $requester->getName() . ". " . ($sendmenu ? "" : "Please check your team menu with /team to accept or deny the request."));
 		if($sendmenu){
-			$player->showModal(new TeamRequestUi($this));
+			$target->showModal(new TeamRequestUi($this));
 		}
 	}
 
@@ -64,7 +66,7 @@ class Request{
 		KitPvP::getInstance()->getCombat()->getTeams()->createTeam($this->getRequester(), $this->getTarget());
 	}
 
-	public function deny($sendMessageToRequester = true, $sendMessageToTarget = true){
+	final public function deny($sendMessageToRequester = true, $sendMessageToTarget = true){
 		$this->close();
 
 		if($sendMessageToRequester){
@@ -75,8 +77,15 @@ class Request{
 		}
 	}
 
+	final public function cancel(){
+		$this->getRequester()->sendMessage(TextFormat::GREEN . "Cancelled team request to ".$this->getTarget()->getName());
+		$this->getTarget()->sendMessage(TextFormat::RED . "Team request from " . $this->getRequester()->getName() . " was cancelled.");
+
+		$this->close();
+	}
+
 	public function canTimeout(){
-		return ($this->getCreatedTime() + 60) - time() <= 0 || $this->getRequester()->isClosed() || $this->getTarget()->isClosed();
+		return ($this->getCreatedTime() + self::TIMEOUT) - time() <= 0 || $this->getRequester()->isClosed() || $this->getTarget()->isClosed();
 	}
 
 	public function timeout(){
@@ -92,7 +101,9 @@ class Request{
 
 	final public function close(){
 		$this->closed = true;
-		unset($kitpvp->getInstance()->getCombat()->getTeams()->requests[$this->getId()]);
+
+		$teams = KitPvP::getInstance()->getCombat()->getTeams();
+		unset($teams->requests[$this->getId()]);
 	}
 
 }

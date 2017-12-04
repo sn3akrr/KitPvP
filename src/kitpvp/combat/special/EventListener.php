@@ -97,6 +97,7 @@ class EventListener implements Listener{
 				}
 				if($count > 0) $this->special->special[$player->getName()]["book_of_spells"] = time();
 			}
+			return;
 		}
 		if($item instanceof ConcussionGrenade){
 			if($e->getAction() == 3){
@@ -211,16 +212,16 @@ class EventListener implements Listener{
 						}
 					}
 					//FIX BOOK OF SPELLS B
-					if($item instanceof BookOfSpells){
+					/*if($item instanceof BookOfSpells){
 						$spell = $this->special->getRandomSpell();
 						if(!isset($this->special->special[$killer->getName()]["book_of_spells"]) || ($this->special->special[$killer->getName()]["book_of_spells"] + 10) - time() <= 0){
 							if(!$teams->sameTeam($player, $killer)){
 								$spell->cast($killer, $player);
 								$this->special->special[$killer->getName()]["book_of_spells"] = time();
 							}
-							$this->special->special[$killer->getName()]["book_of_spells"] = time();
 						}
-					}
+						return;
+					}*/
 
 					if($item instanceof BrassKnuckles){
 						$e->setKnockback(0.65);

@@ -36,6 +36,11 @@ class Team{
 		return $player == $this->getMember1() || $player == $this->getMember2();
 	}
 
+	public function getOppositeMember(Player $player){
+		if($player == $this->getMember1()) return $this->getMember2();
+		return $this->getMember1();
+	}
+
 	public function getId(){
 		return $this->id;
 	}
@@ -68,6 +73,11 @@ class Team{
 		$this->deaths++;
 	}
 
+	public function getKdr(){
+		if($this->getDeaths() == 0) return "N/A";
+		return round($this->getKills() / $this->getDeaths(), 2);
+	}
+
 	public function isClosed(){
 		return $this->closed;
 	}
@@ -77,7 +87,7 @@ class Team{
 		$this->getMember1()->sendMessage(TextFormat::RED."Your team has been disbanded! (".$reason.")");
 		$this->getMember2()->sendMessage(TextFormat::RED."Your team has been disbanded! (".$reason.")");
 
-		unset(KitPvP::getInstance()->getCombat()->getTeams()->teams[$this->getUid()]);
+		unset(KitPvP::getInstance()->getCombat()->getTeams()->teams[$this->getId()]);
 	}
 
 }

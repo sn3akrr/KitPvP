@@ -4,7 +4,7 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 use kitpvp\KitPvP;
-use kitpvp\combat\team\Request;
+use kitpvp\combat\teams\Request;
 
 use core\ui\windows\ModalWindow;
 
@@ -14,6 +14,7 @@ class TeamRequestUi extends ModalWindow{
 
 	public function __construct(Request $request){
 		$this->request = $request;
+		parent::__construct("Team Request", "You have received a team request from " . TextFormat::GREEN . $request->getRequester()->getName(), "Accept", "Deny");
 	}
 
 	public function onClose(Player $player){

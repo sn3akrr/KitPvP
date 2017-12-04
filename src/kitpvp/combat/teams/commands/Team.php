@@ -26,9 +26,9 @@ class Team extends Command implements PluginIdentifiableCommand{
 	public function execute(CommandSender $sender, string $label, array $args){
 		$teams = KitPvP::getInstance()->getCombat()->getTeams();
 		if($teams->inTeam($sender)){
-			$player->showModal(new InTeamMainUi($player));
+			$sender->showModal(new InTeamMainUi($sender));
 		}else{
-			$player->showModal(new NoTeamMainUi($player));
+			$sender->showModal(new NoTeamMainUi($sender));
 		}
 	}
 

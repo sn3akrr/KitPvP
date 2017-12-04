@@ -5,7 +5,7 @@ use pocketmine\Player;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
-use kitpvp\combat\teams\commands\Team;
+use kitpvp\combat\teams\commands\Team as TeamCmd;
 
 class Teams{
 
@@ -22,7 +22,7 @@ class Teams{
 		$this->plugin = $plugin;
 		$this->combat = $combat;
 
-		//$plugin->getServer()->getCommandMap()->register("team", new Team($plugin, "team", "Team with a player!"));
+		$plugin->getServer()->getCommandMap()->register("team", new TeamCmd($plugin, "team", "Team with a player!"));
 	}
 
 	public function tick(){
@@ -35,7 +35,7 @@ class Teams{
 
 	public function onQuit(Player $player){
 		if($this->inTeam($player)){
-			$this->getPlayerTeam($player)->disband("Teammate quit the server");
+			$this->getPlayerTeam($player)->disband($player->getName() . " quit the server");
 		}
 		foreach($this->getRequestsTo($player) as $request){
 			$request->timeout();
@@ -74,7 +74,7 @@ class Teams{
 
 	public function createTeam(Player $player1, Player $player2){
 		$team = new Team($player1, $player2);
-		$this->teams[$team->getUid()] = $team;
+		$this->teams[$team->getId()] = $team;
 
 		foreach($this->getRequestsTo($player1) as $request){
 			$request->deny(true, false);
@@ -125,7 +125,7 @@ class Teams{
 	public function createRequest(Player $requester, Player $target){
 		$arena = $this->plugin->getArena();
 		$send = false;
-		if($arena->inArena($target)) $send = true;
+		if(!$arena->inArena($target)) $send = true;
 
 		$request = new Request($requester, $target, $send);
 		$this->requests[$request->getId()] = $request;

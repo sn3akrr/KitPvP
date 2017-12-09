@@ -58,6 +58,12 @@ class Streaks{
 			$killer->addGlobalExp($streak);
 		}
 		$player->setXpLevel(0);
+
+		$lb = $this->plugin->getLeaderboard();
+		if($lb->getStreak($player) < $streak){
+			$lb->setStreak($player, $streak);
+			$player->sendMessage(TextFormat::GREEN . "New highest streak reached!");
+		}
 	}
 
 	public function hasSignificantStreak(Player $player){

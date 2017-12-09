@@ -60,7 +60,6 @@ class Slay{
 
 	public function addKill(Player $player){
 		$this->lb->addKill($player);
-		Core::getInstance()->getStats()->getKd()->addKill($player);
 
 		$teams = $this->combat->getTeams();
 		if($teams->inTeam($player)){
@@ -68,26 +67,13 @@ class Slay{
 		}
 	}
 
-	public function getKills(Player $player){
-		return $this->lb->getKills($player, "alltime");
-	}
-
 	public function addDeath(Player $player){
 		$this->lb->addDeath($player);
-		Core::getInstance()->getStats()->getKd()->addDeath($player);
 
 		$teams = $this->combat->getTeams();
 		if($teams->inTeam($player)){
 			$teams->getPlayerTeam($player)->addDeath();
 		}
-	}
-
-	public function getDeaths(Player $player){
-		return $this->lb->getDeaths($player, "alltime");
-	}
-
-	public function getKdr(Player $player){
-		return ($this->getDeaths($player) == 0 ? $this->getKills($player) : round($this->getKills($player) / $this->getDeaths($player), 2));
 	}
 
 	public function processKill(Player $killer, Player $dead){
@@ -111,7 +97,6 @@ class Slay{
 				$assist->addTechits(2);
 				$assist->addGlobalExp(1);
 				$assist->sendMessage(TextFormat::AQUA."Assist> ".TextFormat::GREEN."Earned 2 Techits for helping kill ".$dead->getName()."!");
-				$this->lb->addAssist($assist);
 			}
 		}
 		$this->unsetAssistingPlayers($dead);
@@ -123,7 +108,6 @@ class Slay{
 			$killer->addTechits(3);
 			$killer->addGlobalExp(2);
 			$this->unsetLastKiller($killer);
-			$this->lb->addRevenge($killer);
 		}
 
 		$killer->sendMessage(TextFormat::AQUA."Slay> ".TextFormat::GREEN."You killed ".$dead->getName()." and earned 5 Techits!");

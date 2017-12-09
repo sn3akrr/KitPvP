@@ -1,18 +1,18 @@
 <?php namespace kitpvp\leaderboard;
 
 use pocketmine\utils\TextFormat;
+use pocketmine\Player;
 
 use kitpvp\KitPvP;
 
 use core\Core;
-use core\AtPlayer as Player;
+use core\stats\User;
 
 class Leaderboard{
 
 	const TYPE_KILLS = 0;
-	const TYPE_DEATHS = 1;
-	const TYPE_ASSISTS = 2;
-	const TYPE_REVENGE = 3;
+	const TYPE_KDR = 1;
+	const TYPE_STREAK = 2;
 
 	const DATE_WEEKLY = "weekly";
 	const DATE_MONTHLY = "monthly";
@@ -28,10 +28,12 @@ class Leaderboard{
 
 		$this->database = $plugin->database;
 		foreach([
-			"CREATE TABLE IF NOT EXISTS leaderboard_kills(xuid BIGINT(16) NOT NULL UNIQUE, weekly INT NOT NULL, monthly INT NOT NULL, alltime INT NOT NULL);",
-			"CREATE TABLE IF NOT EXISTS leaderboard_deaths(xuid BIGINT(16) NOT NULL UNIQUE, weekly INT NOT NULL, monthly INT NOT NULL, alltime INT NOT NULL);",
-			"CREATE TABLE IF NOT EXISTS leaderboard_assists(xuid BIGINT(16) NOT NULL UNIQUE, weekly INT NOT NULL, monthly INT NOT NULL, alltime INT NOT NULL);",
-			"CREATE TABLE IF NOT EXISTS leaderboard_revenge(xuid BIGINT(16) NOT NULL UNIQUE, weekly INT NOT NULL, monthly INT NOT NULL, alltime INT NOT NULL);",
+			"CREATE TABLE IF NOT EXISTS leaderboard(
+				xuid BIGINT(16) NOT NULL UNIQUE,
+				kills_weekly INT NOT NULL DEFAULT '0', kills_monthly INT NOT NULL DEFAULT '0', kills_alltime INT NOT NULL DEFAULT '0',
+				deaths_weekly INT NOT NULL DEFAULT '0', deaths_monthly INT NOT NULL DEFAULT '0', deaths_alltime INT NOT NULL DEFAULT '0',
+				streak_weekly INT NOT NULL DEFAULT '0', streak_monthly INT NOT NULL DEFAULT '0', streak_alltime INT NOT NULL DEFAULT '0'
+			);"
 		] as $query) $this->database->query($query);
 
 		$dd = $plugin->dir . "lb.cache";
@@ -46,7 +48,7 @@ class Leaderboard{
 	public function hasStats(Player $player){
 		$xuid = $player->getXboxData("XUID");
 
-		$statement = $this->database->prepare("SELECT xuid FROM leaderboard_kills WHERE xuid=?");
+		$statement = $this->database->prepare("SELECT xuid FROM leaderboard WHERE xuid=?");
 		$statement->bind_param("i", $xuid);
 		$statement->bind_result($exists);
 		if($statement->execute()){
@@ -59,10 +61,7 @@ class Leaderboard{
 		$xuid = $player->getXboxData("XUID");
 		$z = 0;
 		foreach([
-			"INSERT INTO leaderboard_kills(xuid, weekly, monthly, alltime) VALUES($xuid, $z, $z, $z)",
-			"INSERT INTO leaderboard_deaths(xuid, weekly, monthly, alltime) VALUES($xuid, $z, $z, $z)",
-			"INSERT INTO leaderboard_assists(xuid, weekly, monthly, alltime) VALUES($xuid, $z, $z, $z)",
-			"INSERT INTO leaderboard_revenge(xuid, weekly, monthly, alltime) VALUES($xuid, $z, $z, $z)",
+			"INSERT INTO leaderboard(xuid) VALUES($xuid)",
 		] as $query) $this->database->query($query);
 	}
 
@@ -88,18 +87,16 @@ class Leaderboard{
 
 	public function reset($date){
 		foreach([
-			"UPDATE leaderboard_kills SET $date='0'",
-			"UPDATE leaderboard_deaths SET $date='0'",
-			"UPDATE leaderboard_assists SET $date='0'",
-			"UPDATE leaderboard_revenge SET $date='0'",
+			"UPDATE leaderbord SET kills_$date='0', deaths_$date='0', streak_$date='0'",
 		] as $query) $this->database->query($query);
 	}
 
 	public function typeToName($type){
 		if($type == self::TYPE_KILLS) return "Kills";
-		if($type == self::TYPE_DEATHS) return "Deaths";
-		if($type == self::TYPE_ASSISTS) return "Assists";
-		if($type == self::TYPE_REVENGE) return "Revenge";
+		if($type == self::TYPE_KDR) return "KDR";
+		if($type == self::TYPE_STREAK) return "Streak";
+
+		return "Unknown";
 	}
 
 	public function getType(Player $player){
@@ -112,9 +109,36 @@ class Leaderboard{
 
 	public function generateText(Player $player, $date, $value = -1){
 		$type = strtolower($this->typeToName($this->getType($player)));
+		if($type != "kdr"){
+			if($value == -1){
+				$xuid = $player->getXboxData("XUID");
+				$statement = $this->database->prepare("SELECT ".$type."_$date FROM leaderboard WHERE xuid=?");
+				$statement->bind_param("i", $xuid);
+				$statement->bind_result($val);
+				if($statement->execute()){
+					$statement->fetch();
+				}
+				if($val == null) $val = 0;
+				$text = TextFormat::GREEN."YOU: ".TextFormat::AQUA.$player->getName()." ".TextFormat::YELLOW.$val;
+				return $text;
+			}
+
+			$text = TextFormat::GREEN.$value.". ".TextFormat::RED."No stats found!";
+			if($statement = $this->database->query("SELECT xuid, ".$type."_$date FROM leaderboard ORDER BY ".$type."_$date DESC LIMIT 5")){
+				$key = 1;
+				while($array = $statement->fetch_array()){
+					if($key == $value){
+						$name = Core::getInstance()->getNetwork()->xuidToGamertag($array["xuid"]);
+						$text = TextFormat::GREEN.$value.". ".TextFormat::AQUA.$name.TextFormat::YELLOW." ".$array[$type."_".$date];
+					}
+					$key++;
+				}
+			}
+			return $text;
+		}
 		if($value == -1){
 			$xuid = $player->getXboxData("XUID");
-			$statement = $this->database->prepare("SELECT $date FROM leaderboard_$type WHERE xuid=?");
+			$statement = $this->database->prepare("SELECT kills_$date / deaths_$date FROM leaderboard WHERE xuid=?");
 			$statement->bind_param("i", $xuid);
 			$statement->bind_result($val);
 			if($statement->execute()){
@@ -126,12 +150,12 @@ class Leaderboard{
 		}
 
 		$text = TextFormat::GREEN.$value.". ".TextFormat::RED."No stats found!";
-		if($statement = $this->database->query("SELECT xuid, $date FROM leaderboard_$type ORDER BY $date DESC LIMIT 5")){
+		if($statement = $this->database->query("SELECT xuid, (kills_$date / deaths_$date) as kdr FROM leaderboard ORDER BY kills_$date / deaths_$date DESC LIMIT 5")){
 			$key = 1;
 			while($array = $statement->fetch_array()){
 				if($key == $value){
 					$name = Core::getInstance()->getNetwork()->xuidToGamertag($array["xuid"]);
-					$text = TextFormat::GREEN.$value.". ".TextFormat::AQUA.$name.TextFormat::YELLOW." ".$array[$date];
+					$text = TextFormat::GREEN.$value.". ".TextFormat::AQUA.$name.TextFormat::YELLOW." ".($array["kdr"] ?? 0);
 				}
 				$key++;
 			}
@@ -139,58 +163,46 @@ class Leaderboard{
 		return $text;
 	}
 
-	public function addKill(Player $player){
-		$xuid = $player->getXboxData("XUID");
+	public function addKill($player){
+		$xuid = (new User($player))->getXuid();
 
 		$dates = ["weekly","monthly","alltime"];
 		foreach($dates as $date){
-			$statement = $this->database->prepare("UPDATE leaderboard_kills SET $date = $date + 1 WHERE xuid=?");
+			$statement = $this->database->prepare("UPDATE leaderboard SET kills_$date = kills_$date + 1 WHERE xuid=?");
 			$statement->bind_param("i", $xuid);
 			$statement->execute();
 			$statement->close();
 		}
 	}
 
-	public function addDeath(Player $player){
-		$xuid = $player->getXboxData("XUID");
+	public function addDeath($player){
+		$xuid = (new User($player))->getXuid();
 
 		$dates = ["weekly","monthly","alltime"];
 		foreach($dates as $date){
-			$statement = $this->database->prepare("UPDATE leaderboard_deaths SET $date = $date + 1 WHERE xuid=?");
+			$statement = $this->database->prepare("UPDATE leaderboard SET deaths_$date = deaths_$date + 1 WHERE xuid=?");
 			$statement->bind_param("i", $xuid);
 			$statement->execute();
 			$statement->close();
 		}
 	}
 
-	public function addAssist(Player $player){
-		$xuid = $player->getXboxData("XUID");
+	public function setStreak($player, $streak){
+		$xuid = (new User($player))->getXuid();
 
 		$dates = ["weekly","monthly","alltime"];
 		foreach($dates as $date){
-			$statement = $this->database->prepare("UPDATE leaderboard_assists SET $date = $date + 1 WHERE xuid=?");
+			$statement = $this->database->prepare("UPDATE leaderboard SET streak_$date = $streak WHERE xuid=?");
 			$statement->bind_param("i", $xuid);
 			$statement->execute();
 			$statement->close();
 		}
 	}
 
-	public function addRevenge(Player $player){
-		$xuid = $player->getXboxData("XUID");
+	public function getKills($player, $date = "alltime"){
+		$xuid = (new User($player))->getXuid();
 
-		$dates = ["weekly","monthly","alltime"];
-		foreach($dates as $date){
-			$statement = $this->database->prepare("UPDATE leaderboard_revenge SET $date = $date + 1 WHERE xuid=?");
-			$statement->bind_param("i", $xuid);
-			$statement->execute();
-			$statement->close();
-		}
-	}
-
-	public function getKills($player, $date){
-		$xuid = ($player instanceof Player ? $player->getXboxData("XUID") : Core::getInstance()->getNetwork()->gamertagToXuid($player));
-
-		$statement = $this->database->prepare("SELECT $date FROM leaderboard_kills WHERE xuid=?");
+		$statement = $this->database->prepare("SELECT kills_$date FROM leaderboard WHERE xuid=?");
 		$statement->bind_param("i", $xuid);
 		$statement->bind_result($kills);
 		if($statement->execute()){
@@ -199,10 +211,10 @@ class Leaderboard{
 		return $kills ?? 0;
 	}
 
-	public function getDeaths($player, $date){
-		$xuid = ($player instanceof Player ? $player->getXboxData("XUID") : Core::getInstance()->getNetwork()->gamertagToXuid($player));
+	public function getDeaths($player, $date = "alltime"){
+		$xuid = (new User($player))->getXuid();
 
-		$statement = $this->database->prepare("SELECT $date FROM leaderboard_deaths WHERE xuid=?");
+		$statement = $this->database->prepare("SELECT deaths_$date FROM leaderboard WHERE xuid=?");
 		$statement->bind_param("i", $xuid);
 		$statement->bind_result($deaths);
 		if($statement->execute()){
@@ -211,28 +223,28 @@ class Leaderboard{
 		return $deaths ?? 0;
 	}
 
-	public function getAssists($player, $date){
-		$xuid = ($player instanceof Player ? $player->getXboxData("XUID") : Core::getInstance()->getNetwork()->gamertagToXuid($player));
+	public function getKdr($player, $date = "alltime"){
+		$xuid = (new User($player))->getXuid();
 
-		$statement = $this->database->prepare("SELECT $date FROM leaderboard_assists WHERE xuid=?");
+		$statement = $this->database->prepare("SELECT (kills_$date / deaths_$date) as kdr FROM leaderboard WHERE xuid=?");
 		$statement->bind_param("i", $xuid);
-		$statement->bind_result($assists);
+		$statement->bind_result($kdr);
 		if($statement->execute()){
 			$statement->fetch();
 		}
-		return $assists ?? 0;
+		return $kdr ?? 0;
 	}
 
-	public function getRevenge($player, $date){
+	public function getStreak($player, $date = "alltime"){
 		$xuid = ($player instanceof Player ? $player->getXboxData("XUID") : Core::getInstance()->getNetwork()->gamertagToXuid($player));
 
-		$statement = $this->database->prepare("SELECT $date FROM leaderboard_revenge WHERE xuid=?");
+		$statement = $this->database->prepare("SELECT streak_$date FROM leaderboard WHERE xuid=?");
 		$statement->bind_param("i", $xuid);
-		$statement->bind_result($revenge);
+		$statement->bind_result($streak);
 		if($statement->execute()){
 			$statement->fetch();
 		}
-		return $revenge ?? 0;
+		return $streak ?? 0;
 	}
 
 }

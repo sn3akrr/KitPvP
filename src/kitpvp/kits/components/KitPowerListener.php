@@ -47,10 +47,12 @@ class KitPowerListener implements Listener{
 	public function onEquip(KitEquipEvent $e){
 		$player = $e->getPlayer();
 		$kit = $e->getKit();
+
 		if($kit->getName() == "m4l0ne23"){
 			$player->setMaxHealth(24);
-			$player->setHealth(24);
 		}
+		$player->setHealth($player->getMaxHealth());
+
 		if($kit->getName() == "scout"){
 			$player->setAllowFlight(true);
 		}
@@ -64,9 +66,7 @@ class KitPowerListener implements Listener{
 
 	public function onUnequip(KitUnequipEvent $e){
 		$player = $e->getPlayer();
-		//max health boost abilities
 		$player->setMaxHealth(20);
-		//double jump abilities
 		$player->setGamemode(1); $player->setGamemode(0);
 
 		unset($this->kits->ability[$player->getName()]);

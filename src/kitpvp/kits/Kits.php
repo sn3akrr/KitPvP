@@ -5,7 +5,10 @@ use pocketmine\entity\{
 	Entity,
 	Effect
 };
-use pocketmine\utils\TextFormat;
+use pocketmine\utils\{
+	TextFormat,
+	Color
+};
 use pocketmine\network\mcpe\protocol\{
 	MobEquipmentPacket,
 	MobArmorEquipmentPacket
@@ -77,6 +80,8 @@ class Kits{
 			"addkitpasses" => new AddKitPasses($plugin, "addkitpasses", "Give player's kit passes"),
 		] as $name => $class) $this->plugin->getServer()->getCommandMap()->register($name, $class);
 
+		$item = Item::get(299,0,1);
+		$item->setCustomColor(new Color(255,255,255));
 		foreach([
 			"noob" => new KitObject("noob", "default", 0, [
 				Item::get(272,0,1),
@@ -96,7 +101,8 @@ class Kits{
 				Item::get(366,0,6),
 
 				Item::get(298,0,1),
-				Item::get(299,0,1),
+				//Item::get(299,0,1),
+				$item,
 				Item::get(304,0,1),
 				Item::get(301,0,1)
 			], [
@@ -207,13 +213,14 @@ class Kits{
 				Item::get(312,0,1)
 			], [
 				Effect::getEffect(Effect::SPEED)->setAmplifier(1),
-				Effect::getEffect(Effect::STRENGTH)
+				Effect::getEffect(Effect::MINING_FATIGUE)->setAmplifier(1),
+				Effect::getEffect(Effect::STRENGTH),
 			], [
 				"Slender" => "All enemies nearby are blinded when you're low on health, one time use",
 				"Arrow Dodge" => "25% chance of arrow attacks to be dodged"
 			], [
-				new EnderPearl(0, 16),
-				new Decoy(0, 8),
+				new EnderPearl(0, 4),
+				new Decoy(0, 3),
 			], 1),
 
 			"pyromancer" => new KitObject("pyromancer", "wither", 40, [

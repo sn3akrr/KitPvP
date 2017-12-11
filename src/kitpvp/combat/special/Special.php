@@ -14,6 +14,7 @@ use kitpvp\combat\special\other\Spell;
 use kitpvp\combat\special\items\{
 	SpecialWeapon,
 
+	FryingPan,
 	BookOfSpells,
 	ConcussionGrenade,
 	BrassKnuckles,
@@ -22,9 +23,11 @@ use kitpvp\combat\special\items\{
 	Defibrillator,
 	Syringe,
 	Kunai,
+	SpikedClub,
 	EnderPearl,
 	Decoy,
 	Flamethrower,
+	FireAxe,
 	MaloneSword
 };
 use kitpvp\combat\special\entities\{
@@ -47,6 +50,7 @@ class Special{
 	public $combat;
 
 	public $spells = [];
+	public $specials = [];
 
 	//Special weapon runs
 	public $special = [];
@@ -57,6 +61,8 @@ class Special{
 		$this->combat = $combat;
 
 		$this->registerSpells();
+		$this->registerSpecial();
+
 		$plugin->getServer()->getPluginManager()->registerEvents(new EventListener($plugin, $this), $plugin);
 		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new SpecialTask($plugin), 10);
 
@@ -77,7 +83,13 @@ class Special{
 					$entity instanceof Flame
 				) $entity->close();
 			}
-		}  
+		}
+	}
+
+	public function tick(){
+		foreach($this->getTickers() as $ticker){
+			$ticker->tick();
+		}
 	}
 
 	public function registerSpells(){
@@ -93,12 +105,44 @@ class Special{
 		] as $name => $spell) $this->spells[] = new Spell($name, $spell);
 	}
 
+	public function registerSpecial(){
+		foreach([
+			new SpecialTicker("fryingpan", "Frying Pan", new FryingPan()),
+			new SpecialTicker("bookofspells", "Book of Spells", new BookOfSpells(), 15),
+			new SpecialTicker("concussiongrenade", "Concussion Grenade", new ConcussionGrenade(), 5),
+			new SpecialTicker("brassknuckles", "Brass Knuckles", new BrassKnuckles()),
+			new SpecialTicker("gun", "Gun", new Gun(), 3),
+			new SpecialTicker("reflexhammer", "Reflex Hammer", new ReflexHammer()),
+			new SpecialTicker("defibrillator", "Defibrillator", new Defibrillator(), 10),
+			new SpecialTicker("syringe", "Syringe", new Syringe(), 5),
+			new SpecialTicker("kunai", "Kunai", new Kunai(), 2),
+			new SpecialTicker("spikedclub", "Spiked Club", new SpikedClub()),
+			new SpecialTicker("enderpearl", "Ender Pearl", new EnderPearl(), 15),
+			new SpecialTicker("decoy", "Decoy", new Decoy(), 10, 3),
+			new SpecialTicker("flamethrower", "Flamethrower", new Flamethrower(), 3),
+			new SpecialTicker("fireaxe", "Fire Axe", new FireAxe()),
+			new SpecialTicker("malonesword", "M4L0NESWORD", new MaloneSword()),
+		] as $special) $this->specials[] = $special;
+	}
+
 	public function getSpells(){
 		return $this->spells;
 	}
 
 	public function getRandomSpell(){
 		return $this->spells[mt_rand(0, count($this->spells) - 1)];
+	}
+
+	public function getTickerByItem(Item $item){
+		if(!$item instanceof SpecialWeapon) return null;
+		foreach($this->getTickers() as $ticker){
+			if($ticker->isTrigger($item)) return $ticker;
+		}
+		return null;
+	}
+
+	public function getTickers(){
+		return $this->specials;
 	}
 
 	public function cg(Player $player, Player $thrower){
@@ -123,6 +167,7 @@ class Special{
 			"time" => time() + $seconds,
 			"attacker" => $killer
 		];
+		$this->combat->getSlay()->damageAs($killer, $player, 2);
 	}
 
 	public function isBleeding(Player $player){

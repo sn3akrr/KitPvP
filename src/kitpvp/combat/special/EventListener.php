@@ -14,6 +14,12 @@ use pocketmine\utils\TextFormat;
 use pocketmine\network\mcpe\protocol\{
 	PlayerActionPacket
 };
+use kitpvp\combat\special\event\{
+	SpecialDelayEndEvent,
+
+	SpecialEffectStartEvent,
+	SpecialEffectEndEvent
+};
 
 use pocketmine\level\sound\{
 	AnvilFallSound
@@ -83,8 +89,11 @@ class EventListener implements Listener{
 			$e->setCancelled(true);
 			return;
 		}
-		if($item instanceof BookOfSpells){
-			if(!isset($this->special->special[$player->getName()]["book_of_spells"]) || ($this->special->special[$player->getName()]["book_of_spells"] + 15) - time() <= 0){
+		$ticker = $this->special->getTickerByItem($item);
+		if($ticker == null) return;
+		if($ticker->hasCooldown($player)) return;
+		switch($ticker->getName()){
+			case "bookofspells":
 				$count = 0;
 				$spell = $this->special->getRandomSpell();
 				foreach($player->getLevel()->getPlayers() as $p){
@@ -95,26 +104,22 @@ class EventListener implements Listener{
 						}
 					}
 				}
-				if($count > 0) $this->special->special[$player->getName()]["book_of_spells"] = time();
-			}
-			return;
-		}
-		if($item instanceof ConcussionGrenade){
-			if($e->getAction() == 3){
-				if(!isset($this->special->special[$player->getName()]["concussion_grenade"]) || ($this->special->special[$player->getName()]["concussion_grenade"] + 5) - time() <= 0){
+				if($count > 0){
+					$ticker->use($player);
+				}
+			break;
+			case "concussiongrenade":
+				if($e->getAction() == 3){
 					$nbt = $this->createNbt($player);
 					$force = 0.4;
 					$cg = Entity::createEntity("ThrownConcussionGrenade", $player->getLevel(), $nbt, $player);
 					$cg->setMotion($cg->getMotion()->multiply($force));
 					$cg->spawnToAll();
-					$player->getInventory()->getItemInHand()->pop();
-					$this->special->special[$player->getName()]["concussion_grenade"] = time();
+					$ticker->use($player);
 				}
-			}
-		}
-		if($item instanceof Kunai){
-			if($e->getAction() == 3){
-				if(!isset($this->special->special[$player->getName()]["kunai"]) || ($this->special->special[$player->getName()]["kunai"] + 2) - time() <= 0){
+			break;
+			case "kunai":
+				if($e->getAction() == 3){
 					$nbt = $this->createNbt($player);
 					$force = 1.25;
 					$kunai = Entity::createEntity("ThrownKunai", $player->getLevel(), $nbt, $player);
@@ -122,64 +127,52 @@ class EventListener implements Listener{
 					$kunai->spawnToAll();
 					$kunai->setDataProperty(38, 7, $player->getId());
 					$kunai->setDataProperty(39, 3, 0.5);
-					$new = clone $item;
-					$new->setCount($item->getCount() - 1);
-					$player->getInventory()->setItemInHand($new);
-					$this->special->special[$player->getName()]["kunai"] = time();
+					$ticker->use($player);
 				}
-			}
-		}
-		if($item instanceof EnderPearl){
-			if($e->getAction() == 3){
-				if(!isset($this->special->special[$player->getName()]["enderpearl"]) || ($this->special->special[$player->getName()]["enderpearl"] + 15) - time() <= 0){
+			break;
+			case "enderpearl":
+				if($e->getAction() == 3){
 					$nbt = $this->createNbt($player);
 					$force = 1.6;
 					$enderpearl= Entity::createEntity("ThrownEnderpearl", $player->getLevel(), $nbt, $player);
 					$enderpearl->setMotion($enderpearl->getMotion()->multiply($force));
 					$enderpearl->spawnToAll();
-					$new = clone $item;
-					$new->setCount($item->getCount() - 1);
-					$player->getInventory()->setItemInHand($new);
-					$this->special->special[$player->getName()]["enderpearl"] = time();
+					$ticker->use($player);
 				}
-			}
-		}
-		if($item instanceof Decoy){
-			if($e->getAction() == 3){
-				if(!isset($this->special->special[$player->getName()]["decoy"]) || ($this->special->special[$player->getName()]["decoy"] + 1) - time() <= 0){
+			break;
+			case "decoy":
+				if($e->getAction() == 3){
 					$nbt = $this->createNbt($player);
 					$force = 1.6;
 					$decoy = Entity::createEntity("ThrownDecoy", $player->getLevel(), $nbt, $player);
 					$decoy->setMotion($decoy->getMotion()->multiply($force));
 					$decoy->spawnToAll();
-					$new = clone $item;
-					$new->setCount($item->getCount() - 1);
-					$player->getInventory()->setItemInHand($new);
-					$this->special->special[$player->getName()]["decoy"] = time();
+					$ticker->use($player);
 				}
-			}
-		}
-		if($item instanceof Gun){
-			if($e->getAction() == 3){
-				if((!isset($this->special->special[$player->getName()]["gun"])) || ($this->special->special[$player->getName()]["gun"] + 3) - time() <= 0){
+			break;
+			case "gun":
+				if($e->getAction() == 3){
 					$nbt = $this->createNbt($player);
 					$force = 2.75;
 					$bullet = Entity::createEntity("Bullet", $player->getLevel(), $nbt, $player);
 					$bullet->setMotion($bullet->getMotion()->multiply($force));
 					$bullet->spawnToAll();
-					$this->special->special[$player->getName()]["gun"] = time();
+					$ticker->use($player);
 				}
-			}
-		}
-		if($item instanceof Flamethrower){
-			if($e->getAction() == 3){
-				if((!isset($this->special->special[$player->getName()]["flamethrower"])) || ($this->special->special[$player->getName()]["flamethrower"] + 3) - time() <= 0){
+			break;
+			case "flamethrower":
+				if($e->getAction() == 3){
 					$nbt = $this->createNbt($player);
 					$flame = Entity::createEntity("Flame", $player->getLevel(), $nbt, $player);
 					$flame->spawnToAll();
-					$this->special->special[$player->getName()]["flamethrower"] = time();
+					$ticker->use($player);
 				}
-			}
+			break;
+		}
+		if($item->isConsumable()){
+			$new = clone $item;
+			$new->setCount($item->getCount() - 1);
+			$player->getInventory()->setItemInHand($new);
 		}
 	}
 
@@ -203,87 +196,6 @@ class EventListener implements Listener{
 						$e->setCancelled(true);
 						return;
 					}
-					if($item instanceof FryingPan){
-						$e->setKnockback(0.9);
-						if(mt_rand(1,3) == 1){
-							$player->getLevel()->addSound(new AnvilFallSound($player));
-							$e->setDamage(mt_rand(1,4));
-							$e->setDamage(mt_rand(1,4), 4);
-						}
-					}
-					//FIX BOOK OF SPELLS B
-					/*if($item instanceof BookOfSpells){
-						$spell = $this->special->getRandomSpell();
-						if(!isset($this->special->special[$killer->getName()]["book_of_spells"]) || ($this->special->special[$killer->getName()]["book_of_spells"] + 10) - time() <= 0){
-							if(!$teams->sameTeam($player, $killer)){
-								$spell->cast($killer, $player);
-								$this->special->special[$killer->getName()]["book_of_spells"] = time();
-							}
-						}
-						return;
-					}*/
-
-					if($item instanceof BrassKnuckles){
-						$e->setKnockback(0.65);
-						if(mt_rand(1,3) == 1){
-							$player->getLevel()->addSound(new AnvilFallSound($player));
-							$e->setDamage(mt_rand(2,6));
-							$e->setDamage(mt_rand(2,6), 4);
-						}
-					}
-
-					if($item instanceof ReflexHammer){
-						$e->setKnockback(0.65);
-						$e->setDamage(2,7);
-					}
-					if($item instanceof Defibrillator){
-						if(!isset($this->special->special[$player->getName()]["defibrillator"]) || ($this->special->special[$player->getName()]["defibrillator"] + 10) - time() <= 0){
-							$this->plugin->getCombat()->getSlay()->strikeLightning($player);
-							$player->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
-							$killer->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
-							$e->setDamage(3);
-							$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 10)->setAmplifier(1));
-							$player->addEffect(Effect::getEffect(Effect::NAUSEA)->setDuration(20 * 10)->setAmplifier(5));
-							$this->special->special[$player->getName()]["defibrillator"] = time();
-							$killer->addActionBarMessage(TextFormat::RED."Defibrillator available in 10...");
-						}
-					}
-
-					if($item instanceof Syringe){
-						if(!isset($this->special->special[$player->getName()]["syringe"]) || ($this->special->special[$player->getName()]["syringe"] + 2) - time() <= 0){
-							$e->setDamage(5);
-							$player->addEffect(Effect::getEffect(Effect::NAUSEA)->setDuration(20 * 15));
-							$player->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(1)->setDuration(20 * 5));
-							$new = clone $item;
-							$new->setCount($item->getCount() - 1);
-							$killer->getInventory()->setItemInHand($new);
-						}
-					}
-					if($item instanceof SpikedClub){
-						$e->setDamage(mt_rand(1,2));
-						$e->setDamage(mt_rand(1,2), 4);
-						$e->setKnockback(0.3);
-						$this->special->bleed($player, $killer, mt_rand(3,8));
-					}
-					if($item instanceof FireAxe){
-						$e->setDamage(mt_rand(1,3));
-						$e->setDamage(mt_rand(1,3), 4);
-						$player->setOnFire(1);
-					}
-					if($item instanceof MaloneSword){
-						$e->setKnockback(0.15);
-						$e->setDamage(mt_rand(1,3));
-						$e->setDamage(mt_rand(1,3), 4);
-						$fire_chance = mt_rand(0,100);
-						if($fire_chance <= 7){
-							$player->setOnFire(1);
-						}
-						$wither_chance = mt_rand(0,100);
-						if($wither_chance <= 3){
-							$player->addEffect(Effect::getEffect(Effect::WITHER)->setAmplifier(1)->setDuration(20 * 2));
-						}
-					}
-
 					if($e instanceof EntityDamageByChildEntityEvent){
 						$child = $e->getChild();
 						if($child instanceof ThrownConcussionGrenade){
@@ -307,12 +219,109 @@ class EventListener implements Listener{
 							$killer->teleport($player);
 						}
 						if($child instanceof ThrownDecoy){
-							$this->plugin->getKits()->setInvisible($killer, true);
-							$this->special->special[$killer->getName()]["decoy"] = time();
+							$ticker->startEffect($killer);
 						}
+						return;
+					}
+
+					$ticker = $this->special->getTickerByItem($item);
+					if($ticker == null) return;
+					if($ticker->hasCooldown($player)) return;
+					switch($ticker->getName()){
+						case "fryingpan":
+							$e->setKnockback(0.9);
+							if(mt_rand(1,3) == 1){
+								$player->getLevel()->addSound(new AnvilFallSound($player));
+								$e->setDamage(mt_rand(1,4));
+								$e->setDamage(mt_rand(1,4), 4);
+							}
+						break;
+						/*case "bookofspells":
+							$spell = $this->special->getRandomSpell();
+							if(!$teams->sameTeam($player, $killer)){
+								$spell->cast($killer, $player);
+								$ticker->use($killer, 10);
+							}
+						break;*/
+						case "brassknuckles":
+							$e->setKnockback(0.65);
+							if(mt_rand(1,3) == 1){
+								$player->getLevel()->addSound(new AnvilFallSound($player));
+								$e->setDamage(mt_rand(2,6));
+								$e->setDamage(mt_rand(2,6), 4);
+							}
+						break;
+						case "reflexhammer":
+							$e->setKnockback(0.65);
+							$e->setDamage(2,7);
+						break;
+						case "defibrillator":
+							$this->plugin->getCombat()->getSlay()->strikeLightning($player);
+							$player->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
+							$killer->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
+							$e->setDamage(3);
+							$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 10)->setAmplifier(1));
+							$player->addEffect(Effect::getEffect(Effect::NAUSEA)->setDuration(20 * 10)->setAmplifier(5));
+							$ticker->use($killer);
+						break;
+						case "syringe":
+							$e->setDamage(5);
+							$player->addEffect(Effect::getEffect(Effect::NAUSEA)->setDuration(20 * 15));
+							$player->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(1)->setDuration(20 * 5));
+							$ticker->use($player);
+						break;
+						case "spikedclub":
+							$e->setDamage(mt_rand(1,2));
+							$e->setDamage(mt_rand(1,2), 4);
+							$e->setKnockback(0.3);
+							$this->special->bleed($player, $killer, mt_rand(3,8));
+						break;
+						case "fireaxe":
+							$e->setDamage(mt_rand(1,3));
+							$e->setDamage(mt_rand(1,3), 4);
+							$player->setOnFire(1);
+						break;
+						case "malonesword":
+							$e->setKnockback(0.15);
+							$e->setDamage(mt_rand(1,3));
+							$e->setDamage(mt_rand(1,3), 4);
+							$fire_chance = mt_rand(0,100);
+							if($fire_chance <= 7){
+								$player->setOnFire(1);
+							}
+							$wither_chance = mt_rand(0,100);
+							if($wither_chance <= 3){
+								$player->addEffect(Effect::getEffect(Effect::WITHER)->setAmplifier(1)->setDuration(20 * 2));
+							}
+						break;
+					}
+					if($item->isConsumable()){
+						$new = clone $item;
+						$new->setCount($item->getCount() - 1);
+						$killer->getInventory()->setItemInHand($new);
 					}
 				}
 			}
+		}
+	}
+
+	public function onStart(SpecialEffectStartEvent $e){
+		$player = $e->getPlayer();
+		$special = $e->getSpecial();
+		switch($special){
+			case "decoy":
+				$this->plugin->getKits()->setInvisible($player, true);
+			break;
+		}
+	}
+
+	public function onEnd(SpecialEffectEndEvent $e){
+		$player = $e->getPlayer();
+		$special = $e->getSpecial();
+		switch($special){
+			case "decoy":
+				$this->plugin->getKits()->setInvisible($player, false);
+			break;
 		}
 	}
 

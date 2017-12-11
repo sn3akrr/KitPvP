@@ -54,7 +54,7 @@ class MainListener implements Listener{
 		$block = $e->getBlock();
 		if($block->getX() == 120 && $block->getY() == 21 && $block->getZ() == 83){
 			$lb = $this->plugin->getLeaderboard();
-			if($lb->getType($player) == 3){
+			if($lb->getType($player) == 2){
 				$lb->setType($player, 0);
 			}else{
 				$lb->setType($player, $lb->getType($player) + 1);

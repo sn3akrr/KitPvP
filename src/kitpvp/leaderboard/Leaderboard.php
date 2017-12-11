@@ -108,7 +108,7 @@ class Leaderboard{
 	}
 
 	public function generateText(Player $player, $date, $value = -1){
-		$type = strtolower($this->typeToName($this->getType($player)));
+		$type = strtolower($this->typeToName($this->getType($player))) ?? "kills";
 		if($type != "kdr"){
 			if($value == -1){
 				$xuid = $player->getXboxData("XUID");

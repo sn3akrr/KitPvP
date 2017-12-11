@@ -110,13 +110,6 @@ class KitPowerTask extends PluginTask{
 							}
 						}
 					break;
-					case "enderman":
-						if($this->runs %3 == 0){
-							if(!isset($this->plugin->getCombat()->getSpecial()->special[$player->getName()]["decoy"])){
-								if($kits->isInvisible($player)) $kits->setInvisible($player, false);
-							}
-						}
-					break;
 				}
 			}else{
 				unset($this->equipped[$name]);

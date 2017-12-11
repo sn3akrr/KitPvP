@@ -4,10 +4,11 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
+
 use kitpvp\KitPvP;
+use kitpvp\combat\special\items\Decoy;
 
 class ThrownDecoy extends Projectile{
 
@@ -38,8 +39,8 @@ class ThrownDecoy extends Projectile{
 		}
 		if($this->isCollided or $this->onGround){
 			if(KitPvP::getInstance()->getArena()->inArena($owner)){
-				KitPvP::getInstance()->getKits()->setInvisible($owner, true);
-				KitPvP::getInstance()->getCombat()->getSpecial()->special[$owner->getName()]["decoy"] = time();
+				$ticker = KitPvP::getInstance()->getCombat()->getSpecial()->getTickerByItem(new Decoy());
+				$ticker->startEffect($owner);
 			}
 			$this->close();
 			$hasUpdate = true;

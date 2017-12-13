@@ -76,6 +76,8 @@ class EventListener implements Listener{
 	}
 
 	public function onDmg(EntityDamageEvent $e){
+		if($e->isCancelled()) return;
+
 		$player = $e->getEntity();
 		$teams = $this->combat->getTeams();
 		if(!$player instanceof Player) return;
@@ -84,15 +86,24 @@ class EventListener implements Listener{
 			return;
 		}
 		if(!$this->plugin->getArena()->inArena($player)){
-			$e->setCancelled(true);
-			return;
+			$duels = $this->plugin->getDuels();
+			if($duels->inDuel($player)){
+				$duel = $duels->getPlayerDuel($player);
+				if($duel->getGameStatus() == 0){
+					$e->setCancelled(true);
+					return;
+				}
+			}else{
+				$e->setCancelled(true);
+				return;
+			}
 		}
 		$combat = $this->plugin->getCombat();
 		if($combat->getSlay()->isInvincible($player)){
 			$e->setCancelled(true);
 			return;
 		}
-		if($e->getDamage() > 10) $e->setDamage(3);
+
 		if($e instanceof EntityDamageByEntityEvent){
 			$player->getLevel()->addParticle(new DestroyBlockParticle($player, Block::get(152)));
 			$killer = $e->getDamager();
@@ -132,17 +143,18 @@ class EventListener implements Listener{
 				if(!$e instanceof EntityDamageByChildEntityEvent && $killer->getDeviceOs() == 7) $combat->getSlay()->setDelay($killer);
 			}
 		}else{
+			$duels = $this->plugin->getDuels();
 			if($e->getFinalDamage() >= $player->getHealth()){
 				$e->setCancelled(true);
 				if($combat->getLogging()->inCombat($player)){
 					$last = $combat->getLogging()->getLastHitter($player);
 					if($last == null){
-						$combat->getSlay()->processSuicide($player);
+						if(!$duels->inDuel($player)) $combat->getSlay()->processSuicide($player);
 					}else{
 						$combat->getSlay()->processKill($last, $player);
 					}
 				}else{
-					$combat->getSlay()->processSuicide($player);
+					if(!$duels->inDuel($player)) $combat->getSlay()->processSuicide($player);
 				}
 			}
 		}

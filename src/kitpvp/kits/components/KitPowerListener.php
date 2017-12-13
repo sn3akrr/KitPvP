@@ -73,6 +73,8 @@ class KitPowerListener implements Listener{
 		unset($this->plugin->getCombat()->getSpecial()->special[$player->getName()]);
 
 		$this->kits->setInvisible($player, false); //check might make invalid..?
+
+		$player->getInventory()->clearAll();
 	}
 
 	public function onReplenish(KitReplenishEvent $e){
@@ -140,21 +142,16 @@ class KitPowerListener implements Listener{
 	}
 
 	public function onDmg(EntityDamageEvent $e){
+		if($e->isCancelled()) return;
+
 		$player = $e->getEntity();
 		$kits = $this->plugin->getKits();
 		$teams = $this->plugin->getCombat()->getTeams();
 		if($player instanceof Player){
-			if((!$this->plugin->getArena()->inArena($player)) || $this->plugin->getCombat()->getSlay()->isInvincible($player)){
-				$e->setCancelled(true);
-				return;
-			}
 			if($e instanceof EntityDamageByEntityEvent){
 				$killer = $e->getDamager();
 				if($killer instanceof Player){
-					if($teams->sameTeam($player, $killer)){
-						$e->setCancelled(true);
-						return;
-					}
+
 					if($kits->hasKit($player)){
 						$kit = $kits->getPlayerKit($player);
 						switch($kit->getName()){
@@ -238,7 +235,6 @@ class KitPowerListener implements Listener{
 										if($chance <= 25){
 											$e->setCancelled();
 											$player->getLevel()->addSound(new EndermanTeleportSound($player));
-											$kits->setInvisible($player, true);
 										}
 									}
 								}

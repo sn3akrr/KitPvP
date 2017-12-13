@@ -85,6 +85,12 @@ class Combat{
 		$this->getSlay()->killChildren($player);
 		$this->getSlay()->unsetAssistingPlayers($player);
 		$this->getTeams()->onQuit($player);
+
+		return;
+		$duels = $this->plugin->getDuels();
+		if($duels->inDuel($player)){
+			$duels->getPlayerDuel($player)->leave($player);
+		}
 	}
 
 }

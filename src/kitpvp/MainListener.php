@@ -30,6 +30,7 @@ class MainListener implements Listener{
 	public function onJoin(PlayerJoinEvent $e){
 		$player = $e->getPlayer();
 		$player->teleport(new Position(129.5,22,135.5, $this->plugin->getServer()->getLevelByName("KitSpawn")), 180);
+
 		if(!$this->plugin->getLeaderboard()->hasStats($player)) $this->plugin->getLeaderboard()->newStats($player);
 	}
 
@@ -37,7 +38,19 @@ class MainListener implements Listener{
 		$player = $e->getPlayer();
 		if($player->getLevel()->getBlockIdAt($player->getX(),$player->getY() + 1,$player->getZ()) == 90) $this->plugin->getArena()->tpToArena($player);
 		if($player->y <= 17){
-			if(!$this->plugin->getArena()->inArena($player)) $player->teleport(new Position(129.5,22,135.5, $this->plugin->getServer()->getLevelByName("KitSpawn")), 180);
+			if(!$this->plugin->getArena()->inArena($player)) if(!$this->plugin->getDuels()->inDuel($player)) $player->teleport(new Position(129.5,22,135.5, $this->plugin->getServer()->getLevelByName("KitSpawn")), 180);
+		}
+		$duels = $this->plugin->getDuels();
+		if($duels->inDuel($player)){
+			$duel = $duels->getPlayerDuel($player);
+			if($duel->getGameStatus() == 0){
+				$to = $e->getTo();
+				$from = $e->getFrom();
+
+				if($to->getX() != $from->getX() || $to->getZ() != $from->getZ()){
+					$e->setCancelled(true);
+				}
+			}
 		}
 	}
 
@@ -46,7 +59,11 @@ class MainListener implements Listener{
 	}
 
 	public function onQuit(PlayerQuitEvent $e){
-		$this->plugin->getKits()->setEquipped($e->getPlayer(), false);
+		$player = $e->getPlayer();
+		$this->plugin->getKits()->setEquipped($player, false);
+
+		$duels = $this->plugin->getDuels();
+		$duels->onQuit($player);
 	}
 
 	public function onInteract(PlayerInteractEvent $e){

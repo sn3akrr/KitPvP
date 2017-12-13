@@ -204,6 +204,7 @@ class KitPowerTask extends PluginTask{
 					if($kits->isInvisible($player)){
 						$kits->setInvisible($player, false);
 					}
+					unset($this->ability[$name]);
 				}
 			}else{
 				unset($this->ability[$name]);

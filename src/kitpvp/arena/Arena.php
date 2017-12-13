@@ -71,6 +71,15 @@ class Arena{
 			$kits->getKit("noob")->equip($player);
 			$player->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."You were automatically given the Noob kit!");
 		}
+
+		$duels = $this->plugin->getDuels();
+		$queues = $duels->getQueues();
+		foreach($queues as $queue){
+			if($queue->inQueue($player)){
+				$queue->removePlayer($player);
+				$player->sendMessage(TextFormat::RED . "Left " . $queue->getName() . " duel queue.");
+			}
+		}
 	}
 
 	public function exitArena(Player $player){

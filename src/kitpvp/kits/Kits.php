@@ -221,7 +221,7 @@ class Kits{
 			], [
 				new EnderPearl(0, 4),
 				new Decoy(0, 3),
-			], 1),
+			], 2),
 
 			"pyromancer" => new KitObject("pyromancer", "wither", 40, [
 				Item::get(364,0,8),

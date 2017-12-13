@@ -77,41 +77,50 @@ class Slay{
 	}
 
 	public function processKill(Player $killer, Player $dead){
-		$this->addKill($killer);
-		$this->combat->getStreaks()->addStreak($killer);
-		$this->combat->getLogging()->removeCombat($killer);
-		$killer->addTechits(5);
+		$duels = $this->plugin->getDuels();
+		if(!$duels->inDuel($dead)){
+			$this->addKill($killer);
+			$this->combat->getStreaks()->addStreak($killer);
+			$this->combat->getLogging()->removeCombat($killer);
+			$killer->addTechits(5);
 
-		$this->strikeLightning($dead);
-		$this->addDeath($dead);
-		$this->combat->getLogging()->removeCombat($dead);
-		$this->combat->getBodies()->addBody($dead);
-		$this->plugin->getArena()->exitArena($dead);
-		$this->resetPlayer($dead);
-		$this->killChildren($dead);
+			$this->strikeLightning($dead);
+			$this->addDeath($dead);
+			$this->combat->getLogging()->removeCombat($dead);
+			$this->combat->getBodies()->addBody($dead);
+			$this->plugin->getArena()->exitArena($dead);
+			$this->resetPlayer($dead);
+			$this->killChildren($dead);
 
-		$this->combat->getStreaks()->resetStreak($dead, $killer);
+			$this->combat->getStreaks()->resetStreak($dead, $killer);
 
-		foreach($this->getAssistingPlayers($dead) as $assist){
-			if($assist != $killer && $assist != $dead){
-				$assist->addTechits(2);
-				$assist->addGlobalExp(1);
-				$assist->sendMessage(TextFormat::AQUA."Assist> ".TextFormat::GREEN."Earned 2 Techits for helping kill ".$dead->getName()."!");
+			foreach($this->getAssistingPlayers($dead) as $assist){
+				if($assist != $killer && $assist != $dead){
+					$assist->addTechits(2);
+					$assist->addGlobalExp(1);
+					$assist->sendMessage(TextFormat::AQUA."Assist> ".TextFormat::GREEN."Earned 2 Techits for helping kill ".$dead->getName()."!");
+				}
 			}
-		}
-		$this->unsetAssistingPlayers($dead);
-		$this->setLastKiller($dead, $killer);
-		if($this->getLastKiller($killer) == $dead->getName()){
-			foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
-				$player->sendMessage(TextFormat::AQUA."Revenge> ".TextFormat::GREEN.$killer->getName()." got revenge against ".$dead->getName()."!");
+			$this->unsetAssistingPlayers($dead);
+			$this->setLastKiller($dead, $killer);
+			if($this->getLastKiller($killer) == $dead->getName()){
+				foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
+					$player->sendMessage(TextFormat::AQUA."Revenge> ".TextFormat::GREEN.$killer->getName()." got revenge against ".$dead->getName()."!");
+				}
+				$killer->addTechits(3);
+				$killer->addGlobalExp(2);
+				$this->unsetLastKiller($killer);
 			}
-			$killer->addTechits(3);
-			$killer->addGlobalExp(2);
-			$this->unsetLastKiller($killer);
+
+			$killer->sendMessage(TextFormat::AQUA."Slay> ".TextFormat::GREEN."You killed ".$dead->getName()." and earned 5 Techits!");
+			$dead->sendMessage(TextFormat::AQUA."Slay> ".TextFormat::RED.$killer->getName()." killed you with ".($killer->getHealth() / 2)." <3's left!");
+		}else{
+			$duel = $duels->getPlayerDuel($dead);
+			$duel->setWinner($killer);
+			$duel->setLoser($dead);
+			$duel->end();
 		}
 
-		$killer->sendMessage(TextFormat::AQUA."Slay> ".TextFormat::GREEN."You killed ".$dead->getName()." and earned 5 Techits!");
-		$dead->sendMessage(TextFormat::AQUA."Slay> ".TextFormat::RED.$killer->getName()." killed you with ".($killer->getHealth() / 2)." <3's left!");
 	}
 
 	public function processSuicide(Player $player){

@@ -7,6 +7,7 @@ use kitpvp\{
 
 	arena\Arena,
 	combat\Combat,
+	duels\Duels,
 	kits\Kits,
 	leaderboard\Leaderboard,
 	nuke\Nuke
@@ -21,6 +22,7 @@ class KitPvP extends PluginBase{
 
 	public $arena;
 	public $combat;
+	public $duels;
 	public $kits;
 	public $leaderboard;
 	public $nuke;
@@ -46,11 +48,16 @@ class KitPvP extends PluginBase{
 		$this->getServer()->getLevelByName("KitArena")->setTime(0);
 		$this->getServer()->getLevelByName("KitArena")->stopTime();
 
+		$this->getServer()->loadLevel("duels");
+		$this->getServer()->getLevelByName("duels")->setTime(0);
+		$this->getServer()->getLevelByName("duels")->stopTime();
+
 		Items::init();
 
 		$this->arena = new Arena($this);
 		$this->leaderboard = new Leaderboard($this);
 		$this->nuke = new Nuke($this);
+		$this->duels = new Duels($this);
 		$this->combat = new Combat($this);
 		$this->kits = new Kits($this);
 
@@ -78,6 +85,10 @@ class KitPvP extends PluginBase{
 
 	public function getCombat(){
 		return $this->combat;
+	}
+
+	public function getDuels(){
+		return $this->duels;
 	}
 
 	public function getKits(){

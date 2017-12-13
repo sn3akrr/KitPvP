@@ -29,6 +29,8 @@ class CombatTask extends PluginTask{
 					$player->setFood(17);
 				}
 			}
+
+			$this->plugin->getDuels()->tick(); //TODO: MOVE TO MAIN TASK
 		}
 
 		$slay = $combat->getSlay();

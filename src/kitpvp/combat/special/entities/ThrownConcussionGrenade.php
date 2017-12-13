@@ -44,8 +44,17 @@ class ThrownConcussionGrenade extends Projectile{
 			return true;
 		}
 		if(!KitPvP::getInstance()->getArena()->inArena($owner)){
-			$this->close();
-			return false;
+			$duels = KitPvP::getInstance()->getDuels();
+			if($duels->inDuel($owner)){
+				$duel = $duels->getPlayerDuel($owner);
+				if($duel->getGameStatus() == 0){
+					$this->close();
+					return true;
+				}
+			}else{
+				$this->close();
+				return true;
+			}
 		}
 		if($this->onGround or $this->isCollided){
 			$special = KitPvP::getInstance()->getCombat()->getSpecial();

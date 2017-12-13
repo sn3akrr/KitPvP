@@ -82,10 +82,25 @@ class EventListener implements Listener{
 	}
 
 	public function onInteract(PlayerInteractEvent $e){
+		if($e->isCancelled()) return;
+
 		$player = $e->getPlayer();
 		$teams = $this->plugin->getCombat()->getTeams();
 		$item = $e->getItem();
-		if((!$this->plugin->getArena()->inArena($player)) || $this->plugin->getCombat()->getSlay()->isInvincible($player)){
+		if(!$this->plugin->getArena()->inArena($player)){
+			$duels = $this->plugin->getDuels();
+			if($duels->inDuel($player)){
+				$duel = $duels->getPlayerDuel($player);
+				if($duel->getGameStatus() == 0){
+					$e->setCancelled(true);
+					return;
+				}
+			}else{
+				$e->setCancelled(true);
+				return;
+			}
+		}
+		if($this->plugin->getCombat()->getSlay()->isInvincible($player)){
 			$e->setCancelled(true);
 			return;
 		}
@@ -177,25 +192,16 @@ class EventListener implements Listener{
 	}
 
 	public function onDmg(EntityDamageEvent $e){
+		if($e->isCancelled()) return;
+
 		$player = $e->getEntity();
 		$teams = $this->plugin->getCombat()->getTeams();
 		if($player instanceof Player){
-			if((!$this->plugin->getArena()->inArena($player)) || $this->plugin->getCombat()->getSlay()->isInvincible($player)){
-				$e->setCancelled(true);
-				return;
-			}
 			if($e instanceof EntityDamageByEntityEvent){
 				$killer = $e->getDamager();
 				if($killer instanceof Player){
 					$item = $killer->getInventory()->getItemInHand();
-					if($teams->sameTeam($player, $killer)){
-						$e->setCancelled(true);
-						return;
-					}
-					if((!$this->plugin->getArena()->inArena($killer)) || $this->plugin->getCombat()->getSlay()->isInvincible($killer)){
-						$e->setCancelled(true);
-						return;
-					}
+					$ticker = $this->special->getTickerByItem($item);
 					if($e instanceof EntityDamageByChildEntityEvent){
 						$child = $e->getChild();
 						if($child instanceof ThrownConcussionGrenade){

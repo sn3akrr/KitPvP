@@ -43,17 +43,12 @@ use pocketmine\Player;
 
 class Special{
 
-	const TYPE_INTERACT = 0;
-	const TYPE_ATTACK = 1;
-
 	public $plugin;
 	public $combat;
 
 	public $spells = [];
-	public $specials = [];
+	public $tickers = [];
 
-	//Special weapon runs
-	public $special = [];
 	public $bleeding = [];
 
 	public function __construct(KitPvP $plugin, Combat $combat){
@@ -61,7 +56,7 @@ class Special{
 		$this->combat = $combat;
 
 		$this->registerSpells();
-		$this->registerSpecial();
+		$this->registerTickers();
 
 		$plugin->getServer()->getPluginManager()->registerEvents(new EventListener($plugin, $this), $plugin);
 		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new SpecialTask($plugin), 10);
@@ -105,7 +100,7 @@ class Special{
 		] as $name => $spell) $this->spells[] = new Spell($name, $spell);
 	}
 
-	public function registerSpecial(){
+	public function registerTickers(){
 		foreach([
 			new SpecialTicker("fryingpan", "Frying Pan", new FryingPan()),
 			new SpecialTicker("bookofspells", "Book of Spells", new BookOfSpells(), 15),
@@ -122,7 +117,7 @@ class Special{
 			new SpecialTicker("flamethrower", "Flamethrower", new Flamethrower(), 3),
 			new SpecialTicker("fireaxe", "Fire Axe", new FireAxe()),
 			new SpecialTicker("malonesword", "M4L0NESWORD", new MaloneSword()),
-		] as $special) $this->specials[] = $special;
+		] as $special) $this->tickers[] = $special;
 	}
 
 	public function getSpells(){
@@ -142,7 +137,7 @@ class Special{
 	}
 
 	public function getTickers(){
-		return $this->specials;
+		return $this->tickers;
 	}
 
 	public function cg(Player $player, Player $thrower){
@@ -167,7 +162,6 @@ class Special{
 			"time" => time() + $seconds,
 			"attacker" => $killer
 		];
-		$this->combat->getSlay()->damageAs($killer, $player, 2);
 	}
 
 	public function isBleeding(Player $player){

@@ -24,9 +24,8 @@ class Arena{
 		$this->spawn2 = $spawn2;
 		$this->level = $level;
 
-		echo $this->spawn1->getX() . "," . $this->spawn1->getY() . "," . $this->spawn1->getZ(), PHP_EOL;
-		echo $this->spawn2->getX() . "," . $this->spawn2->getY() . "," . $this->spawn2->getZ(), PHP_EOL;
-
+		//echo $this->spawn1->getX() . "," . $this->spawn1->getY() . "," . $this->spawn1->getZ(), PHP_EOL;
+		//echo $this->spawn2->getX() . "," . $this->spawn2->getY() . "," . $this->spawn2->getZ(), PHP_EOL;
 	}
 
 	public function getId(){

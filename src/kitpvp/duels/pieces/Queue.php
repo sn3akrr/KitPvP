@@ -1,5 +1,6 @@
 <?php namespace kitpvp\duels\pieces;
 
+use pocketmine\utils\TextFormat;
 use pocketmine\{
 	Player,
 	Server
@@ -20,49 +21,64 @@ class Queue{
 	}
 
 	public function tick(){
-		$matches = [];
-		foreach($this->players as $name => $pref){
+		$duels = KitPvP::getInstance()->getDuels();
+
+		$nopref = [];
+		$wpref = [];
+
+		foreach($this->players as $name => $arena){
 			$player = Server::getInstance()->getPlayerExact($name);
 			if($player instanceof Player){
-				if(!isset($matches[$pref])) $matches[$pref] = [];
-				$player->sendPopup("Waiting in duel queue...");
-				$matches[$pref][] = $player;
+				if($arena == "none"){
+					$nopref[] = $player;
+					$player->sendTip(TextFormat::GREEN . "Waiting in '" . $this->getName() . "' queue...");
+				}else{
+					if(!isset($wpref[$arena])) $wpref[$arena] = [];
+					$wpref[$arena][] = $player;
+					$player->sendTip(TextFormat::GREEN . "Waiting in '" . $this->getName() . "' queue..." . PHP_EOL . "Preferred map: ".$duels->getArena($arena)->getName());
+				}
 			}else{
 				unset($this->players[$name]);
 			}
 		}
 
-		$duels = KitPvP::getInstance()->getDuels();
+		if(count($nopref) > 1){
+			while(count($nopref) > 1){
+				$p1 = array_shift($nopref);
+				$p2 = array_shift($nopref);
 
-		//First cycle. Get's all currently available pairs.
-		foreach($matches as $arena => $players){
-			while(count($matches[$arena]) > 1){
-				$player1 = array_shift($matches[$arena]);
-				$player2 = array_shift($matches[$arena]);
-				$duels->createDuel($player1, $player2, ($arena == "none" ? null : $arena));
-				unset($this->players[$player1->getName()]);
-				unset($this->players[$player2->getName()]);
+				$duels->createDuel($p1, $p2);
+
+				$this->removePlayer($p1);
+				$this->removePlayer($p2);
 			}
 		}
 
-		foreach($matches as $arena => $players){
-			if(empty($matches[$arena])) unset($matches[$arena]);
+		foreach($wpref as $arena => $players){
+			if(count($wpref[$arena]) > 1){
+				while(count($wpref[$arena]) > 1){
+					$p1 = array_shift($wpref[$arena]);
+					$p2 = array_shift($wpref[$arena]);
+
+					$duels->createDuel($p1, $p2, $arena);
+
+					$this->removePlayer($p1);
+					$this->removePlayer($p2);
+				}
+			}
+			if(empty($wpref[$arena])) unset($wpref[$arena]);
 		}
 
-		if(isset($matches["none"]) && count($matches["none"]) > 0){
-			//Second cycle. Pairs extra player with no preferred arena with others with preferred maps
-			$player1 = array_shift($matches["none"]);
-			unset($matches["none"]);
-			foreach($matches as $arena => $players){
-				$player2 = array_shift($matches[$arena]);
-				$duels->createDuel($player1, $player2, $arena);
-				unset($player1);
-				unset($this->players[$player1->getName()]);
-				unset($this->players[$player2->getName()]);
+		if(!empty($nopref) && !empty($wpref)){
+			$p1 = array_shift($nopref);
+			foreach($wpref as $arena => $players){
+				$p2 = array_shift($wpref[$arena]);
+
+				$duels->createDuel($p1, $p2, $arena);
+
+				$this->removePlayer($p1);
+				$this->removePlayer($p2);
 				break;
-			}
-			if(isset($player1)){
-				$matches["none"] = $player1;
 			}
 		}
 	}

@@ -9,6 +9,8 @@ use core\ui\elements\simpleForm\Button;
 
 use kitpvp\KitPvP;
 
+use core\network\Links;
+
 class QueueSelectUi extends SimpleForm{
 
 	public $queues = [];
@@ -16,28 +18,35 @@ class QueueSelectUi extends SimpleForm{
 	public function __construct(Player $player){
 		parent::__construct("Duels", "Choose an option below.");
 
-		$this->queues[] = $queue = KitPvP::getInstance()->getDuels()->queues["random"];
-
-		$this->addButton(new Button("Random Duel" . PHP_EOL .
-			($queue->inQueue($player) ? "Tap to leave queue" : "Tap to join queue")
-		));
+		$queues = KitPvP::getInstance()->getDuels()->getQueues();
+		$key = 0;
+		foreach($queues as $id => $queue){
+			$this->queues[$key] = $queue;
+			$key++;
+			$this->addButton(new Button($queue->getName() . PHP_EOL .
+				($queue->inQueue($player) ? "Tap to leave queue" : "Tap to enter queue")
+			));
+		}
 		$this->addButton(new Button("Select preferred map" . PHP_EOL . ($player->getRank() == "default" ? "Requires a rank!" : "")));
 	}
 
 	public function handle($response, Player $player){
-		if(KitPvP::getInstance()->getDuels()->inDuel($player)){
+		$duels = KitPvP::getInstance()->getDuels();
+		if($duels->inDuel($player)){
 			$player->sendMessage(TextFormat::RED . "You cannot use this menu while in a duel!");
 			return;
 		}
-		if($response == 0){
-			if(!$this->queues[0]->inQueue($player)){
-				$this->queues[0]->addPlayer($player);
-				$player->sendMessage(TextFormat::GREEN . "You have joined the duel queue!");
+		foreach($this->queues as $key => $queue){
+			if($response == $key){
+				if(!$queue->inQueue($player)){
+					$queue->addPlayer($player, $duels->getPreferredMap($player));
+					$player->sendMessage(TextFormat::GREEN . "You have joined the '" . $queue->getName() . "' duel queue!");
+					return;
+				}
+				$queue->removePlayer($player);
+				$player->sendMessage(TextFormat::GREEN . "Left '" . $queue->getName() . "' queue.");
 				return;
 			}
-			$this->queues[0]->removePlayer($player);
-			$player->sendMessage(TextFormat::GREEN . "Left duel queue.");
-			return;
 		}
 		if($player->getRank() == "default"){
 			$player->sendMessage(TextFormat::RED . "This feature requires a premium rank! Purchase one at " . TextFormat::YELLOW . Links::SHOP);

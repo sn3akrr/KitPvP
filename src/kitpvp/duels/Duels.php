@@ -132,6 +132,7 @@ class Duels{
 
 	public function createDuel(Player $player1, Player $player2, $arena = null){
 		if($arena == null) $arena = $this->getRandomArena();
+		if(is_string($arena)) $arena = $this->getArena($arena);
 
 		$id = self::$duelCount++;
 		$this->duels[$id] = new Duel($id, $player1, $player2, $arena);
@@ -146,6 +147,11 @@ class Duels{
 			unset($this->pm[$player->getName()]);
 		}else{
 			$this->pm[$player->getName()] = $map;
+		}
+		foreach($this->getQueues() as $queue){
+			if($queue->inQueue($player)){
+				$queue->addPlayer($player, $map);
+			}
 		}
 	}
 

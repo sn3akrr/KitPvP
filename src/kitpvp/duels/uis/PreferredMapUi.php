@@ -13,7 +13,7 @@ class PreferredMapUi extends SimpleForm{
 	public $arenas = [];
 
 	public function __construct(){
-		parent::__construct("Select Map", "Select which map you'd like to duel in next. (BROKEN)");
+		parent::__construct("Select Map", "Select which map you'd like to duel in next round.");
 
 		$arenas = KitPvP::getInstance()->getDuels()->getArenas();
 		$key = 0;
@@ -33,8 +33,7 @@ class PreferredMapUi extends SimpleForm{
 		foreach($this->arenas as $key => $arena){
 			if($key == $response){
 				KitPvP::getInstance()->getDuels()->setPreferredMap($player, $arena->getId());
-				$player->sendMessage(TextFormat::GREEN . "Set preferred arena to " . $arena->getName());
-				return;
+				$player->sendMessage(TextFormat::GREEN . "Set preferred arena to '" . $arena->getName() . "'. Your next duel will take place in this map.");
 			}
 		}
 		$player->showModal(new QueueSelectUi($player));

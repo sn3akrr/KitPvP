@@ -280,7 +280,7 @@ class EventListener implements Listener{
 							$e->setDamage(mt_rand(1,2));
 							$e->setDamage(mt_rand(1,2), 4);
 							$e->setKnockback(0.3);
-							$this->special->bleed($player, $killer, mt_rand(3,8));
+							//$this->special->bleed($player, $killer, mt_rand(3,8));
 						break;
 						case "fireaxe":
 							$e->setDamage(mt_rand(1,3));

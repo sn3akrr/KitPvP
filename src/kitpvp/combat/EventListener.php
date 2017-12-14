@@ -143,7 +143,6 @@ class EventListener implements Listener{
 				if(!$e instanceof EntityDamageByChildEntityEvent && $killer->getDeviceOs() == 7) $combat->getSlay()->setDelay($killer);
 			}
 		}else{
-			$duels = $this->plugin->getDuels();
 			if($e->getFinalDamage() >= $player->getHealth()){
 				$e->setCancelled(true);
 				if($combat->getLogging()->inCombat($player)){

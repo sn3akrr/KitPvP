@@ -32,7 +32,7 @@ class Nuke{
 		$this->setTime();
 		$this->setWaitTime();
 
-		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new NukeTick($plugin), 1);
+		//$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new NukeTick($plugin), 1);
 	}
 
 	public function registerShutdownCodes(){

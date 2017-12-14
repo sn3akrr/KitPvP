@@ -63,6 +63,9 @@ class Duel{
 					$this->setTimer($this->getFightTime());
 					foreach($this->getPlayers() as $player){
 						$player->sendMessage(TextFormat::RED . "You can now move! Go fight! You have 5 minutes.");
+						foreach(Server::getInstance()->getOnlinePlayers() as $p){
+							if(!isset($this->players[$p->getName()])) $player->despawnFrom($p);
+						}
 					}
 					return;
 				}

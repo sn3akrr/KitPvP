@@ -6,6 +6,7 @@ use pocketmine\entity\{
 	Effect
 };
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\Player;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
@@ -38,8 +39,6 @@ use kitpvp\combat\special\entities\{
 	ThrownDecoy,
 	Flame
 };
-
-use pocketmine\Player;
 
 class Special{
 

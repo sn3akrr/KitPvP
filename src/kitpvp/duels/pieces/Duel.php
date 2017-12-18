@@ -8,6 +8,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\level\Position;
 
 use kitpvp\KitPvP;
+use kitpvp\duels\uis\DuelStatsUi;
 
 class Duel{
 
@@ -26,9 +27,14 @@ class Duel{
 	public $status = self::GAME_PREPARE;
 
 	public $winner = null;
-	public $loser = null;
+	public $winnerdata = [];
 
-	public function __construct($id, Player $player1, Player $player2, Arena $arena, $prepare_time = 10, $fight_time = 300){
+	public $loser = null;
+	public $loserdata = [];
+
+	public $enddata = [];
+
+	public function __construct($id, Player $player1, Player $player2, Arena $arena, $prepare_time = 15, $fight_time = 300){
 		$this->id = $id;
 		$this->players = [
 			$player1->getName() => $player1,
@@ -44,10 +50,16 @@ class Duel{
 
 		$arena->teleport($player1, $player2);
 		foreach($this->players as $player){
-			$player->sendMessage(TextFormat::GREEN . "Welcome to Duels BETA! Playing map: " . $arena->getName().". You have 10 seconds to prepare.");
+
+			$player->sendMessage(TextFormat::GRAY . "Welcome to " . TextFormat::YELLOW . "Duels " . TextFormat::RED . "BETA" . TextFormat::GRAY . "! Playing map: " . TextFormat::YELLOW . $arena->getName() . TextFormat::GRAY . ". You have " . TextFormat::YELLOW . $this->prepare_time . TextFormat::GRAY . " seconds to prepare.");
+			//$player->showModal(new DuelEnterUi($player, $this));
+
 			KitPvP::getInstance()->getDuels()->setPreferredMap($player);
 			foreach(Server::getInstance()->getOnlinePlayers() as $p){
-				if(!isset($this->players[$p->getName()])) $player->despawnFrom($p);
+				if(!isset($this->players[$p->getName()])){
+					$player->despawnFrom($p);
+					$p->despawnFrom($player);
+				}
 			}
 		}
 	}
@@ -64,7 +76,10 @@ class Duel{
 					foreach($this->getPlayers() as $player){
 						$player->sendMessage(TextFormat::RED . "You can now move! Go fight! You have 5 minutes.");
 						foreach(Server::getInstance()->getOnlinePlayers() as $p){
-							if(!isset($this->players[$p->getName()])) $player->despawnFrom($p);
+							if(!isset($this->players[$p->getName()])){
+								$player->despawnFrom($p);
+								$p->despawnFrom($player);
+							}
 						}
 					}
 					return;
@@ -171,8 +186,18 @@ class Duel{
 		}else{
 			$loser->sendMessage(TextFormat::RED . "Lost duel against " . $winner->getName() . "! Better luck next time.");
 
-			$winner->addTechits(50);
-			$winner->sendMessage(TextFormat::GREEN . "Won duel against " . $loser->getName() . " and earned 50 techits!");
+			$duels = KitPvP::getInstance()->getDuels();
+			if(!$duels->hasWon($winner, $loser)){
+				$winner->addTechits(50);
+				$winner->sendMessage(TextFormat::GREEN . "Won duel against " . $loser->getName() . " and earned 50 techits!");
+			}else{
+				$winner->sendMessage(TextFormat::GREEN . "Won duel against " . $loser->getName() . "! (No prize given due to already winning against this player.)");
+			}
+
+			//Duel stats
+			//Duel achievements
+
+			$duels->setWon($winner, $loser);
 
 			foreach(Server::getInstance()->getOnlinePlayers() as $player){
 				$player->sendMessage(TextFormat::GREEN . $winner->getName() . " won duel on map " . $this->getArena()->getName() . "!");
@@ -189,6 +214,7 @@ class Duel{
 				KitPvP::getInstance()->getCombat()->getSlay()->resetPlayer($player);
 				foreach(Server::getInstance()->getOnlinePlayers() as $p){
 					$player->spawnTo($p);
+					$p->spawnTo($player);
 				}
 			}
 		}

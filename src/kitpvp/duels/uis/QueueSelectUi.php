@@ -27,7 +27,7 @@ class QueueSelectUi extends SimpleForm{
 				($queue->inQueue($player) ? "Tap to leave queue" : "Tap to enter queue")
 			));
 		}
-		$this->addButton(new Button("Select preferred map" . PHP_EOL . ($player->getRank() == "default" ? "Requires a rank!" : "")));
+		$this->addButton(new Button("Select a map"));
 	}
 
 	public function handle($response, Player $player){
@@ -40,7 +40,7 @@ class QueueSelectUi extends SimpleForm{
 			if($response == $key){
 				if(!$queue->inQueue($player)){
 					$queue->addPlayer($player, $duels->getPreferredMap($player));
-					$player->sendMessage(TextFormat::GREEN . "You have joined the '" . $queue->getName() . "' duel queue!");
+					$player->sendMessage(TextFormat::GREEN . "You have joined the '" . $queue->getName() . "' queue!");
 					return;
 				}
 				$queue->removePlayer($player);

@@ -77,7 +77,7 @@ class Arena{
 		foreach($queues as $queue){
 			if($queue->inQueue($player)){
 				$queue->removePlayer($player);
-				$player->sendMessage(TextFormat::RED . "Left " . $queue->getName() . " duel queue.");
+				$player->sendMessage(TextFormat::RED . "Left '" . $queue->getName() . "' queue.");
 			}
 		}
 	}

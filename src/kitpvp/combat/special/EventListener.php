@@ -11,6 +11,7 @@ use pocketmine\event\entity\{
 };
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\utils\TextFormat;
+use pocketmine\Player;
 use pocketmine\network\mcpe\protocol\{
 	PlayerActionPacket
 };
@@ -40,25 +41,6 @@ use pocketmine\nbt\tag\{
 };
 
 use kitpvp\KitPvP;
-use kitpvp\combat\special\items\{
-	SpecialWeapon,
-
-	FryingPan,
-	BookOfSpells,
-	ConcussionGrenade,
-	BrassKnuckles,
-	Gun,
-	ReflexHammer,
-	Defibrillator,
-	Syringe,
-	SpikedClub,
-	Kunai,
-	EnderPearl,
-	Decoy,
-	FireAxe,
-	Flamethrower,
-	MaloneSword
-};
 use kitpvp\combat\special\entities\{
 	ThrownConcussionGrenade,
 	Bullet,
@@ -66,8 +48,6 @@ use kitpvp\combat\special\entities\{
 	ThrownDecoy,
 	ThrownKunai
 };
-
-use core\AtPlayer as Player;
 
 class EventListener implements Listener{
 
@@ -197,11 +177,23 @@ class EventListener implements Listener{
 		$player = $e->getEntity();
 		$teams = $this->plugin->getCombat()->getTeams();
 		if($player instanceof Player){
+			if(!$this->plugin->getArena()->inArena($player)){
+				$duels = $this->plugin->getDuels();
+				if($duels->inDuel($player)){
+					$duel = $duels->getPlayerDuel($player);
+					if($duel->getGameStatus() == 0){
+						$e->setCancelled(true);
+						return;
+					}
+				}else{
+					$e->setCancelled(true);
+					return;
+				}
+			}
 			if($e instanceof EntityDamageByEntityEvent){
 				$killer = $e->getDamager();
 				if($killer instanceof Player){
 					$item = $killer->getInventory()->getItemInHand();
-					$ticker = $this->special->getTickerByItem($item);
 					if($e instanceof EntityDamageByChildEntityEvent){
 						$child = $e->getChild();
 						if($child instanceof ThrownConcussionGrenade){
@@ -262,25 +254,25 @@ class EventListener implements Listener{
 							$e->setDamage(2,7);
 						break;
 						case "defibrillator":
+							$ticker->use($killer);
 							$this->plugin->getCombat()->getSlay()->strikeLightning($player);
 							$player->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
 							$killer->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
 							$e->setDamage(3);
 							$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 10)->setAmplifier(1));
 							$player->addEffect(Effect::getEffect(Effect::NAUSEA)->setDuration(20 * 10)->setAmplifier(5));
-							$ticker->use($killer);
 						break;
 						case "syringe":
 							$e->setDamage(5);
 							$player->addEffect(Effect::getEffect(Effect::NAUSEA)->setDuration(20 * 15));
 							$player->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(1)->setDuration(20 * 5));
-							$ticker->use($player);
+							$ticker->use($killer);
 						break;
 						case "spikedclub":
 							$e->setDamage(mt_rand(1,2));
 							$e->setDamage(mt_rand(1,2), 4);
 							$e->setKnockback(0.3);
-							//$this->special->bleed($player, $killer, mt_rand(3,8));
+							$this->special->bleed($player, $killer, mt_rand(3,8));
 						break;
 						case "fireaxe":
 							$e->setDamage(mt_rand(1,3));
@@ -292,11 +284,11 @@ class EventListener implements Listener{
 							$e->setDamage(mt_rand(1,3));
 							$e->setDamage(mt_rand(1,3), 4);
 							$fire_chance = mt_rand(0,100);
-							if($fire_chance <= 7){
+							if($fire_chance <= 5){
 								$player->setOnFire(1);
 							}
 							$wither_chance = mt_rand(0,100);
-							if($wither_chance <= 3){
+							if($wither_chance <= 2){
 								$player->addEffect(Effect::getEffect(Effect::WITHER)->setAmplifier(1)->setDuration(20 * 2));
 							}
 						break;

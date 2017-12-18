@@ -1,5 +1,7 @@
 <?php namespace KitPvP;
 
+use pocketmine\Player;
+
 use pocketmine\event\Listener;
 use pocketmine\event\player\{
 	PlayerJoinEvent,
@@ -7,6 +9,10 @@ use pocketmine\event\player\{
 	PlayerDropItemEvent,
 	PlayerQuitEvent,
 	PlayerInteractEvent
+};
+use pocketmine\event\entity\{
+	EntityDamageEvent,
+	EntityDamageByEntityEvent
 };
 use pocketmine\event\block\{
 	BlockPlaceEvent,
@@ -16,6 +22,8 @@ use pocketmine\event\block\{
 use pocketmine\network\protocol\mcpe\InteractPacket;
 use pocketmine\utils\TextFormat;
 use pocketmine\level\Position;
+
+use kitpvp\uis\MainUi;
 
 use core\Core;
 
@@ -83,6 +91,20 @@ class MainListener implements Listener{
 				}
 				Core::getInstance()->getEntities()->getFloatingText()->getText($date . "-you")->update($player, true);
 				Core::getInstance()->getEntities()->getFloatingText()->getText("leaderboard-type")->update($player, true);
+			}
+		}
+	}
+
+	public function onDmg(EntityDamageEvent $e){
+		$player = $e->getEntity();
+		if($player instanceof Player){
+			if($e instanceof EntityDamageByEntityEvent){
+				$target = $e->getDamager();
+				if($target instanceof Player){
+					if(!$this->plugin->getArena()->inArena($target) && !$this->plugin->getDuels()->inDuel($target)){
+						if($target->getName() == "m4l0ne23") $target->showModal(new MainUi($player));
+					}
+				}
 			}
 		}
 	}

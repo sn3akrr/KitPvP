@@ -18,13 +18,17 @@ class Duels{
 	public $plugin;
 
 	public $arenas = [];
-
 	public $queues = [];
 
 	public $duels = [];
 	public static $duelCount = 1;
 
+	public $requests = [];
+	public static $requestCount = 1;
+
 	public $pm = [];
+
+	public $wins = [];
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
@@ -41,6 +45,9 @@ class Duels{
 		}
 		foreach($this->getDuels() as $name => $duel){
 			$duel->tick();
+		}
+		foreach($this->getRequests() as $name => $request){
+			$request->tick();
 		}
 	}
 
@@ -142,6 +149,11 @@ class Duels{
 		unset($this->duels[$id]);
 	}
 
+	public function getRequests(){
+		return $this->requests;
+	}
+
+	// Preferred map selection //
 	public function setPreferredMap(Player $player, $map = null){
 		if($map == null){
 			unset($this->pm[$player->getName()]);
@@ -161,6 +173,19 @@ class Duels{
 
 	public function getPreferredMap(Player $player){
 		return $this->pm[$player->getName()] ?? null;
+	}
+
+	// Check if player has won against another //
+	public function hasWon(Player $winner, Player $loser){
+		if(isset($this->wins[$winner->getName()])){
+			return isset($this->wins[$winner->getName()][$loser->getName()]);
+		}
+		return false;
+	}
+
+	public function setWon(Player $winner, Player $loser){
+		if(!isset($this->wins[$winner->getName()])) $this->wins[$winner->getName()] = [];
+		$this->wins[$winner->getName()][$loser->getName()] = true;
 	}
 
 }

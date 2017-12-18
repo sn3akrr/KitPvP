@@ -33,6 +33,22 @@ class CombatTask extends PluginTask{
 			$this->plugin->getDuels()->tick(); //TODO: MOVE TO MAIN TASK
 		}
 
+		/*foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
+			if($player->getName() == "m4l0ne23" || $player->getName() == "ZachMW"){
+				$scale = $player->getScale();
+				if($player->isSneaking()){
+					$player->setMotion($player->getDirectionVector()->multiply(0.5));
+					if($scale > 0.40){
+						$player->setScale($scale - 0.08);
+					}
+				}else{
+					if($scale < 1){
+						$player->setScale($scale + 0.08);
+					}	
+				}
+			}
+		}*/
+
 		$slay = $combat->getSlay();
 		if($this->runs %2 == 0){
 			if(!empty($slay->delay)){

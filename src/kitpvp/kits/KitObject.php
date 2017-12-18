@@ -8,7 +8,12 @@ use pocketmine\level\sound\{
 	AnvilFallSound,
 	AnvilUseSound
 };
-
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\{
+	ListTag,
+	CompoundTag,
+	ShortTag
+};
 use kitpvp\KitPvP;
 use kitpvp\kits\event\{
 	KitEquipEvent,
@@ -43,8 +48,15 @@ class KitObject{
 		$this->abilities = $abilities;
 		$this->special = $special;
 
+		$tag = new ListTag("ench", [], NBT::TAG_Compound);
+		$tag[200] = new CompoundTag("", [
+			new ShortTag("id", 200),
+			new ShortTag("lvl", 1)
+		]);
+
 		foreach($this->special as $special){
 			$special->setCustomName(TextFormat::RESET.TextFormat::YELLOW.$special->getName());
+			$special->setNamedTagEntry($tag);
 		}
 
 		$this->cooldown = $cooldown;

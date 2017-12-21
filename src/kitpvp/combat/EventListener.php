@@ -85,8 +85,8 @@ class EventListener implements Listener{
 			$e->setCancelled(true);
 			return;
 		}
+		$duels = $this->plugin->getDuels();
 		if(!$this->plugin->getArena()->inArena($player)){
-			$duels = $this->plugin->getDuels();
 			if($duels->inDuel($player)){
 				$duel = $duels->getPlayerDuel($player);
 				if($duel->getGameStatus() == 0){

@@ -6,10 +6,9 @@ use pocketmine\{
 };
 use pocketmine\utils\TextFormat;
 
-use kitpvp\combat\special\items\SpecialWeapon;
+use kitpvp\combat\special\items\types\SpecialWeapon;
 use kitpvp\combat\special\event\{
 	SpecialDelayEndEvent,
-
 	SpecialEffectStartEvent,
 	SpecialEffectEndEvent
 };

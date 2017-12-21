@@ -12,9 +12,8 @@ use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
 use kitpvp\combat\special\other\Spell;
 
+use kitpvp\combat\special\items\types\SpecialWeapon;
 use kitpvp\combat\special\items\{
-	SpecialWeapon,
-
 	FryingPan,
 	BookOfSpells,
 	ConcussionGrenade,

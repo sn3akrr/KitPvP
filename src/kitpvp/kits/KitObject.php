@@ -48,7 +48,9 @@ class KitObject{
 		$this->abilities = $abilities;
 		$this->special = $special;
 
-		$tag = new ListTag("ench", [], NBT::TAG_Compound);
+		$this->cooldown = $cooldown;
+
+		/*$tag = new ListTag("ench", [], NBT::TAG_Compound);
 		$tag[200] = new CompoundTag("", [
 			new ShortTag("id", 200),
 			new ShortTag("lvl", 1)
@@ -57,9 +59,7 @@ class KitObject{
 		foreach($this->special as $special){
 			$special->setCustomName(TextFormat::RESET.TextFormat::YELLOW.$special->getName());
 			$special->setNamedTagEntry($tag);
-		}
-
-		$this->cooldown = $cooldown;
+		}*/
 	}
 
 	public function getName(){

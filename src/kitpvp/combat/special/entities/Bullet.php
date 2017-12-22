@@ -16,7 +16,7 @@ class Bullet extends Projectile{
 	public $length = 0.2;
 	public $height = 0.2;
 
-	protected $gravity = 0; //.03
+	protected $gravity = 0;
 	protected $drag = 0.01;
 
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
@@ -40,17 +40,6 @@ class Bullet extends Projectile{
 			$hasUpdate = true;
 		}
 		return $hasUpdate;
-	}
-
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = Bullet::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-		parent::spawnTo($player);
 	}
 
 }

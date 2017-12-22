@@ -1,6 +1,9 @@
 <?php namespace kitpvp\kits;
 
-use pocketmine\Server;
+use pocketmine\{
+	Player,
+	Server
+};
 use pocketmine\item\Item;
 use pocketmine\entity\Effect;
 use pocketmine\utils\TextFormat;
@@ -19,9 +22,8 @@ use kitpvp\kits\event\{
 	KitEquipEvent,
 	KitReplenishEvent
 };
-use kitpvp\combat\special\items\SpecialWeapon;
+use kitpvp\combat\special\items\types\SpecialWeapon;
 
-use core\AtPlayer as Player;
 use core\Core;
 
 class KitObject{
@@ -38,7 +40,9 @@ class KitObject{
 	public $cooldown;
 	public $cooldowns = [];
 
-	public function __construct(string $name, string $required_rank = "default", int $price = 0, array $items = [], array $effects = [], array $abilities = [], array $special = [], $cooldown = 0){
+	public $quote;
+
+	public function __construct(string $name, string $required_rank = "default", int $price = 0, array $items = [], array $effects = [], array $abilities = [], array $special = [], $cooldown = 0, $quote = ""){
 		$this->name = $name;
 		$this->required_rank = $required_rank;
 		$this->price = $price;
@@ -50,16 +54,7 @@ class KitObject{
 
 		$this->cooldown = $cooldown;
 
-		/*$tag = new ListTag("ench", [], NBT::TAG_Compound);
-		$tag[200] = new CompoundTag("", [
-			new ShortTag("id", 200),
-			new ShortTag("lvl", 1)
-		]);
-
-		foreach($this->special as $special){
-			$special->setCustomName(TextFormat::RESET.TextFormat::YELLOW.$special->getName());
-			$special->setNamedTagEntry($tag);
-		}*/
+		$this->quote = $quote;
 	}
 
 	public function getName(){
@@ -92,6 +87,10 @@ class KitObject{
 
 	public function getCooldown(){
 		return $this->cooldown;
+	}
+
+	public function getQuote(){
+		return $this->quote;
 	}
 
 	public function hasPlayerCooldown(Player $player){

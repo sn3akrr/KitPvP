@@ -74,15 +74,4 @@ class Flame extends Projectile{
 		return $hasUpdate;
 	}
 
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = Flame::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-		parent::spawnTo($player);
-	}
-
 }

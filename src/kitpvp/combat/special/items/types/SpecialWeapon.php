@@ -13,23 +13,26 @@ class SpecialWeapon extends Item{
 			case $this->isConsumable():
 				switch(true){
 					case $this->isMeleeWeapon():
-						$lores[] = TextFormat::GRAY . "Consumable Melee";
+						$lores[] = "Consumable Melee";
 					break 2;
 					default:
-						$lores[] = TextFormat::GRAY . "Consumable";
+						$lores[] = "Consumable";
 					break 2;
 				}
 			break;
 			case $this->isShootable():
-				$lores[] = TextFormat::GRAY . "Shootable";
+				$lores[] = "Shootable";
 			break;
 			case $this->isMeleeWeapon():
-				$lores[] = TextFormat::GRAY . "Melee";
+				$lores[] = "Melee";
 			break;
 		}
 		$lores[] = " ";
-		foreach(explode("\n", wordwrap($this->getDescription(), 20, "\n")) as $desc){
+		foreach(explode("\n", wordwrap($this->getDescription(), 30, "\n")) as $desc){
 			$lores[] = TextFormat::GRAY . $desc;
+		}
+		foreach($lores as $key => $lore){
+			$lores[$key] = TextFormat::RESET . TextFormat::GRAY . $lore;
 		}
 		$this->setLore($lores);
 

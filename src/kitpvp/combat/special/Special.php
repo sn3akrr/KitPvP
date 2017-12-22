@@ -149,7 +149,7 @@ class Special{
 		$pk->evid = 3501;
 		$pk->position = $player->asVector3();
 		$pk->data = 0;
-		foreach($player->getLevel()->getPlayers() as $p) $p->dataPacket($pk);
+		foreach($player->getViewers() as $p) $p->dataPacket($pk);
 
 		$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 8)->setAmplifier(3));
 		$player->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 8));

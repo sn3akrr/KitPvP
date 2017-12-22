@@ -48,11 +48,14 @@ class QueueSelectUi extends SimpleForm{
 				return;
 			}
 		}
-		if($player->getRank() == "default"){
-			$player->sendMessage(TextFormat::RED . "This feature requires a premium rank! Purchase one at " . TextFormat::YELLOW . Links::SHOP);
+		if($response == count($this->queues)){
+			if($player->getRank() == "default"){
+				$player->sendMessage(TextFormat::RED . "This feature requires a premium rank! Purchase one at " . TextFormat::YELLOW . Links::SHOP);
+				return;
+			}
+			$player->showModal(new PreferredMapUi());
 			return;
 		}
-		$player->showModal(new PreferredMapUi());
 	}
 
 }

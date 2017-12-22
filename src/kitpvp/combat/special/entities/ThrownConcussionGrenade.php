@@ -58,7 +58,7 @@ class ThrownConcussionGrenade extends Projectile{
 		}
 		if($this->onGround or $this->isCollided){
 			$special = KitPvP::getInstance()->getCombat()->getSpecial();
-			foreach($this->getLevel()->getPlayers() as $player){
+			foreach($this->getViewers() as $player){
 				if($player->distance($this) <= 5 && $player != $this->getOwningEntity() && $player instanceof Player){
 					$special->cg($player, $this->getOwningEntity());
 				}
@@ -69,14 +69,4 @@ class ThrownConcussionGrenade extends Projectile{
 		return $hasUpdate;
 	}
 
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = ThrownConcussionGrenade::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-		parent::spawnTo($player);
-	}
 }

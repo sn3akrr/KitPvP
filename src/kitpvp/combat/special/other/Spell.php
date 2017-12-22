@@ -1,10 +1,10 @@
 <?php namespace kitpvp\combat\special\other;
 
+use pocketmine\Player;
 use pocketmine\entity\Effect;
 use pocketmine\utils\TextFormat;
 
 use KitPvP\KitPvP;
-use core\AtPlayer as Player;
 
 class Spell{
 

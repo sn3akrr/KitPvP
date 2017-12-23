@@ -105,10 +105,6 @@ class EventListener implements Listener{
 					$killer->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::RED.$player->getName()." is on your team!");
 					return;
 				}
-				if($combat->getSlay()->isDelayed($killer)){
-					$e->setCancelled(true);
-					return;
-				}
 				if($killer == $player){
 					$e->setCancelled(true);
 					return;
@@ -132,7 +128,6 @@ class EventListener implements Listener{
 
 					if(!$combat->getSlay()->isAssistingPlayer($player, $killer)) $combat->getSlay()->addAssistingPlayer($player, $killer);
 				}
-				if(!$e instanceof EntityDamageByChildEntityEvent && $killer->getDeviceOs() == 7) $combat->getSlay()->setDelay($killer);
 			}
 		}else{
 			if($e->getFinalDamage() >= $player->getHealth()){

@@ -62,6 +62,7 @@ class KitPvP extends PluginBase{
 		$this->kits = new Kits($this);
 
 		$this->getServer()->getPluginManager()->registerEvents(new MainListener($this), $this);
+		$this->getServer()->getScheduler()->scheduleRepeatingTask(new MainTask($this), 20);
 	}
 
 	public function onDisable(){

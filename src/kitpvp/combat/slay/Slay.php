@@ -25,7 +25,6 @@ class Slay{
 	public $lb;
 
 	public $invincible = [];
-	public $delay = [];
 
 	public $lastkilledby = [];
 	public $assists = [];
@@ -48,14 +47,6 @@ class Slay{
 				unset($this->invincibility[$name]);
 			}
 		}
-	}
-
-	public function isDelayed(Player $player){
-		return isset($this->delay[$player->getName()]);
-	}
-
-	public function setDelay(Player $player){
-		$this->delay[$player->getName()] = 5;
 	}
 
 	public function addKill(Player $player){

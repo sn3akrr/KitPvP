@@ -1,6 +1,6 @@
 <?php namespace kitpvp\achievements;
 
-class List{
+class AchievementList{
 
 	const POINTS_TIER1 = 100;
 	const POINTS_TIER2 = 250;
@@ -11,12 +11,12 @@ class List{
 	const ACHIEVEMENTS = [
 		//Duels
 		"duel_1" => [
-			"displayName" => "Duel 1",
+			"displayName" => "First duel win",
 			"description" => "Win 1 duel",
 			"points" => self::POINTS_TIER1
 		],
 		"duel_2" => [
-			"displayName" => "Duel 2",
+			"displayName" => "Average Dueler",
 			"description" => "Win 5 duels",
 			"points" => self::POINTS_TIER2
 		],
@@ -40,7 +40,5 @@ class List{
 			"description" => "Win 100 duels",
 			"points" => self::POINTS_TIER5
 		],
-
-
 	];
 }

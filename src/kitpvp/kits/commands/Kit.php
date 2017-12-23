@@ -26,34 +26,32 @@ class Kit extends Command implements PluginIdentifiableCommand{
 		$kits = KitPvP::getInstance()->getKits();
 		if($kits->hasKit($sender)){
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You already have a kit equipped!");
-			return;
+			return false;
 		}
 		if(count($args) !== 1){
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."Usage: /kit <name>");
-			return;
+			return false;
 		}
 		$kit = $kits->getKit(strtolower($args[0]));
 		if($kit->getName() == "invalid"){
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."The kit specified does not exist!");
-			return;
+			return false;
 		}
 		if(!$kit->hasRequiredRank($sender)){
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You must be at least rank ".strtoupper($kit->getRequiredRank())." to use this kit! Purchase this rank at ".TextFormat::YELLOW."buy.atpe.co");
-			return;
+			return false;
 		}
 		if(!$kit->hasEnoughCurrency($sender)){
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You do not have enough Techits to equip this kit! (".$kit->getPrice().")");
-			return;
+			return false;
 		}
 		if($kit->hasPlayerCooldown($sender)){
 			$cooldown = $kit->getPlayerCooldown($sender);
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."This kit has a cooldown! You can equip it again in ".$cooldown." play".($cooldown > 1 ? "s" : "")."!");
-			return;
+			return false;
 		}
-		if(!isset($this->plugin->getKits()->uic[$sender->getName()]) || $this->plugin->getKits()->uic[$sender->getName()] != time()){
-			$sender->showModal(new KitConfirmUi($kit, $sender));
-			$this->plugin->getKits()->uic[$sender->getName()] = time();
-		}
+		$sender->showModal(new KitConfirmUi($kit, $sender));
+		return true;
 	}
 
 	public function getPlugin() : Plugin{

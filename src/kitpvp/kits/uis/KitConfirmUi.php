@@ -17,7 +17,7 @@ class KitConfirmUi extends CustomForm{
 		$this->kit = $kit;
 
 		parent::__construct("Confirm");
-		$this->addElement(new Label("Scroll to view kit details\n\n".$kit->getVisualItemList()."\n\n".(KitPvP::getInstance()->getKits()->hasKitPassActive($player) ? TextFormat::LIGHT_PURPLE."You have a Kit Pass active, so the next kit you equip will not charge you.".TextFormat::RESET."\n\n" : "")."Press Submit to equip this kit."));
+		$this->addElement(new Label("Scroll to view kit details\n\n".$kit->getVisualItemList()."\n\nPress Submit to equip this kit."));
 	}
 
 	public function handle($response, Player $player){
@@ -25,7 +25,7 @@ class KitConfirmUi extends CustomForm{
 			$player->sendMessage(TextFormat::RED."You already have a kit equipped!");
 			return;
 		}
-		$this->kit->equip($player);
+		$this->kit->purchase($player);
 		$player->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."You equipped the ".$this->kit->getName()." kit!");
 	}
 

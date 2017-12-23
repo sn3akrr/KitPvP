@@ -77,11 +77,6 @@ class KitPowerListener implements Listener{
 		$player->getInventory()->clearAll();
 	}
 
-	public function onReplenish(KitReplenishEvent $e){
-		$player = $e->getPlayer();
-		$kit = $e->getKit();
-	}
-
 	// Powers and shit below \\
 	public function onMove(PlayerMoveEvent $e){
 		$player = $e->getPlayer();

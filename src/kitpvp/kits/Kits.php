@@ -17,10 +17,7 @@ use pocketmine\Player;
 
 use kitpvp\KitPvP;
 use kitpvp\kits\commands\{
-	Kit,
-	ReplenishKit,
-	KitPass,
-	AddKitPasses
+	Kit
 };
 use kitpvp\kits\components\{
 	KitPowerListener,
@@ -57,54 +54,46 @@ class Kits{
 
 	public $kits;
 
-	public $confirm = [];
 	public $equipped = [];
-
 	public $ability = [];
 
-	public $kp = [];
-	public $uic = [];
+	public $sessions = [];
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
 		$this->database = $plugin->database;
 
 		foreach([
-			"CREATE TABLE IF NOT EXISTS kits_kitpasses(xuid BIGINT(16) NOT NULL UNIQUE, passes INT NOT NULL, cooldown INT NOT NULL)",
+
 		] as $query) $this->database->query($query);
 
 		foreach([
 			"kit" => new Kit($plugin, "kit", "Equip a kit!"),
-			"replenishkit" => new ReplenishKit($plugin, "replenishkit", "Replenish your kit items!"),
-			"kitpass" => new KitPass($plugin, "kitpass", "Toggle kit pass"),
-			"addkitpasses" => new AddKitPasses($plugin, "addkitpasses", "Give player's kit passes"),
 		] as $name => $class) $this->plugin->getServer()->getCommandMap()->register($name, $class);
 
-		$item = Item::get(299,0,1);
-		$item->setCustomColor(new Color(255,255,255));
 		foreach([
 			"noob" => new KitObject("noob", "default", 0, [
-				Item::get(272,0,1),
+				Item::get(272),
 				Item::get(366,0,4),
 				Item::get(260,0,4),
-
-				Item::get(314,0,1),
-				Item::get(303,0,1),
-				Item::get(317,0,1)
+			], [
+				Item::get(314),
+				Item::get(303),
+				Item::get(0),
+				Item::get(317)
 			],[],[],[
 				new FryingPan(),
 			]),
 
 			"witch" => new KitObject("witch", "default", 10, [
-				Item::get(272,0,1),
-				Item::get(322,0,1),
+				Item::get(272),
+				Item::get(322),
 				Item::get(366,0,6),
-
-				Item::get(298,0,1),
-				//Item::get(299,0,1),
-				$item,
-				Item::get(304,0,1),
-				Item::get(301,0,1)
+			], [
+				Item::get(298),
+				Item::get(299),
+				Item::get(304),
+				Item::get(301)
 			], [
 				Effect::getEffect(Effect::FIRE_RESISTANCE)
 			], [
@@ -114,13 +103,14 @@ class Kits{
 			]),
 
 			"spy" => new KitObject("spy", "default", 20, [
-				Item::get(267,0,1),
+				Item::get(267),
 				Item::get(364,0,2),
 				Item::get(320,0,4),
-
-				Item::get(298,0,1),
-				Item::get(307,0,1),
-				Item::get(309,0,1)
+			], [
+				Item::get(298),
+				Item::get(307),
+				Item::get(0),
+				Item::get(309)
 			], [
 				Effect::getEffect(Effect::HASTE),
 				Effect::getEffect(Effect::SPEED),
@@ -132,13 +122,14 @@ class Kits{
 			]),
 
 			"scout" => new KitObject("scout", "default", 30, [
-				Item::get(267,0,1),
+				Item::get(267),
 				Item::get(320,0,4),
 				Item::get(364,0,2),
-
-				Item::get(306,0,1),
-				Item::get(299,0,1),
-				Item::get(313,0,1)
+			], [
+				Item::get(306),
+				Item::get(299),
+				Item::get(0),
+				Item::get(313)
 			], [
 				Effect::getEffect(Effect::HASTE),
 				Effect::getEffect(Effect::SPEED)->setAmplifier(3),
@@ -150,13 +141,14 @@ class Kits{
 			]),
 
 			"assault" => new KitObject("assault", "default", 40, [
-				Item::get(267,0,1),
+				Item::get(267),
 				Item::get(364,0,2),
 				Item::get(424,0,4),
-
-				Item::get(310,0,1),
-				Item::get(307,0,1),
-				Item::get(300,0,1)
+			], [
+				Item::get(310),
+				Item::get(307),
+				Item::get(300),
+				Item::get(0),
 			], [
 				Effect::getEffect(Effect::SPEED)->setAmplifier(1),
 				Effect::getEffect(Effect::DAMAGE_RESISTANCE)
@@ -167,12 +159,13 @@ class Kits{
 			], 1),
 
 			"medic" => new KitObject("medic", "blaze", 10, [
-				Item::get(267,0,1),
+				Item::get(267),
 				Item::get(260,0,16),
-
-				Item::get(315,0,1),
-				Item::get(300,0,1),
-				Item::get(313,0,1)
+			], [
+				Item::get(0),
+				Item::get(315),
+				Item::get(300),
+				Item::get(313)
 			], [], [
 				"Life Steal" => "Gain health when killing players",
 				"Miracle" => "Regains 2.5 hearts when low on health one time",
@@ -184,16 +177,15 @@ class Kits{
 			], 1),
 
 			"archer" => new KitObject("archer", "ghast", 20, [
-				Item::get(261,0,1),
+				Item::get(261),
 				Item::get(262,0,64),
-				//Item::get(267,0,1),
 				Item::get(260,0,16),
 				Item::get(320,0,4),
-
-				Item::get(302,0,1),
-				Item::get(299,0,1),
-				Item::get(308,0,1),
-				Item::get(301,0,1)
+			], [
+				Item::get(302),
+				Item::get(299),
+				Item::get(308),
+				Item::get(301)
 			], [
 				Effect::getEffect(Effect::SPEED),
 				Effect::getEffect(Effect::JUMP)
@@ -205,12 +197,13 @@ class Kits{
 			], 1),
 
 			"enderman" => new KitObject("enderman", "enderman", 30, [
-				Item::get(267,0,1), //REPLACE -- STICK w/ KNOCKBACK
+				Item::get(267),
 				Item::get(364,0,8),
-
-				Item::get(302,0,1),
-				Item::get(299,0,1),
-				Item::get(312,0,1)
+			], [
+				Item::get(302),
+				Item::get(299),
+				Item::get(312),
+				Item::get(0),
 			], [
 				Effect::getEffect(Effect::SPEED)->setAmplifier(1),
 				Effect::getEffect(Effect::MINING_FATIGUE)->setAmplifier(1),
@@ -225,10 +218,11 @@ class Kits{
 
 			"pyromancer" => new KitObject("pyromancer", "wither", 40, [
 				Item::get(364,0,8),
-
-				Item::get(307,0,1),
-				Item::get(300,0,1),
-				Item::get(309,0,1)
+			], [
+				Item::get(0),
+				Item::get(307),
+				Item::get(300),
+				Item::get(309)
 			], [
 				Effect::getEffect(Effect::SLOWNESS),
 				Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setAmplifier(1),
@@ -242,10 +236,12 @@ class Kits{
 
 			"m4l0ne23" => new KitObject("m4l0ne23", "enderdragon", 50, [
 				Item::get(364,0,16),
-				Item::get(322,0,1),
-
-				Item::get(310,0,1),
-				Item::get(311,0,1)
+				Item::get(322),
+			], [
+				Item::get(310),
+				Item::get(311),
+				Item::get(0),
+				Item::get(0)
 			], [
 				Effect::getEffect(Effect::SPEED)->setAmplifier(2),
 				Effect::getEffect(Effect::MINING_FATIGUE)->setAmplifier(1)
@@ -305,93 +301,17 @@ class Kits{
 		return $list;
 	}
 
-	//Kit passes
-	public function getKitPasses($player){
-		$xuid = (new User($player))->getXuid();
-
-		$statement = $this->database->prepare("SELECT passes FROM kits_kitpasses WHERE xuid=?");
-		$statement->bind_param("i", $xuid);
-		$statement->bind_result($passes);
-		if($statement->execute()){
-			$statement->fetch();
-		}
-		$statement->close();
-
-		return $passes ?? 0;
+	public function createSession(Player $player){
+		$this->sessions[$player->getName()] = new Session($player);
 	}
 
-	public function setKitPasses($player, $amount){
-		$xuid = (new User($player))->getXuid();
-
-		$z = 0;
-		$statement = $this->database->prepare("INSERT INTO kits_kitpasses(xuid, passes, cooldown) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE passes=VALUES(passes)");
-		$statement->bind_param("iii", $xuid, $amount, $z);
-		$statement->execute();
-		$statement->close();
+	public function getSession(Player $player){
+		return $this->sessions[$player->getName()] ?? null;
 	}
 
-	public function addKitPasses($player,  $amount){
-		$amount = $this->getKitPasses($player) + $amount;
-		$this->setKitPasses($player, $amount);
-	}
-
-	public function takeKitPasses($player, $amount){
-		$amount = $this->getKitPasses($player) - $amount;
-		$this->setKitPasses($player, $amount);
-	}
-
-	public function setPassCooldown($player){
-		$xuid = (new User($player))->getXuid();
-		$f = 5;
-
-		$statement = $this->database->prepare("UPDATE kits_kitpasses SET cooldown=? WHERE xuid=?");
-		$statement->bind_param("ii", $f, $xuid);
-		$statement->execute();
-		$statement->close();
-	}
-
-	public function subtractPassCooldown($player){
-		$xuid = (new User($player))->getXuid();
-
-		$statement = $this->database->prepare("UPDATE kits_kitpasses SET cooldown=cooldown-1 WHERE xuid=?");
-		$statement->bind_param("i", $xuid);
-		$statement->execute();
-		$statement->close();
-	}
-
-	public function hasPassCooldown($player){
-		$xuid = (new User($player))->getXuid();
-		$statement = $this->database->prepare("SELECT cooldown FROM kits_kitpasses WHERE xuid=?");
-		$statement->bind_param("i", $xuid);
-		$statement->bind_result($cooldown);
-		if($statement->execute()){
-			$statement->fetch();
-		}
-		$statement->close();
-
-		return ($cooldown ?? 0) > 0;
-	}
-
-	public function toggleKitPass(Player $player){
-		if(!isset($this->kp[$player->getName()])){
-			$this->kp[$player->getName()] = true;
-			return true;
-		}else{
-			unset($this->kp[$player->getName()]);
-			return false;
-		}
-	}
-
-	public function hasKitPassActive(Player $player){
-		return isset($this->kp[$player->getName()]);
-	}
-
-	public function consumeKitPass(Player $player){
-		unset($this->kp[$player->getName()]);
-		$this->takeKitPasses($player, 1);
-		$this->setPassCooldown($player);
-
-		$player->sendMessage(TextFormat::LIGHT_PURPLE."You used one kit pass! The kit you equipped was free of charge!");
+	public function deleteSession(Player $player){
+		$this->sessions[$player->getName()]->save();
+		unset($this->sessions[$player->getName()]);
 	}
 
 	// special stuffs \\

@@ -67,18 +67,9 @@ class EventListener implements Listener{
 		$player = $e->getPlayer();
 		$teams = $this->plugin->getCombat()->getTeams();
 		$item = $e->getItem();
-		if(!$this->plugin->getArena()->inArena($player)){
-			$duels = $this->plugin->getDuels();
-			if($duels->inDuel($player)){
-				$duel = $duels->getPlayerDuel($player);
-				if($duel->getGameStatus() == 0){
-					$e->setCancelled(true);
-					return;
-				}
-			}else{
-				$e->setCancelled(true);
-				return;
-			}
+		if($this->plugin->getArena()->inSpawn($player)){
+			$e->setCancelled(true);
+			return;
 		}
 		if($this->plugin->getCombat()->getSlay()->isInvincible($player)){
 			$e->setCancelled(true);
@@ -177,18 +168,9 @@ class EventListener implements Listener{
 		$player = $e->getEntity();
 		$teams = $this->plugin->getCombat()->getTeams();
 		if($player instanceof Player){
-			if(!$this->plugin->getArena()->inArena($player)){
-				$duels = $this->plugin->getDuels();
-				if($duels->inDuel($player)){
-					$duel = $duels->getPlayerDuel($player);
-					if($duel->getGameStatus() == 0){
-						$e->setCancelled(true);
-						return;
-					}
-				}else{
-					$e->setCancelled(true);
-					return;
-				}
+			if($this->plugin->getArena()->inSpawn($player)){
+				$e->setCancelled(true);
+				return;
 			}
 			if($e instanceof EntityDamageByEntityEvent){
 				$killer = $e->getDamager();

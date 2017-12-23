@@ -11,12 +11,6 @@ use pocketmine\level\sound\{
 	AnvilFallSound,
 	AnvilUseSound
 };
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\{
-	ListTag,
-	CompoundTag,
-	ShortTag
-};
 use kitpvp\KitPvP;
 use kitpvp\kits\event\{
 	KitEquipEvent,
@@ -33,7 +27,9 @@ class KitObject{
 	public $price;
 
 	public $items;
+	public $armor;
 	public $effects;
+
 	public $abilities;
 	public $special;
 
@@ -42,13 +38,15 @@ class KitObject{
 
 	public $quote;
 
-	public function __construct(string $name, string $required_rank = "default", int $price = 0, array $items = [], array $effects = [], array $abilities = [], array $special = [], $cooldown = 0, $quote = ""){
+	public function __construct(string $name, string $required_rank = "default", int $price = 0, array $items = [], array $armor = [], array $effects = [], array $abilities = [], array $special = [], $cooldown = 0, $quote = ""){
 		$this->name = $name;
 		$this->required_rank = $required_rank;
 		$this->price = $price;
 
 		$this->items = $items;
+		$this->armor = $armor;
 		$this->effects = $effects;
+
 		$this->abilities = $abilities;
 		$this->special = $special;
 
@@ -71,6 +69,10 @@ class KitObject{
 
 	public function getItems(){
 		return $this->items;
+	}
+
+	public function getArmorContents(){
+		return $this->armor;
 	}
 
 	public function getEffects(){
@@ -116,117 +118,50 @@ class KitObject{
 	}
 
 	public function hasEnoughCurrency(Player $player){
-		return $player->getTechits() >= $this->getPrice() || KitPvP::getInstance()->getKits()->hasKitPassActive($player);
+		return $player->getTechits() >= $this->getPrice();
 	}
 
 	public function refund(Player $player){
 		$player->addTechits($this->getPrice());
 	}
 
-	public function equip(Player $player, $replenish = false){
+	public function equip(Player $player){
 		foreach($this->getItems() as $item){
-			if($item instanceof Item){
-				if($this->isHelmet($item)){
-					$player->getInventory()->setHelmet($item);
-				}elseif($this->isChestplate($item)){
-					$player->getInventory()->setChestplate($item);
-				}elseif($this->isLeggings($item)){
-					$player->getInventory()->setLeggings($item);
-				}elseif($this->isBoots($item)){
-					$player->getInventory()->setBoots($item);
-				}else{
-					if(!$replenish){
-						$player->getInventory()->addItem($item);
-					}else{
-						if($this->canReplenish($item)){
-							$player->getInventory()->addItem($item);
-						}
-					}
-				}
-			}
+			$player->getInventory()->addItem($item);
 		}
+		$player->getInventory()->setArmorContents($this->getArmorContents());
 		foreach($this->getEffects() as $effect){
 			$effect->setDuration(20 * 999999);
 			$player->addEffect($effect);
 		}
-		if(!$replenish){
-			foreach($this->getSpecial() as $special){
-				$player->getInventory()->addItem($special);
-			}
-			Server::getInstance()->getPluginManager()->callEvent(new KitEquipEvent($player, $this));
-			KitPvP::getInstance()->getKits()->setEquipped($player, true, $this->getName());
-			$player->getLevel()->addSound(new AnvilFallSound($player), [$player]);
-
-			$kits = KitPvP::getInstance()->getKits();
-
-			$num = $kits->getKitNum($this->getName());
-			Core::getInstance()->getEntities()->getFloatingText()->getText("equipped-" . $num)->update($player, true);
-
-			if(!$kits->hasKitPassActive($player)){
-				$player->takeTechits($this->getPrice());
-				if($kits->hasPassCooldown($player)){
-					$kits->subtractPassCooldown($player);
-				}
-			}else{
-				$kits->consumeKitPass($player);
-			}
-		}else{
-			foreach($this->getSpecial() as $special){
-				if(!$special->isConsumable()) $player->getInventory()->addItem($special);
-			}
-			Server::getInstance()->getPluginManager()->callEvent(new KitReplenishEvent($player, $this));
-
-			$player->getLevel()->addSound(new AnvilUseSound($player), [$player]);
+		foreach($this->getSpecial() as $special){
+			$player->getInventory()->addItem($special);
 		}
 
+		Server::getInstance()->getPluginManager()->callEvent(new KitEquipEvent($player, $this));
+		$player->getLevel()->addSound(new AnvilFallSound($player), [$player]);
+
+		$kits = KitPvP::getInstance()->getKits();
+		$kits->setEquipped($player, true, $this->getName());
+		$num = $kits->getKitNum($this->getName());
+		Core::getInstance()->getEntities()->getFloatingText()->getText("equipped-" . $num)->update($player, true);
+	}
+
+	public function purchase(Player $player){
+		$player->takeTechits($this->getPrice());
 		if($this->getCooldown() > 0) $this->cooldowns[$player->getName()] = $this->getCooldown();
+
+		$this->equip($player);
 	}
 
 	public function replenish(Player $player){
-		for($i = 0; $i <= $player->getInventory()->getSize(); $i++){
-			$item = $player->getInventory()->getItem($i);
-			if($item instanceof SpecialWeapon){
-				if(!$item->isConsumable()){
-					$player->getInventory()->clear($i);
-				}
-			}else{
-				if($this->canReplenish($item)){
-					$player->getInventory()->clear($i);
-				}
-			}
-		}
-		foreach($this->getEffects() as $effect){
-			$player->removeEffect($effect->getId());
-		}
-		$this->equip($player, true);
+		$player->getInventory()->clearAll();
+		$player->removeAllEffects();
+
+		$this->equip($player);
 	}
 
-	// Armor checks //
-	public function isHelmet(Item $item){
-		$name = $item->getName();
-		if(strpos($name, "Helmet") || strpos($name, "Cap")) return true;
-		return false;
-	}
-
-	public function isChestplate(Item $item){
-		$name = $item->getName();
-		if(strpos($name, "Chestplate") || strpos($name, "Tunic")) return true;
-		return false;
-	}
-
-	public function isLeggings(Item $item){
-		$name = $item->getName();
-		if(strpos($name, "Leggings") || strpos($name, "Pants")) return true;
-		return false;
-	}
-
-	public function isBoots(Item $item){
-		$name = $item->getName();
-		if(strpos($name, "Boots")) return true;
-		return false;
-	}
-
-	// Text //
+	// TODO: Clean shit below //
 	public function getItemList(){
 		$list = [];
 		$key = 0;

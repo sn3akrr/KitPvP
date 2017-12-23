@@ -39,6 +39,7 @@ class MainListener implements Listener{
 		$player = $e->getPlayer();
 		$player->teleport(new Position(129.5,22,135.5, $this->plugin->getServer()->getLevelByName("KitSpawn")), 180);
 
+		$this->plugin->getAchievements()->createSession($player);
 		if(!$this->plugin->getLeaderboard()->hasStats($player)) $this->plugin->getLeaderboard()->newStats($player);
 	}
 
@@ -70,6 +71,7 @@ class MainListener implements Listener{
 		$player = $e->getPlayer();
 		$this->plugin->getKits()->setEquipped($player, false);
 
+		$this->plugin->getAchievements()->deleteSession($player);
 		$duels = $this->plugin->getDuels();
 		$duels->onQuit($player);
 	}
@@ -77,7 +79,7 @@ class MainListener implements Listener{
 	public function onInteract(PlayerInteractEvent $e){
 		$player = $e->getPlayer();
 		$block = $e->getBlock();
-		if($block->getX() == 120 && $block->getY() == 21 && $block->getZ() == 83){
+		if($this->plugin->getArena()->inSpawn($player) && $block->getX() == 120 && $block->getY() == 21 && $block->getZ() == 83){
 			$lb = $this->plugin->getLeaderboard();
 			if($lb->getType($player) == 2){
 				$lb->setType($player, 0);
@@ -101,7 +103,7 @@ class MainListener implements Listener{
 			if($e instanceof EntityDamageByEntityEvent){
 				$target = $e->getDamager();
 				if($target instanceof Player){
-					if(!$this->plugin->getArena()->inArena($target) && !$this->plugin->getDuels()->inDuel($target)){
+					if($this->plugin->getArena()->inSpawn($target)){
 						if($target->getName() == "m4l0ne23") $target->showModal(new MainUi($player));
 					}
 				}

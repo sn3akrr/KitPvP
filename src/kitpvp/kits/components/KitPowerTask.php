@@ -116,17 +116,6 @@ class KitPowerTask extends PluginTask{
 			}
 		}
 		if($this->runs %20 == 0){
-			foreach($kits->confirm as $name => $data){
-				$player = $this->plugin->getServer()->getPlayerExact($name);
-				if($player instanceof Player){
-					if(($kits->confirm[$name][1] + 10) - time() <= 0){
-						unset($kits->confirm[$name]);
-					}
-				}else{
-					unset($kits->confirm[$name]);
-				}
-			}
-
 			foreach($kits->equipped as $name => $kitname){
 				$player = $this->plugin->getServer()->getPlayerExact($name);
 				if($player instanceof Player){

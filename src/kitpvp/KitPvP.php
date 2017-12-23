@@ -5,12 +5,12 @@ use pocketmine\plugin\PluginBase;
 use kitpvp\{
 	items\Items,
 
+	achievements\Achievements,
 	arena\Arena,
 	combat\Combat,
 	duels\Duels,
 	kits\Kits,
-	leaderboard\Leaderboard,
-	nuke\Nuke
+	leaderboard\Leaderboard
 };
 
 class KitPvP extends PluginBase{
@@ -20,12 +20,12 @@ class KitPvP extends PluginBase{
 
 	public $dir = "/home/data/gamemodes/kitpvp/";
 
+	public $achievements;
 	public $arena;
 	public $combat;
 	public $duels;
 	public $kits;
 	public $leaderboard;
-	public $nuke;
 
 	public function onEnable(){
 		self::$instance = $this;
@@ -54,9 +54,9 @@ class KitPvP extends PluginBase{
 
 		Items::init();
 
+		$this->achievements = new Achievements($this);
 		$this->arena = new Arena($this);
 		$this->leaderboard = new Leaderboard($this);
-		$this->nuke = new Nuke($this);
 		$this->duels = new Duels($this);
 		$this->combat = new Combat($this);
 		$this->kits = new Kits($this);
@@ -79,6 +79,10 @@ class KitPvP extends PluginBase{
 		return self::$instance;
 	}
 
+	public function getAchievements(){
+		return $this->achievements;
+	}
+
 	public function getArena(){
 		return $this->arena;
 	}
@@ -97,10 +101,6 @@ class KitPvP extends PluginBase{
 
 	public function getLeaderboard(){
 		return $this->leaderboard;
-	}
-
-	public function getNuke(){
-		return $this->nuke;
 	}
 
 }

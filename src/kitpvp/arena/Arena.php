@@ -55,14 +55,41 @@ class Arena{
 		return $this->positions[mt_rand(0,count($this->positions) - 1)];
 	}
 
+	public function getPositionClosestTo(Player $player){
+		$distance = 99999;
+		$pos = null;
+		foreach($this->positions as $position){
+			if($position->distance($player) < $distance){
+				$distance = $position->distance($player);
+				$pos = $position;
+			}
+		}
+		return $pos;
+	}
+
 	public function inArena(Player $player){
 		return $player->getLevel()->getName() == "KitArena";
 	}
 
-	public function tpToArena(Player $player){
-		$player->teleport($this->getRandomPosition());
+	public function inSpawn(Player $player){
+		return $player->getLevel() == $this->plugin->getServer()->getDefaultLevel();
+	}
 
+	public function tpToArena(Player $player){
 		$combat = $this->plugin->getCombat();
+		$teams = $combat->getTeams();
+		if($teams->inTeam($player)){
+			$team = $teams->getPlayerTeam($player);
+			$member = $team->getOppositeMember($player);
+			if($this->inArena($member)){
+				$player->teleport($this->getPositionClosestTo($member));
+			}else{
+				$player->teleport($this->getRandomPosition());
+			}
+		}else{
+			$player->teleport($this->getRandomPosition());
+		}
+
 		$combat->getBodies()->addAllBodies($player);
 		$combat->getSlay()->setInvincible($player);
 

@@ -258,6 +258,12 @@ class Kits{
 		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new KitPowerTask($plugin), 5);
 	}
 
+	public function close(){
+		foreach($this->sessions as $name => $session){
+			$session->save();
+		}
+	}
+
 	public function kitExists($name){
 		return isset($this->kits[$name]);
 	}

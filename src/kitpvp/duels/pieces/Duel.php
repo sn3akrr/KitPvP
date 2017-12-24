@@ -61,6 +61,11 @@ class Duel{
 					$p->despawnFrom($player);
 				}
 			}
+
+			if(isset($this->plugin->jump[$player->getName()])){
+				$attribute = $player->getAttributeMap()->getAttribute(5);
+				$attribute->setValue($attribute->getValue() / (1 + 0.2 * 5), true);
+			}
 		}
 	}
 
@@ -210,6 +215,7 @@ class Duel{
 	public function close(){
 		foreach($this->getPlayers() as $player){
 			if($player->getLevel() != null){
+				unset(KitPvP::getInstance()->jump[$player->getName()]);
 				KitPvP::getInstance()->getArena()->exitArena($player);
 				KitPvP::getInstance()->getCombat()->getSlay()->resetPlayer($player);
 				foreach(Server::getInstance()->getOnlinePlayers() as $p){

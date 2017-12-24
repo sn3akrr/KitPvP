@@ -72,7 +72,7 @@ class Arena{
 	}
 
 	public function inSpawn(Player $player){
-		return $player->getLevel() == $this->plugin->getServer()->getDefaultLevel();
+		return $player->getLevel()->getName() == "m4";
 	}
 
 	public function tpToArena(Player $player){
@@ -107,13 +107,24 @@ class Arena{
 				$player->sendMessage(TextFormat::RED . "Left '" . $queue->getName() . "' queue.");
 			}
 		}
+
+		if(isset($this->plugin->jump[$player->getName()])){
+			$attribute = $player->getAttributeMap()->getAttribute(5);
+			$attribute->setValue($attribute->getValue() / (1 + 0.2 * 5), true);
+		}
 	}
 
 	public function exitArena(Player $player){
-		$player->teleport(new Position(129.5,23,135.5, $this->plugin->getServer()->getDefaultLevel()), 180);
+		$player->teleport(...$this->getSpawnPosition());
 
 		$this->plugin->getCombat()->getBodies()->removeAllBodies($player);
 		$this->plugin->getKits()->setEquipped($player, false);
+
+		unset($this->plugin->jump[$player->getName()]);
+	}
+
+	public function getSpawnPosition(){
+		return [new Position(81.5,69,201.5, $this->plugin->getServer()->getLevelByName("m4")), 180];
 	}
 
 }

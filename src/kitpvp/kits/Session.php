@@ -15,7 +15,18 @@ class Session{
 	public $activekit = null;
 	public $ability = [];
 
-	public $freePlays = [];
+	public $freePlays = [
+		"witch" => 0,
+		"spy" => 0,
+		"scout" => 0,
+		"assault" => 0,
+
+		"medic" => 0,
+		"archer" => 0,
+		"enderman" => 0,
+		"pyromancer" => 0,
+		"m4l0ne23" => 0,
+	];
 
 	public function __construct($user){
 		$this->user = new User($user);
@@ -64,10 +75,12 @@ class Session{
 	}
 
 	public function addFreePlays($kit, $amount = 1){
+		if($kit instanceof KitObject) $kit = $kit->getName();
 		$this->freePlays[$kit] += $amount;
 	}
 
 	public function takeFreePlays($kit, $amount = 1){
+		if($kit instanceof KitObject) $kit = $kit->getName();
 		$this->freePlays[$kit] -= $amount;
 	}
 

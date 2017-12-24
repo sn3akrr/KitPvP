@@ -22,6 +22,10 @@ class Achievement{
 		return AchievementList::ACHIEVEMENTS[$this->getId()]["description"];
 	}
 
+	public function isDescriptionHidden(){
+		return AchievementList::ACHIEVEMENTS[$this->getId()]["hidden"] ?? false;
+	}
+
 	public function getPoints(){
 		return AchievementList::ACHIEVEMENTS[$this->getId()]["points"];
 	}
@@ -47,7 +51,7 @@ class Achievement{
 	}
 
 	public function getFormattedObtained(){
-		return gmdate("Y/m/d H:i:s", $this->getObtained());
+		return gmdate("m/d/y", $this->getObtained());
 	}
 
 }

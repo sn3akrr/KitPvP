@@ -27,6 +27,12 @@ class Achievements{
 		$this->setupAchievements();
 	}
 
+	public function close(){
+		foreach($this->sessions as $name => $session){
+			$session->save();
+		}
+	}
+
 	public function setupAchievements(){
 		foreach(AchievementList::ACHIEVEMENTS as $id => $data){
 			$this->achievements[$id] = new Achievement($id, $data["displayName"], $data["description"], $data["points"]);

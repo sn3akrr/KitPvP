@@ -36,9 +36,7 @@ class KitObject{
 	public $cooldown;
 	public $cooldowns = [];
 
-	public $quote;
-
-	public function __construct(string $name, string $required_rank = "default", int $price = 0, array $items = [], array $armor = [], array $effects = [], array $abilities = [], array $special = [], $cooldown = 0, $quote = ""){
+	public function __construct(string $name, string $required_rank = "default", int $price = 0, array $items = [], array $armor = [], array $effects = [], array $abilities = [], array $special = [], $cooldown = 0){
 		$this->name = $name;
 		$this->required_rank = $required_rank;
 		$this->price = $price;
@@ -51,8 +49,6 @@ class KitObject{
 		$this->special = $special;
 
 		$this->cooldown = $cooldown;
-
-		$this->quote = $quote;
 	}
 
 	public function getName(){
@@ -89,10 +85,6 @@ class KitObject{
 
 	public function getCooldown(){
 		return $this->cooldown;
-	}
-
-	public function getQuote(){
-		return $this->quote;
 	}
 
 	public function hasPlayerCooldown(Player $player){

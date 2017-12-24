@@ -27,6 +27,8 @@ class KitPvP extends PluginBase{
 	public $kits;
 	public $leaderboard;
 
+	public $jump = [];
+
 	public function onEnable(){
 		self::$instance = $this;
 
@@ -39,6 +41,10 @@ class KitPvP extends PluginBase{
 			$this->getServer()->shutdown();
 		}
 		$this->getLogger()->notice("Successfully connected to database.");
+
+		$this->getServer()->loadLevel("m4");
+		$this->getServer()->getLevelByName("m4")->setTime(18000);
+		$this->getServer()->getLevelByName("m4")->stopTime();
 
 		$this->getServer()->loadLevel("KitSpawn");
 		$this->getServer()->getLevelByName("KitSpawn")->setTime(18000);
@@ -71,8 +77,10 @@ class KitPvP extends PluginBase{
 				$this->getKits()->getPlayerKit($player)->refund($player);
 			}
 		}
-		$this->getCombat()->close();
+		$this->getAchievements()->close();
+		$this->getKits()->close();
 
+		$this->getCombat()->close();
 		$this->database->close();
 	}
 

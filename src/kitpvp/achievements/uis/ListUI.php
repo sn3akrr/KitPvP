@@ -39,7 +39,7 @@ class ListUI extends SimpleForm{
 	public function handle($response, Player $player){
 		foreach($this->achievements as $key => $achievement){
 			if($key == $response){
-				//$player->showModal(new AchDetailUI($this->session, $achievement, $this->self));
+				$player->showModal(new AchDetailUI($this->session, $achievement, $this->self));
 				return;
 			}
 		}

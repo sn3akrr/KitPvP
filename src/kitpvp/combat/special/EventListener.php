@@ -209,11 +209,11 @@ class EventListener implements Listener{
 					if($ticker->hasCooldown($player)) return;
 					switch($ticker->getName()){
 						case "fryingpan":
-							$e->setKnockback(0.9);
+							$e->setKnockback(0.50);
+							$e->setDamage(mt_rand(1,3));
+							$e->setDamage(mt_rand(1,3), 4);
 							if(mt_rand(1,3) == 1){
 								$player->getLevel()->addSound(new AnvilFallSound($player));
-								$e->setDamage(mt_rand(1,4));
-								$e->setDamage(mt_rand(1,4), 4);
 							}
 						break;
 						/*case "bookofspells":
@@ -224,16 +224,17 @@ class EventListener implements Listener{
 							}
 						break;*/
 						case "brassknuckles":
-							$e->setKnockback(0.65);
+							$e->setKnockback(0.75);
+							$e->setDamage(mt_rand(2,4));
+							$e->setDamage(mt_rand(2,4), 4);
 							if(mt_rand(1,3) == 1){
 								$player->getLevel()->addSound(new AnvilFallSound($player));
-								$e->setDamage(mt_rand(2,6));
-								$e->setDamage(mt_rand(2,6), 4);
 							}
 						break;
 						case "reflexhammer":
 							$e->setKnockback(0.65);
-							$e->setDamage(2,7);
+							$e->setDamage(mt_rand(2,3));
+							$e->setDamage(mt_rand(2,3), 4);
 						break;
 						case "defibrillator":
 							$ticker->use($killer);
@@ -251,20 +252,20 @@ class EventListener implements Listener{
 							$ticker->use($killer);
 						break;
 						case "spikedclub":
-							$e->setDamage(mt_rand(1,2));
-							$e->setDamage(mt_rand(1,2), 4);
-							$e->setKnockback(0.3);
+							$e->setDamage(mt_rand(2,3));
+							$e->setDamage(mt_rand(2,3), 4);
+							$e->setKnockback(0.65);
 							$this->special->bleed($player, $killer, mt_rand(3,8));
 						break;
 						case "fireaxe":
-							$e->setDamage(mt_rand(1,3));
-							$e->setDamage(mt_rand(1,3), 4);
+							$e->setDamage(mt_rand(2,4));
+							$e->setDamage(mt_rand(2,4), 4);
 							$player->setOnFire(1);
 						break;
 						case "malonesword":
 							$e->setKnockback(0.15);
-							$e->setDamage(mt_rand(1,3));
-							$e->setDamage(mt_rand(1,3), 4);
+							$e->setDamage(mt_rand(2,5));
+							$e->setDamage(mt_rand(2,5), 4);
 							$fire_chance = mt_rand(0,100);
 							if($fire_chance <= 5){
 								$player->setOnFire(1);

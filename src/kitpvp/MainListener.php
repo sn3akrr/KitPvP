@@ -8,7 +8,8 @@ use pocketmine\event\player\{
 	PlayerMoveEvent,
 	PlayerDropItemEvent,
 	PlayerQuitEvent,
-	PlayerInteractEvent
+	PlayerInteractEvent,
+	PlayerJumpEvent
 };
 use pocketmine\event\entity\{
 	EntityDamageEvent,
@@ -18,6 +19,7 @@ use pocketmine\event\block\{
 	BlockPlaceEvent,
 	BlockBreakEvent
 };
+use pocketmine\level\sound\GhastShootSound;
 
 use pocketmine\network\protocol\mcpe\InteractPacket;
 use pocketmine\utils\TextFormat;
@@ -37,8 +39,9 @@ class MainListener implements Listener{
 
 	public function onJoin(PlayerJoinEvent $e){
 		$player = $e->getPlayer();
-		$player->teleport(new Position(129.5,22,135.5, $this->plugin->getServer()->getLevelByName("KitSpawn")), 180);
+		$player->teleport(...$this->plugin->getArena()->getSpawnPosition());
 
+		$this->plugin->getKits()->createSession($player);
 		$this->plugin->getAchievements()->createSession($player);
 		if(!$this->plugin->getLeaderboard()->hasStats($player)) $this->plugin->getLeaderboard()->newStats($player);
 	}
@@ -46,8 +49,8 @@ class MainListener implements Listener{
 	public function onMove(PlayerMoveEvent $e){
 		$player = $e->getPlayer();
 		if($player->getLevel()->getBlockIdAt($player->getX(),$player->getY() + 1,$player->getZ()) == 90) $this->plugin->getArena()->tpToArena($player);
-		if($player->y <= 17){
-			if(!$this->plugin->getArena()->inArena($player)) if(!$this->plugin->getDuels()->inDuel($player)) $player->teleport(new Position(129.5,22,135.5, $this->plugin->getServer()->getLevelByName("KitSpawn")), 180);
+		if($player->y <= 49){
+			if($this->plugin->getArena()->inSpawn($player)) $player->teleport(...$this->plugin->getArena()->getSpawnPosition());
 		}
 		$duels = $this->plugin->getDuels();
 		if($duels->inDuel($player)){
@@ -71,15 +74,18 @@ class MainListener implements Listener{
 		$player = $e->getPlayer();
 		$this->plugin->getKits()->setEquipped($player, false);
 
+		$this->plugin->getKits()->deleteSession($player);
 		$this->plugin->getAchievements()->deleteSession($player);
 		$duels = $this->plugin->getDuels();
 		$duels->onQuit($player);
+
+		unset($this->plugin->jump[$player->getName()]);
 	}
 
 	public function onInteract(PlayerInteractEvent $e){
 		$player = $e->getPlayer();
 		$block = $e->getBlock();
-		if($this->plugin->getArena()->inSpawn($player) && $block->getX() == 120 && $block->getY() == 21 && $block->getZ() == 83){
+		if($this->plugin->getArena()->inSpawn($player) && $block->getX() == 62 && $block->getY() == 59 && $block->getZ() == 143){
 			$lb = $this->plugin->getLeaderboard();
 			if($lb->getType($player) == 2){
 				$lb->setType($player, 0);
@@ -92,8 +98,21 @@ class MainListener implements Listener{
 					Core::getInstance()->getEntities()->getFloatingText()->getText($date . "-" . $i)->update($player, true);
 				}
 				Core::getInstance()->getEntities()->getFloatingText()->getText($date . "-you")->update($player, true);
-				Core::getInstance()->getEntities()->getFloatingText()->getText("leaderboard-type")->update($player, true);
 			}
+			Core::getInstance()->getEntities()->getFloatingText()->getText("leaderboard-type")->update($player, true);
+		}
+	}
+
+	public function onJump(PlayerJumpEvent $e){
+		$player = $e->getPlayer();
+		if(!isset($this->plugin->jump[$player->getName()]) && $player->getY() >= 64 && $this->plugin->getArena()->inSpawn($player)){
+			$dv = $player->getDirectionVector();
+			$player->knockback($player, 0, $dv->x, $dv->z, 0.9);
+			$player->getLevel()->addSound(new GhastShootSound($player));
+			$this->plugin->jump[$player->getName()] = true;
+
+			$attribute = $player->getAttributeMap()->getAttribute(5);
+			$attribute->setValue($attribute->getValue() * (1 + 0.2 * 5), true);
 		}
 	}
 

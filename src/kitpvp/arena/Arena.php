@@ -14,14 +14,13 @@ class Arena{
 	public $plugin;
 	public $positions;
 
+	public $regions = [];
+
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
-		$this->registerPositions();
-	}
 
-	public function registerPositions(){
 		$level = $this->plugin->getServer()->getLevelByName("KitArena");
-		$this->positions = [
+		$region = new Region("main", [
 			new Position(152,75,89,$level),
 			new Position(128,58,113,$level),
 			new Position(128,57,124,$level),
@@ -48,20 +47,37 @@ class Arena{
 			new Position(109,69,92,$level),
 			new Position(87,70,122,$level),
 			new Position(96,71,154,$level),
-		];
+		]);
+		$this->regions["main"] = $region;
 	}
 
-	public function getRandomPosition(){
-		return $this->positions[mt_rand(0,count($this->positions) - 1)];
+	public function getRegions(){
+		return $this->regions;
+	}
+
+	public function getNumberedRegions(){
+		$r = [];
+		$key = 0;
+		foreach($this->getRegions() as $region){
+			$r[$key] = $region;
+			$key++;
+		}
+		return $r;
+	}
+
+	public function getRandomRegion(){
+		return $this->getNumberedRegions()[mt_rand(0,count($this->getNumberedRegions()) - 1)];
 	}
 
 	public function getPositionClosestTo(Player $player){
 		$distance = 99999;
 		$pos = null;
-		foreach($this->positions as $position){
-			if($position->distance($player) < $distance){
-				$distance = $position->distance($player);
-				$pos = $position;
+		foreach($this->regions as $region){
+			foreach($region->getPositions() as $position){
+				if($position->distance($player) < $distance){
+					$distance = $position->distance($player);
+					$pos = $position;
+				}
 			}
 		}
 		return $pos;
@@ -84,17 +100,18 @@ class Arena{
 			if($this->inArena($member)){
 				$player->teleport($this->getPositionClosestTo($member));
 			}else{
-				$player->teleport($this->getRandomPosition());
+				$player->teleport($this->getRandomRegion()->getRandomPosition());
 			}
 		}else{
-			$player->teleport($this->getRandomPosition());
+			$player->teleport($this->getRandomRegion()->getRandomPosition());
 		}
 
 		$combat->getBodies()->addAllBodies($player);
 		$combat->getSlay()->setInvincible($player);
 
 		$kits = $this->plugin->getKits();
-		if(!$kits->hasKit($player)){
+		$session = $kits->getSession($player);
+		if(!$session->hasKit()){
 			$kits->getKit("noob")->equip($player);
 			$player->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."You were automatically given the Noob kit!");
 		}

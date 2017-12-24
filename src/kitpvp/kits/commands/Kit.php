@@ -24,7 +24,8 @@ class Kit extends Command implements PluginIdentifiableCommand{
 
 	public function execute(CommandSender $sender, string $label, array $args){
 		$kits = KitPvP::getInstance()->getKits();
-		if($kits->hasKit($sender)){
+		$session = $kits->getSession($sender);
+		if($session->hasKit()){
 			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You already have a kit equipped!");
 			return false;
 		}

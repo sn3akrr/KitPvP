@@ -26,9 +26,10 @@ class KitPowerTask extends PluginTask{
 	public function onRun(int $currentTick){
 		$this->runs++;
 		$kits = $this->plugin->getKits();
-		foreach($kits->equipped as $name => $kitname){
-			$player = $this->plugin->getServer()->getPlayerExact($name);
-			if($player instanceof Player){
+		foreach($kits->sessions as $name => $session){
+			$player = $session->getPlayer();
+			if($player instanceof Player && $session->hasKit()){
+				$kitname = $session->getKit()->getName();
 				switch($kitname){
 					case "scout":
 						//Double Jump
@@ -116,9 +117,10 @@ class KitPowerTask extends PluginTask{
 			}
 		}
 		if($this->runs %20 == 0){
-			foreach($kits->equipped as $name => $kitname){
-				$player = $this->plugin->getServer()->getPlayerExact($name);
-				if($player instanceof Player){
+			foreach($kits->sessions as $name => $session){
+				$player = $session->getPlayer();
+				if($player instanceof Player && $session->hasKit()){
+					$kitname = $session->getKit()->getName();
 					switch($kitname){
 						case "spy":
 							if(!isset($kits->ability[$player->getName()]["still"])){

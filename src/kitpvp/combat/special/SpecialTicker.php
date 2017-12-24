@@ -105,7 +105,6 @@ class SpecialTicker{
 
 
 	public function hasCooldown(Player $player){
-		if(!$this->hasCooldownRate()) return false;
 		return isset($this->cooldowns[$player->getName()]);
 	}
 

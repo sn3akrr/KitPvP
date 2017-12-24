@@ -12,7 +12,7 @@ class Session{
 	public $player;
 	public $xuid;
 
-	public $activekit = null;
+	public $activeKit = null;
 	public $ability = [];
 
 	public $freePlays = [

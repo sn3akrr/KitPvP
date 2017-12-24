@@ -82,8 +82,9 @@ class KitPowerListener implements Listener{
 		$player = $e->getPlayer();
 		$from = $e->getFrom();
 		$to = $e->getTo();
-		if($this->kits->hasKit($player)){
-			$kit = $this->kits->getPlayerKit($player);
+		$session = $this->kits->getSession($player);
+		if($session->hasKit()){
+			$kit = $session->getKit();
 			switch($kit->getName()){
 				case "spy":
 					//Stealth Mode
@@ -112,8 +113,9 @@ class KitPowerListener implements Listener{
 		$kits = $this->kits;
 		if($packet instanceof PlayerActionPacket){
 			$action = $packet->action;
-			if($kits->hasKit($player)){
-				$kit = $kits->getPlayerKit($player);
+			$session = $this->kits->getSession($player);
+			if($session->hasKit()){
+				$kit = $session->getKit();
 				switch($kit->getName()){
 					case "spy":
 						switch($action){
@@ -146,9 +148,9 @@ class KitPowerListener implements Listener{
 			if($e instanceof EntityDamageByEntityEvent){
 				$killer = $e->getDamager();
 				if($killer instanceof Player){
-
-					if($kits->hasKit($player)){
-						$kit = $kits->getPlayerKit($player);
+					$session = $this->kits->getSession($player);
+					if($session->hasKit()){
+						$kit = $session->getKit();
 						switch($kit->getName()){
 							case "witch":
 								//Curse
@@ -244,8 +246,9 @@ class KitPowerListener implements Listener{
 							break;
 						}
 					}
-					if($kits->hasKit($killer)){
-						$kit = $kits->getPlayerKit($killer);
+					$session = $this->kits->getSession($killer);
+					if($session->hasKit()){
+						$kit = $session->getKit();
 						switch($kit->getName()){
 							case "spy":
 								//Stealth Mode
@@ -281,13 +284,4 @@ class KitPowerListener implements Listener{
 		}
 	}
 
-	public function onDp(DataPacketReceiveEvent $e){
-		$player = $e->getPlayer();
-		$packet = $e->getPacket();
-		if($this->plugin->getArena()->inArena($player) && (!$this->plugin->getCombat()->getSlay()->isInvincible($player))){
-			if($this->kits->hasKit($player)){
-				$kit = $this->kits->getPlayerKit($player);
-			}
-		}
-	}
 }

@@ -54,7 +54,6 @@ class Kits{
 
 	public $kits;
 
-	public $equipped = [];
 	public $ability = [];
 
 	public $sessions = [];
@@ -268,10 +267,6 @@ class Kits{
 		return isset($this->kits[$name]);
 	}
 
-	public function hasKit(Player $player){
-		return isset($this->equipped[$player->getName()]);
-	}
-
 	public function getKit($name){
 		return $this->kits[$name] ?? new KitObject("invalid", "default", 0, [], [], [], []);
 	}
@@ -283,20 +278,6 @@ class Kits{
 			$key++;
 		}
 		return -1;
-	}
-
-	public function getPlayerKit(Player $player){
-		if(!isset($this->equipped[$player->getName()])) return new KitObject("invalid", "default", 0, [], [], [], []);
-		return $this->kits[$this->equipped[$player->getName()]];
-	}
-
-	public function setEquipped(Player $player, $equipped = true, $kitname = null){
-		if($equipped){
-			$this->equipped[$player->getName()] = $kitname;
-		}else{
-			$this->plugin->getServer()->getPluginManager()->callEvent(new KitUnequipEvent($player));
-			unset($this->equipped[$player->getName()]);
-		}
 	}
 
 	public function getKitList(){

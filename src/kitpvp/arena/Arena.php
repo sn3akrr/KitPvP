@@ -118,7 +118,7 @@ class Arena{
 		$player->teleport(...$this->getSpawnPosition());
 
 		$this->plugin->getCombat()->getBodies()->removeAllBodies($player);
-		$this->plugin->getKits()->setEquipped($player, false);
+		$this->plugin->getKits()->getSession($player)->removeKit();
 
 		unset($this->plugin->jump[$player->getName()]);
 	}

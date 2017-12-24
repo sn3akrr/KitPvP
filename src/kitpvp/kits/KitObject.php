@@ -134,7 +134,7 @@ class KitObject{
 		$player->getLevel()->addSound(new AnvilFallSound($player), [$player]);
 
 		$kits = KitPvP::getInstance()->getKits();
-		$kits->setEquipped($player, true, $this->getName());
+		$kits->getSession($player)->addKit($this);
 		$num = $kits->getKitNum($this->getName());
 		Core::getInstance()->getEntities()->getFloatingText()->getText("equipped-" . $num)->update($player, true);
 	}

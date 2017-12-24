@@ -191,7 +191,8 @@ class KitPowerTask extends PluginTask{
 		foreach($kits->ability as $name => $data){
 			$player = $this->plugin->getServer()->getPlayerExact($name);
 			if($player instanceof Player){
-				if(!$kits->hasKit($player)){
+				$session = $kits->getSession($player);
+				if(!$session->hasKit()){
 					if($kits->isInvisible($player)){
 						$kits->setInvisible($player, false);
 					}

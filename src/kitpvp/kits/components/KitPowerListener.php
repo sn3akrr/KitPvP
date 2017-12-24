@@ -273,8 +273,9 @@ class KitPowerListener implements Listener{
 		$player = $e->getEntity();
 		$force = $e->getForce();
 		$dv = $player->getDirectionVector();
-		if($this->kits->hasKit($player)){
-			$kit = $this->kits->getPlayerKit($player);
+		$session = $this->kits->getSession($player);
+		if($session->hasKit()){
+			$kit = $session->getKit();
 			//Aim Assist
 			if($kit->getName() == "archer"){
 				if(isset($this->kits->ability[$player->getName()]["aim_assist"])){

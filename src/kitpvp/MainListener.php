@@ -72,7 +72,6 @@ class MainListener implements Listener{
 
 	public function onQuit(PlayerQuitEvent $e){
 		$player = $e->getPlayer();
-		$this->plugin->getKits()->setEquipped($player, false);
 
 		$this->plugin->getKits()->deleteSession($player);
 		$this->plugin->getAchievements()->deleteSession($player);

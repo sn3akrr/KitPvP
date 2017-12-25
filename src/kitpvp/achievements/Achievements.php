@@ -9,6 +9,8 @@ use core\stats\User;
 
 class Achievements{
 
+	const PAGE_SIZE = 10;
+
 	public $plugin;
 	public $database;
 
@@ -39,8 +41,23 @@ class Achievements{
 		}
 	}
 
-	public function getAchievements(){
-		return $this->achievements;
+	public function getAchievements($page = -1){
+		if($page == -1) return $this->achievements;
+		$pages = array_chunk($this->achievements, self::PAGE_SIZE);
+		return $pages[($page - 1)];
+	}
+
+	public function hasNextPage($page){
+		return $page == 1 || $page < $this->getTotalPages();
+	}
+
+	public function hasBackPage($page){
+		if($page == 1) return false;
+		return $page > 1 && $page <= $this->getTotalPages();
+	}
+
+	public function getTotalPages(){
+		return count(array_chunk($this->getAchievements(), self::PAGE_SIZE));
 	}
 
 	public function getAchievement($id){

@@ -289,11 +289,11 @@ class Kits{
 	}
 
 	public function createSession(Player $player){
-		$this->sessions[$player->getName()] = new Session($player);
+		return $this->sessions[$player->getName()] = new Session($player);
 	}
 
 	public function getSession(Player $player){
-		return $this->sessions[$player->getName()] ?? null;
+		return $this->sessions[$player->getName()] ?? $this->createSession($player);
 	}
 
 	public function deleteSession(Player $player){

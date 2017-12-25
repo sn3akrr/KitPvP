@@ -16,21 +16,24 @@ class AchDetailUI extends SimpleForm{
 
 	public $session;
 	public $self;
+	public $page;
 
 	public $achievement;
 
-	public function __construct(Session $session, Achievement $achievement, $self = true){
+	public function __construct(Session $session, Achievement $achievement, $self = true, $page){
 		$this->session = $session;
 		$this->self = $self; //TODO: Implement
+		$this->page = $page;
+
 		$this->achievement = $achievement;
 
-		parent::__construct($achievement->getName(), "Description: " . (($achievement->isDescriptionHidden() && !$session->hasAchievement($achievement->getId())) ? TextFormat::OBFUSCATED . "~~~~~~~~~~" . TextFormat::RESET : $achievement->getDescription()) . PHP_EOL . PHP_EOL . "Points worth: " . $achievement->getPoints() . PHP_EOL . PHP_EOL . ($session->hasAchievement($achievement->getId()) ? "This achievement was obtained on " . $session->getAchievement($achievement->getId())->getFormattedObtained() : "This achievement is locked."));
+		parent::__construct($achievement->getName(), "Description: " . (($achievement->isDescriptionHidden() && !$session->hasAchievement($achievement->getId())) ? TextFormat::OBFUSCATED : "") . $achievement->getDescription() . TextFormat::RESET . PHP_EOL . PHP_EOL . "Points worth: " . $achievement->getPoints() . PHP_EOL . PHP_EOL . ($session->hasAchievement($achievement->getId()) ? "This achievement was obtained on " . $session->getAchievement($achievement->getId())->getFormattedObtained() : "This achievement is locked."));
 
 		$this->addButton(new Button("Go back"));
 	}
 
 	public function handle($response, Player $player){
-		$player->showModal(new ListUI($this->session, $this->self));
+		$player->showModal(new ListUI($this->session, $this->self, $this->page));
 	}
 
 }

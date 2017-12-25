@@ -29,7 +29,8 @@ class DuelsCommand extends Command implements PluginIdentifiableCommand{
 			return false;
 		}
 		$kits = $this->plugin->getKits();
-		if(!$kits->hasKit($sender)){
+		$session = $kits->getSession($sender);
+		if(!$session->hasKit()){
 			$sender->sendMessage(TextFormat::RED . "You cannot use this menu without a kit!");
 			return false;
 		}

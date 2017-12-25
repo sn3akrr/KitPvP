@@ -5,6 +5,7 @@ use pocketmine\plugin\PluginBase;
 use kitpvp\{
 	items\Items,
 
+
 	achievements\Achievements,
 	arena\Arena,
 	combat\Combat,
@@ -73,8 +74,9 @@ class KitPvP extends PluginBase{
 
 	public function onDisable(){
 		foreach($this->getServer()->getOnlinePlayers() as $player){
-			if($this->getKits()->hasKit($player)){
-				$this->getKits()->getPlayerKit($player)->refund($player);
+			$session = $this->getKits()->getSession($player);
+			if($session->hasKit()){
+				$session->getKit()->refund($player);
 			}
 		}
 		$this->getAchievements()->close();

@@ -69,6 +69,14 @@ class Session{
 		Server::getInstance()->getPluginManager()->callEvent(new KitUnequipEvent($this->getPlayer()));
 	}
 
+	public function getAbilityArray(){
+		return $this->ability; //Only GETS, SETTING doesn't work from this.
+	}
+
+	public function resetAbilityArray(){
+		$this->ability = [];
+	}
+
 	public function getFreePlays($kit){
 		if($kit instanceof KitObject) $kit = $kit->getName();
 		return $this->freePlays[$kit] ?? 0;

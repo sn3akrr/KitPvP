@@ -113,7 +113,7 @@ class AchievementList{
 		"kills_10" => [
 			"displayName" => "Serial Killer",
 			"description" => "Get 1000 kills in the arena",
-			"points" => self::POINTS_TIER3
+			"points" => self::POINTS_TIER5
 		],
 
 		//Streak stuff

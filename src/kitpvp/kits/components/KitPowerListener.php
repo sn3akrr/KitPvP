@@ -69,9 +69,9 @@ class KitPowerListener implements Listener{
 		$player->setMaxHealth(20);
 		$player->setGamemode(1); $player->setGamemode(0);
 
-		unset($this->kits->ability[$player->getName()]);
 		unset($this->plugin->getCombat()->getSpecial()->special[$player->getName()]);
 
+		$this->kits->getSession($player)->resetAbilityArray();
 		$this->kits->setInvisible($player, false); //check might make invalid..?
 
 		$player->getInventory()->clearAll();
@@ -88,9 +88,9 @@ class KitPowerListener implements Listener{
 			switch($kit->getName()){
 				case "spy":
 					//Stealth Mode
-					if(isset($this->kits->ability[$player->getName()]["still"])){
-						if($player->getFloorX() != $this->kits->ability[$player->getName()]["still"][1] || $player->getFloorZ() != $this->kits->ability[$player->getName()]["still"][3]){
-							unset($this->kits->ability[$player->getName()]["still"]);
+					if(isset($session->ability["still"])){
+						if($player->getFloorX() != $session->ability["still"][1] || $player->getFloorZ() != $session->ability["still"][3]){
+							unset($session->ability["still"]);
 							if(!$player->isSneaking()){
 								if($this->kits->isInvisible($player)){
 									$this->kits->setInvisible($player, false);
@@ -161,7 +161,7 @@ class KitPowerListener implements Listener{
 							break;
 							case "spy":
 								//Last Chance
-								if(!isset($kits->ability[$player->getName()]["last_chance"])){
+								if(!isset($session->ability["last_chance"])){
 									if(($player->getHealth() - $e->getFinalDamage()) <= 5){
 										$player->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 5));
 										$kits->setInvisible($player, true);
@@ -171,7 +171,7 @@ class KitPowerListener implements Listener{
 												$p->knockback($p, 0 -$dv->x, -$dv->z, 0.8);
 											}
 										}
-										$kits->ability[$player->getName()]["last_chance"] = time();
+										$session->ability["last_chance"] = time();
 									}
 								}else{
 									if($kits->isInvisible($player)){
@@ -189,28 +189,28 @@ class KitPowerListener implements Listener{
 							break;
 							case "assault":
 								//Adrenaline
-								if(!isset($kits->ability[$player->getName()]["adrenaline"])){
+								if(!isset($session->ability["adrenaline"])){
 									if(($player->getHealth() - $e->getFinalDamage()) <= 5){
 										$player->removeEffect(Effect::SPEED);
 										$player->addEffect(Effect::getEffect(Effect::JUMP)->setAmplifier(2)->setDuration(20 * 10));
 										$player->addEffect(Effect::getEffect(Effect::SPEED)->setAmplifier(4)->setDuration(20 * 10));
 										$player->setHealth(15);
-										$kits->ability[$player->getName()]["adrenaline"] = time();
+										$session->ability["adrenaline"] = time();
 									}
 								}
 							break;
 							case "medic":
 								//Miracle
-								if(!isset($kits->ability[$player->getName()]["miracle"])){
+								if(!isset($session->ability["miracle"])){
 									if(($player->getHealth() - $e->getFinalDamage()) <= 5){
 										$player->setHealth($player->getHealth() + 5);
-										$kits->ability[$player->getName()]["miracle"] = true;
+										$session->ability["miracle"] = true;
 									}
 								}
 							break;
 							case "enderman":
 								//Slender
-								if(!isset($kits->ability[$player->getName()]["slender"])){
+								if(!isset($session->ability["slender"])){
 									if(($player->getHealth() - $e->getFinalDamage()) <= 5){
 										$player->addEffect(Effect::getEffect(Effect::INVISIBILITY)->setDuration(20 * 5));
 										$player->getLevel()->addSound(new EndermanTeleportSound($player));
@@ -221,7 +221,7 @@ class KitPowerListener implements Listener{
 												$p->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 7));
 											}
 										}
-										$kits->ability[$player->getName()]["slender"] = time();
+										$session->ability["slender"] = time();
 									}
 								}
 								//Arrow Dodge
@@ -278,8 +278,8 @@ class KitPowerListener implements Listener{
 			$kit = $session->getKit();
 			//Aim Assist
 			if($kit->getName() == "archer"){
-				if(isset($this->kits->ability[$player->getName()]["aim_assist"])){
-					unset($this->kits->ability[$player->getName()]["aim_assist"]);
+				if(isset($session->ability["aim_assist"])){
+					unset($session->ability["aim_assist"]);
 				}
 			}
 		}

@@ -51,10 +51,7 @@ class Kits{
 
 	public $plugin;
 	public $database;
-
 	public $kits;
-
-	public $ability = [];
 
 	public $sessions = [];
 
@@ -303,11 +300,12 @@ class Kits{
 
 	// special stuffs \\
 	public function isInvisible(Player $player){
-		return $this->ability[$player->getName()]["invisible"] ?? false;
+		return $this->getSession($player)->ability["invisible"] ?? false;
 	}
 
 	public function setInvisible(Player $player, $bool){
-		$this->ability[$player->getName()]["invisible"] = $bool;
+		$session = $this->getSession($player);
+		$session->ability["invisible"] = (bool) $bool;
 		switch($bool){
 			case true:
 				$player->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);

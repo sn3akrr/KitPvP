@@ -38,28 +38,28 @@ class KitPowerTask extends PluginTask{
 							$dv = $player->getDirectionVector();
 							$player->knockback($player, 0, $dv->x, $dv->z, 0.7);
 							$player->getLevel()->addSound(new GhastShootSound($player));
-							$kits->ability[$player->getName()]["double_jump"] = time() + 5;
+							$session->ability["double_jump"] = time() + 5;
 							$player->addActionBarMessage(TextFormat::RED."Recharging double jump... 5");
 						}
-						if(isset($kits->ability[$player->getName()]["double_jump"])){
-							if($kits->ability[$player->getName()]["double_jump"] <= time()){
+						if(isset($session->ability["double_jump"])){
+							if($session->ability["double_jump"] <= time()){
 								if($player->getLevel()->getBlockIdAt($player->x, $player->y - 0.5, $player->z) != 0){
-									unset($kits->ability[$player->getName()]["double_jump"]);
+									unset($session->ability["double_jump"]);
 									$player->setAllowFlight(true);
 									$player->addActionBarMessage(TextFormat::GREEN."Double jump recharged.");
 								}
 							}else{
 								$player->setAllowFlight(false);
 								$player->setFlying(false);
-								$time = $kits->ability[$player->getName()]["double_jump"] - time();
+								$time = $session->ability["double_jump"] - time();
 								$player->addActionBarMessage(TextFormat::RED."Recharging double jump... ".$time);
 							}
 						}
 					break;
 					case "assault":
 						//Adrenaline
-						if(isset($kits->ability[$player->getName()]["adrenaline"])){
-							if(($kits->ability[$player->getName()]["adrenaline"] + 10) - time() == 0){
+						if(isset($session->ability["adrenaline"])){
+							if(($session->ability["adrenaline"] + 10) - time() == 0){
 								$player->removeEffect(Effect::SPEED);
 								$player->addEffect(Effect::getEffect(Effect::SPEED)->setAmplifier(1)->setDuration(20 * 999999));
 							}
@@ -68,10 +68,10 @@ class KitPowerTask extends PluginTask{
 					case "archer":
 						$hand = $player->getInventory()->getItemInHand();
 						if($hand instanceof Bow && $player->getItemUseDuration() != -1){
-							if(!isset($kits->ability[$player->getName()]["aim_assist"])){
-								$kits->ability[$player->getName()]["aim_assist"] = ["time" => time()];
+							if(!isset($session->ability["aim_assist"])){
+								$session->ability["aim_assist"] = ["time" => time()];
 							}
-							if(!isset($kits->ability[$player->getName()]["aim_assist"]["target"])){
+							if(!isset($session->ability["aim_assist"]["target"])){
 								$newtarget = [
 									"dist" => 20,
 									"player" => null
@@ -83,14 +83,14 @@ class KitPowerTask extends PluginTask{
 										$newtarget["player"] = $p;
 									}
 									if($newtarget["player"] != null){
-										$kits->ability[$player->getName()]["aim_assist"]["target"] = $newtarget["player"];
+										$session->ability["aim_assist"]["target"] = $newtarget["player"];
 									}
 								}
 							}else{
-								if(!isset($kits->ability[$player->getName()]["aim_assist"]["targetted"])){
-									$target = $kits->ability[$player->getName()]["aim_assist"]["target"];
+								if(!isset($session->ability["aim_assist"]["targetted"])){
+									$target = $session->ability["aim_assist"]["target"];
 									if((!$target instanceof Player) || (!$this->plugin->getArena()->inArena($target)) || $target->distance($player) > 20){
-										unset($kits->ability[$player->getName()]["aim_assist"]["target"]);
+										unset($session->ability["aim_assist"]["target"]);
 									}else{
 										$x = $player->x - $target->x;
 										$y = $player->y - $target->y;
@@ -101,13 +101,13 @@ class KitPowerTask extends PluginTask{
 
 										$player->teleport($player, $yaw, $pitch + 0.25);
 
-										$kits->ability[$player->getName()]["aim_assist"]["targetted"] = true;
+										$session->ability["aim_assist"]["targetted"] = true;
 									}
 								}
 							}
 						}else{
-							if(isset($kits->ability[$player->getName()]["aim_assist"])){
-								unset($kits->ability[$player->getName()]["aim_assist"]);
+							if(isset($session->ability["aim_assist"])){
+								unset($session->ability["aim_assist"]);
 							}
 						}
 					break;
@@ -123,18 +123,18 @@ class KitPowerTask extends PluginTask{
 					$kitname = $session->getKit()->getName();
 					switch($kitname){
 						case "spy":
-							if(!isset($kits->ability[$player->getName()]["still"])){
-								$kits->ability[$player->getName()]["still"] = [time(),$player->getFloorX(),$player->getFloorY(),$player->getFloorZ()];
+							if(!isset($session->ability["still"])){
+								$session->ability["still"] = [time(),$player->getFloorX(),$player->getFloorY(),$player->getFloorZ()];
 							}else{
-								$time = $kits->ability[$player->getName()]["still"][0];
+								$time = $session->ability["still"][0];
 								if(($time + 3) - time() <= 0){
 									if(!$kits->isInvisible($player)){
 										$kits->setInvisible($player, true);
 									}
 								}
 							}
-							if(isset($kits->ability[$player->getName()]["last_chance"])){
-								if(($kits->ability[$player->getName()]["last_chance"] + 5) - time() == 0){
+							if(isset($session->ability["last_chance"])){
+								if(($session->ability["last_chance"] + 5) - time() == 0){
 									if($kits->isInvisible($player)){
 										$kits->setInvisible($player, false);
 									}
@@ -184,22 +184,13 @@ class KitPowerTask extends PluginTask{
 						break;
 					}
 				}else{
-					unset($kits->equipped[$name]);
-				}
-			}
-		}
-		foreach($kits->ability as $name => $data){
-			$player = $this->plugin->getServer()->getPlayerExact($name);
-			if($player instanceof Player){
-				$session = $kits->getSession($player);
-				if(!$session->hasKit()){
-					if($kits->isInvisible($player)){
-						$kits->setInvisible($player, false);
+					if($player instanceof Player){
+						if($kits->isInvisible($player)){
+							$kits->setInvisible($player, false);
+						}
+						$session->resetAbilityArray();
 					}
-					unset($this->ability[$name]);
 				}
-			}else{
-				unset($this->ability[$name]);
 			}
 		}
 	}

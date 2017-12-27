@@ -175,11 +175,11 @@ class AchievementList{
 			"description" => "Shoot an archer with a gun",
 			"points" => self::POINTS_TIER1,
 		],
-		"enchanter_kill" => [
+		/*"enchanter_kill" => [
 			"displayName" => "What doesn't kill me makes me stronger",
 			"description" => "Kill someone with the Enchanter kit using the Book of Spells",
 			"points" => self::POINTS_TIER1,
-		],
+		],*/
 		"3_on_killer" => [
 			"displayName" => "You don't know who you're messing with",
 			"description" => "Kill someone 3 times that killed you once",

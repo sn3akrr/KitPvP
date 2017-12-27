@@ -38,20 +38,10 @@ class ThrownDecoy extends Projectile{
 			return true;
 		}
 		if($this->isCollided or $this->onGround){
-			if(!KitPvP::getInstance()->getArena()->inArena($owner)){
-				$duels = KitPvP::getInstance()->getDuels();
-				if($duels->inDuel($owner)){
-					$duel = $duels->getPlayerDuel($owner);
-					if($duel->getGameStatus() != 0){
-						$ticker = KitPvP::getInstance()->getCombat()->getSpecial()->getTickerByItem(new Decoy());
-						$ticker->startEffect($owner);
-					}
-				}
-			}else{
+			if(!KitPvP::getInstance()->getArena()->inSpawn($owner)){
 				$ticker = KitPvP::getInstance()->getCombat()->getSpecial()->getTickerByItem(new Decoy());
 				$ticker->startEffect($owner);
 			}
-
 			$this->close();
 			$hasUpdate = true;
 		}

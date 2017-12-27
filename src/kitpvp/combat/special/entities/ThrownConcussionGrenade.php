@@ -11,6 +11,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
 
 use kitpvp\KitPvP;
+use kitpvp\combat\special\items\ConcussionGrenade;
 
 class ThrownConcussionGrenade extends Projectile{
 
@@ -43,24 +44,16 @@ class ThrownConcussionGrenade extends Projectile{
 			$this->close();
 			return true;
 		}
-		if(!KitPvP::getInstance()->getArena()->inArena($owner)){
-			$duels = KitPvP::getInstance()->getDuels();
-			if($duels->inDuel($owner)){
-				$duel = $duels->getPlayerDuel($owner);
-				if($duel->getGameStatus() == 0){
-					$this->close();
-					return true;
-				}
-			}else{
-				$this->close();
-				return true;
-			}
+		if(KitPvP::getInstance()->getArena()->inSpawn($owner)){
+			$this->close();
+			return true;
 		}
 		if($this->onGround or $this->isCollided){
 			$special = KitPvP::getInstance()->getCombat()->getSpecial();
 			foreach($this->getViewers() as $player){
 				if($player->distance($this) <= 5 && $player != $this->getOwningEntity() && $player instanceof Player){
-					$special->cg($player, $this->getOwningEntity());
+					$grenade = new ConcussionGrenade();
+					$grenade->concuss($player, $this->getOwningEntity());
 				}
 				$this->close();
 				$hasUpdate = true;

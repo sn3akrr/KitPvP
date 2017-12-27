@@ -138,23 +138,6 @@ class Special{
 		return $this->tickers;
 	}
 
-	public function cg(Player $player, Player $thrower){
-		$teams = $this->combat->getTeams();
-		if($teams->sameTeam($player, $thrower)){
-			return;
-		}
-		$this->plugin->getCombat()->getSlay()->damageAs($thrower, $player, 5);
-
-		$pk = new LevelEventPacket();
-		$pk->evid = 3501;
-		$pk->position = $player->asVector3();
-		$pk->data = 0;
-		foreach($player->getViewers() as $p) $p->dataPacket($pk);
-
-		$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 8)->setAmplifier(3));
-		$player->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 8));
-	}
-
 	public function bleed(Player $player, Player $killer, $seconds){
 		$this->bleeding[$player->getName()] = [
 			"time" => time() + $seconds,

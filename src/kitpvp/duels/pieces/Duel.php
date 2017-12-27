@@ -62,7 +62,7 @@ class Duel{
 				}
 			}
 
-			if(isset($this->plugin->jump[$player->getName()])){
+			if(isset(KitPvP::getInstance()->jump[$player->getName()])){
 				$attribute = $player->getAttributeMap()->getAttribute(5);
 				$attribute->setValue($attribute->getValue() / (1 + 0.2 * 5), true);
 			}

@@ -48,13 +48,12 @@ use kitpvp\combat\special\entities\{
 	ThrownDecoy,
 	ThrownKunai
 };
+use kitpvp\combat\special\items\ConcussionGrenade;
 
 class EventListener implements Listener{
 
 	public $plugin;
 	public $special;
-
-	public $action = [];
 
 	public function __construct(KitPvP $plugin, Special $special){
 		$this->plugin = $plugin;
@@ -179,9 +178,10 @@ class EventListener implements Listener{
 					if($e instanceof EntityDamageByChildEntityEvent){
 						$child = $e->getChild();
 						if($child instanceof ThrownConcussionGrenade){
-							foreach($child->getLevel()->getPlayers() as $player){
+							foreach($child->getViewers() as $player){
 								if($player->distance($child) <= 5 && $player != $killer){
-									$this->special->cg($player, $killer);
+									$grenade = new ConcussionGrenade();
+									$grenade->concuss($player, $killer);
 								}
 							}
 						}

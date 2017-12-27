@@ -37,18 +37,9 @@ class ThrownKunai extends Projectile{
 			$this->close();
 			return true;
 		}
-		if(!KitPvP::getInstance()->getArena()->inArena($owner)){
-			$duels = KitPvP::getInstance()->getDuels();
-			if($duels->inDuel($owner)){
-				$duel = $duels->getPlayerDuel($owner);
-				if($duel->getGameStatus() == 0){
-					$this->close();
-					return true;
-				}
-			}else{
-				$this->close();
-				return true;
-			}
+		if(KitPvP::getInstance()->getArena()->inSpawn($owner)){
+			$this->close();
+			return true;
 		}
 		if($this->isCollided or $this->onGround){
 			$this->close();

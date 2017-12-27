@@ -37,6 +37,14 @@ class ConcussionGrenade extends Throwable{
 
 		$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 8)->setAmplifier(3));
 		$player->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 8));
+
+		$session = KitPvP::getInstance()->getKits()->getSession($player);
+		if($session->hasKit() && $session->getKit()->getName() == "scout"){
+			$as = KitPvP::getInstance()->getAchievements()->getSession($thrower);
+			if(!$as->hasAchievement("countered")){
+				$as->get("countered");
+			}
+		}
 	}
 
 }

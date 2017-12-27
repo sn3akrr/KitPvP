@@ -275,6 +275,12 @@ class KitPowerListener implements Listener{
 		$dv = $player->getDirectionVector();
 		$session = $this->kits->getSession($player);
 		if($session->hasKit()){
+			$session->addBowShot();
+			$shots = $session->getBowShots();
+			if($shots >= 10){
+				$as = $this->plugin->getAchievements()->getSession($player);
+				if(!$as->hasAchievement("faker")) $as->get("faker");
+			}
 			$kit = $session->getKit();
 			//Aim Assist
 			if($kit->getName() == "archer"){

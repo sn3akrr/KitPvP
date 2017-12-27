@@ -44,6 +44,22 @@ class Streaks{
 
 	public function setStreak(Player $player, $value){
 		$this->streaks[strtolower($player->getName())] = $value;
+
+		$as = KitPvP::getInstance()->getAchievements()->getSession($player);
+		switch($value){
+			case 5:
+				if(!$as->hasAchievement("streak_1")) $as->get("streak_1");
+			break;
+			case 10:
+				if(!$as->hasAchievement("streak_2")) $as->get("streak_2");
+			break;
+			case 20:
+				if(!$as->hasAchievement("streak_3")) $as->get("streak_3");
+			break;
+			case 25:
+				if(!$as->hasAchievement("streak_4")) $as->get("streak_4");
+			break;
+		}
 	}
 
 	public function resetStreak(Player $player, Player $killer){
@@ -63,6 +79,16 @@ class Streaks{
 		if($lb->getStreak($player) < $streak){
 			$lb->setStreak($player, $streak);
 			$player->sendMessage(TextFormat::GREEN . "New highest streak reached!");
+		}
+
+		$a = KitPvP::getInstance()->getAchievements();
+		if($streak >= 5){
+			$as = $a->getSession($player);
+			if(!$as->hasAchievement("streak_killer")) $as->get("streak_killer");
+			if($streak == 23){
+				$as = $a->getSession($player);
+				if($as->hasAchievement("malone_streak")) $as->get("malone_streak");
+			}
 		}
 	}
 

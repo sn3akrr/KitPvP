@@ -30,6 +30,29 @@ class Team{
 
 		$member1->sendMessage(TextFormat::GREEN . "You are now teamed with " . $member2->getName());
 		$member2->sendMessage(TextFormat::GREEN . "You are now teamed with " . $member1->getName());
+
+		$slay = KitPvP::getInstance()->getCombat()->getSlay();
+		$pl = [$member1, $member2];
+		foreach($pl as $p){
+			$as = KitPvP::getInstance()->getAchievements()->getSession($p);
+			if(!$as->hasAchievement("team_1")){
+				$as->get("team_1");
+			}
+			if($p == $member1){
+				if($slay->getLastKiller($p) == $member2->getName()){
+					if(!$as->hasAchievement("team_4")){
+						$as->get("team_4");
+					}
+				}
+			}
+			if($p == $member2){
+				if($slay->getLastKiller($p) == $member1->getName()){
+					if(!$as->hasAchievement("team_4")){
+						$as->get("team_4");
+					}
+				}
+			}
+		}
 	}
 
 	public function inTeam(Player $player){

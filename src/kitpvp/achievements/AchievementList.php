@@ -22,7 +22,7 @@ class AchievementList{
 		],
 		"team_3" => [
 			"displayName" => "Avenger",
-			"description" => "Kill the player that killed your teammate",
+			"description" => "Kill the player that killed your teammate in the arena",
 			"points" => self::POINTS_TIER0
 		],
 		"team_4" => [
@@ -179,7 +179,7 @@ class AchievementList{
 			"displayName" => "What doesn't kill me makes me stronger",
 			"description" => "Kill someone with the Enchanter kit using the Book of Spells",
 			"points" => self::POINTS_TIER1,
-		],*/
+		],
 		"3_on_killer" => [
 			"displayName" => "You don't know who you're messing with",
 			"description" => "Kill someone 3 times that killed you once",
@@ -189,7 +189,7 @@ class AchievementList{
 			"displayName" => "My one weakness",
 			"description" => "Drown as Pyromancer",
 			"points" => self::POINTS_TIER1,
-		],
+		],*/
 		"countered" => [
 			"displayName" => "Get countered!",
 			"description" => "Land a Concussion Grenade on someone with the Scout kit",

@@ -26,29 +26,21 @@ class Kit extends Command implements PluginIdentifiableCommand{
 		$kits = KitPvP::getInstance()->getKits();
 		$session = $kits->getSession($sender);
 		if($session->hasKit()){
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You already have a kit equipped!");
+			$sender->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "You already have a kit equipped!");
 			return false;
 		}
 		if(count($args) !== 1){
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."Usage: /kit <name>");
+			$sender->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Usage: /kit <name>");
 			return false;
 		}
 		$kit = $kits->getKit(strtolower($args[0]));
 		if($kit->getName() == "invalid"){
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."The kit specified does not exist!");
-			return false;
-		}
-		if(!$kit->hasRequiredRank($sender)){
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You must be at least rank ".strtoupper($kit->getRequiredRank())." to use this kit! Purchase this rank at ".TextFormat::YELLOW."buy.atpe.co");
-			return false;
-		}
-		if(!$kit->hasEnoughCurrency($sender)){
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."You do not have enough Techits to equip this kit! (".$kit->getPrice().")");
+			$sender->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "The kit specified does not exist!");
 			return false;
 		}
 		if($kit->hasPlayerCooldown($sender)){
 			$cooldown = $kit->getPlayerCooldown($sender);
-			$sender->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::RED."This kit has a cooldown! You can equip it again in ".$cooldown." play".($cooldown > 1 ? "s" : "")."!");
+			$sender->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "This kit has a cooldown! You can equip it again in ". TextFormat::WHITE . $cooldown . TextFormat::GRAY . " play".($cooldown > 1 ? "s" : "")."!");
 			return false;
 		}
 		$sender->showModal(new KitConfirmUi($kit, $sender));

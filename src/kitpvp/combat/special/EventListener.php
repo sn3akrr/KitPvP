@@ -27,7 +27,8 @@ use pocketmine\level\sound\{
 };
 use pocketmine\entity\{
 	Entity,
-	Effect
+	Effect,
+	Arrow
 };
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -188,6 +189,14 @@ class EventListener implements Listener{
 						if($child instanceof Bullet){
 							$e->setDamage(3);
 							$e->setDamage(3, 4);
+
+							$ks = $this->plugin->getKits()->getSession($player);
+							if($ks->hasKit()){
+								if($ks->getKit()->getName() == "archer"){
+									$as = $this->plugin->getAchievements()->getSession($killer);
+									if(!$as->hasAchievement("archer_gun")) $as->get("archer_gun");
+								}
+							}
 						}
 						if($child instanceof ThrownKunai){
 							$e->setDamage(mt_rand(1,6));
@@ -200,6 +209,10 @@ class EventListener implements Listener{
 						}
 						if($child instanceof ThrownDecoy){
 							$ticker->startEffect($killer);
+						}
+						if($child instanceof Arrow){
+							$ks = $this->plugin->getKits()->getSession($killer);
+							$ks->resetMissedShots();
 						}
 						return;
 					}

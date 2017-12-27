@@ -2,6 +2,7 @@
 
 use pocketmine\Server;
 
+use kitpvp\KitPvP;
 use kitpvp\kits\event\KitUnequipEvent;
 
 use core\stats\User;
@@ -14,6 +15,9 @@ class Session{
 
 	public $activeKit = null;
 	public $ability = [];
+
+	public $bowShots = 0;
+	public $missedBowShots = 0;
 
 	public $freePlays = [
 		"witch" => 0,
@@ -62,6 +66,39 @@ class Session{
 
 	public function addKit(KitObject $kit){
 		$this->activeKit = $kit;
+		$as = KitPvP::getInstance()->getAchievements()->getSession($this->getPlayer());
+		switch($kit->getName()){
+			case "noob":
+				if(!$as->hasAchievement("noob_first")) $as->get("noob_first");
+			break;
+			case "witch":
+				if(!$as->hasAchievement("witch_first")) $as->get("witch_first");
+			break;
+			case "spy":
+				if(!$as->hasAchievement("spy_first")) $as->get("spy_first");
+			break;
+			case "scout":
+				if(!$as->hasAchievement("scout_first")) $as->get("scout_first");
+			break;
+			case "assault":
+				if(!$as->hasAchievement("assault_first")) $as->get("assault_first");
+			break;
+			case "medic":
+				if(!$as->hasAchievement("medic_first")) $as->get("medic_first");
+			break;
+			case "archer":
+				if(!$as->hasAchievement("archer_first")) $as->get("archer_first");
+			break;
+			case "enderman":
+				if(!$as->hasAchievement("enderman_first")) $as->get("enderman_first");
+			break;
+			case "pyromancer":
+				if(!$as->hasAchievement("pyromancer_first")) $as->get("pyromancer_first");
+			break;
+			case "m4l0ne23":
+				if(!$as->hasAchievement("malone_first")) $as->get("malone_first");
+			break;
+		}
 	}
 
 	public function removeKit(){
@@ -75,6 +112,32 @@ class Session{
 
 	public function resetAbilityArray(){
 		$this->ability = [];
+	}
+
+	public function getBowShots(){
+		return $this->bowShots;
+	}
+
+	public function addBowShot(){
+		$this->bowShots++;
+		$this->addMissedBowShot();
+	}
+
+	public function resetBowShots(){
+		$this->bowShots = 0;
+		$this->resetMissedBowShots();
+	}
+
+	public function getMissedBowShots(){
+		return $this->missedBowShots;
+	}
+
+	public function addMissedBowShot(){
+		$this->missedBowShots++;
+	}
+
+	public function resetMissedBowShots(){
+		$this->missedBowShots = 0;
 	}
 
 	public function getFreePlays($kit){

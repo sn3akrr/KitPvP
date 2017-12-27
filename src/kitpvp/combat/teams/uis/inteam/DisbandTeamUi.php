@@ -8,6 +8,8 @@ use kitpvp\combat\teams\Team;
 
 use core\ui\windows\ModalWindow;
 
+use kitpvp\KitPvP;
+
 class DisbandTeamUi extends ModalWindow{
 
 	public $team;
@@ -25,9 +27,14 @@ class DisbandTeamUi extends ModalWindow{
 		}
 		if($response){
 			$this->team->disband($player->getName() . " left");
-		}else{
-			$player->showModal(new InTeamMainUi($player));
+			return;
+			$as = KitPvP::getInstance()->getAchievements()->getSession($player);
+			if(!$as->hasAchievement("team_2")){
+				$as->get("team_2");
+			}
+			return;
 		}
+		$player->showModal(new InTeamMainUi($player));
 	}
 
 }

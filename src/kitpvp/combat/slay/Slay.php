@@ -56,6 +56,59 @@ class Slay{
 		if($teams->inTeam($player)){
 			$teams->getPlayerTeam($player)->addKill();
 		}
+
+		$kills = $this->lb->getKills($player);
+		$as = KitPvP::getInstance()->getAchievements()->getSession($player);
+		if($kills >= 1){
+			if(!$as->hasAchievement("kills_1")){
+				$as->get("kills_1");
+			}
+		}
+		if($kills >= 5){
+			if(!$as->hasAchievement("kills_2")){
+				$as->get("kills_2");
+			}
+		}
+		if($kills >= 10){
+			if(!$as->hasAchievement("kills_3")){
+				$as->get("kills_3");
+			}
+		}
+		if($kills >= 25){
+			if(!$as->hasAchievement("kills_4")){
+				$as->get("kills_4");
+			}
+		}
+		if($kills >= 50){
+			if(!$as->hasAchievement("kills_5")){
+				$as->get("kills_5");
+			}
+		}
+		if($kills >= 100){
+			if(!$as->hasAchievement("kills_6")){
+				$as->get("kills_6");
+			}
+		}
+		if($kills >= 250){
+			if(!$as->hasAchievement("kills_7")){
+				$as->get("kills_7");
+			}
+		}
+		if($kills >= 500){
+			if(!$as->hasAchievement("kills_8")){
+				$as->get("kills_8");
+			}
+		}
+		if($kills >= 750){
+			if(!$as->hasAchievement("kills_9")){
+				$as->get("kills_9");
+			}
+		}
+		if($kills >= 1000){
+			if(!$as->hasAchievement("kills_10")){
+				$as->get("kills_10");
+			}
+		}
 	}
 
 	public function addDeath(Player $player){
@@ -74,6 +127,40 @@ class Slay{
 			$this->combat->getStreaks()->addStreak($killer);
 			$this->combat->getLogging()->removeCombat($killer);
 			$killer->addTechits(5);
+
+			$teams = KitPvP::getInstance()->getTeams();
+			if($teams->inTeam($killer)){
+				$team = $teams->getPlayerTeam($killer);
+				$opposite = $team->getOppositePlayer($killer);
+				if($this->getLastKiller($opposite) == $dead->getName()){
+					$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
+					if(!$as->hasAchievement("team_3")){
+						$as->hasAchievement("team_3");
+					}
+				}
+			}
+
+			if($killer->getHealth() <= 4){
+				$as = KitPvP::getInstance()->getAchievements()->getSession($dead);
+				if(!$as->hasAchievement("close_call")) $as->get("close_call");
+			}
+
+			$streak = $this->combat->getStreaks()->getStreak($dead);
+			if(!isset($streak) || $streak == 0){
+				$as = KitPvP::getInstance()->getAchievements()->getSession($dead);
+				$ks = KitPvP::getInstance()->getSession($dead);
+				if($ks->hasKit()){
+					$kit = $ks->getKit()->getName();
+					switch($kit){
+						case "noob":
+							if(!$as->hasAchievement("lol_noob")) $as->get("lol_noob");
+						break;
+						default:
+							if(!$as->hasAchievement("wasted")) $as->get("wasted");
+						break;
+					}
+				}
+			}
 
 			$this->strikeLightning($dead);
 			$this->addDeath($dead);

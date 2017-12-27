@@ -23,6 +23,9 @@ class Flame extends Projectile{
 	protected $gravity = 0.001;
 	protected $drag = 0.01;
 
+	public $lit = [];
+	public $get = false;
+
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
@@ -56,6 +59,12 @@ class Flame extends Projectile{
 						if(!$teams->sameTeam($player, $owner)){
 							$player->setOnFire(2);
 							KitPvP::getInstance()->getCombat()->getSlay()->damageAs($owner, $player, 0);
+							if(!isset($this->lit[$player->getName()])) $this->lit[$player->getName()] = true;
+							if(count($this->lit) >= 2 && $this->get == false){
+								$this->get = true;
+								$as = KitPvP::getInstance()->getAchievements()->getSession($owner);
+								if(!$as->hasAchievement("multiple_flamethrower")) $as->get("multiple_flamethrower");
+							}
 						}
 					}
 				}

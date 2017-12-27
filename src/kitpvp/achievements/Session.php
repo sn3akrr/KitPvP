@@ -92,6 +92,7 @@ class Session{
 	}
 
 	public function get($id){
+		return; //TODO: Remove once they should work
 		$this->addAchievement($id);
 		$achievement = $this->getAchievement($id);
 		$this->addPoints($achievement->getPoints());

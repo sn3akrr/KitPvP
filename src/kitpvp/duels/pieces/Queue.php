@@ -31,11 +31,11 @@ class Queue{
 			if($player instanceof Player){
 				if($arena == "none"){
 					$nopref[] = $player;
-					$player->sendTip(TextFormat::GREEN . "Waiting in '" . $this->getName() . "' queue...");
+					$player->sendPopup(TextFormat::YELLOW . "Duel: " . TextFormat::GRAY . "In queue... " . TextFormat::AQUA . $this->getName());
 				}else{
 					if(!isset($wpref[$arena])) $wpref[$arena] = [];
 					$wpref[$arena][] = $player;
-					$player->sendTip(TextFormat::GREEN . "Waiting in '" . $this->getName() . "' queue..." . PHP_EOL . "Preferred map: ".$duels->getArena($arena)->getName());
+					$player->sendPopup(TextFormat::YELLOW . "Duel: " . TextFormat::GRAY . "In queue. " . TextFormat::AQUA . $this->getName() . PHP_EOL . TextFormat::GRAY . "Preferred map: " . TextFormat::LIGHT_PURPLE . $duels->getArena($arena)->getName());
 				}
 			}else{
 				unset($this->players[$name]);

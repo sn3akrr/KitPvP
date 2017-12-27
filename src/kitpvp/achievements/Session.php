@@ -10,6 +10,7 @@ use kitpvp\KitPvP;
 class Session{
 
 	public $user;
+	public $player;
 	public $xuid;
 
 	public $points = 0;
@@ -18,6 +19,7 @@ class Session{
 	public function __construct($user){
 		$user = new User($user);
 		$this->user = $user;
+		$this->player = $user->getPlayer();
 		$this->xuid = $user->getXuid();
 
 		$this->load();
@@ -41,6 +43,10 @@ class Session{
 
 	public function getUser(){
 		return $this->user;
+	}
+
+	public function getPlayer(){
+		return $this->player;
 	}
 
 	public function getXuid(){
@@ -92,19 +98,18 @@ class Session{
 	}
 
 	public function get($id){
-		return; //TODO: Remove once they should work
+		$player = $this->getPlayer();
+
+		if($player->getName() != "m4l0ne23") return;
+
 		$this->addAchievement($id);
 		$achievement = $this->getAchievement($id);
 		$this->addPoints($achievement->getPoints());
 
-		$player = $this->getUser()->getPlayer();
-		if($this->getUser()->validPlayer()){
-			$player = $this->getUser()->getPlayer();
-			$player->sendMessage(TextFormat::AQUA . "= = = = = = = = = = = =");
-			$player->sendMessage(TextFormat::YELLOW . TextFormat::OBFUSCATED . "||" . TextFormat::RESET . TextFormat::GRAY . " Achievement get! (" . TextFormat::YELLOW . $achievement->getName() . TextFormat::GRAY . ") " . TextFormat::YELLOW . TextFormat::OBFUSCATED . "||");
-			$player->sendMessage(TextFormat::LIGHT_PURPLE . "+" . $achievement->getPoints() . " achievement points");
-			$player->sendMessage(TextFormat::AQUA . "= = = = = = = = = = = =");
-		}
+		$player->sendMessage(TextFormat::AQUA . "= = = = = = = = = = = =");
+		$player->sendMessage(TextFormat::YELLOW . TextFormat::OBFUSCATED . "||" . TextFormat::RESET . TextFormat::GRAY . " Achievement get! (" . TextFormat::YELLOW . $achievement->getName() . TextFormat::GRAY . ") " . TextFormat::YELLOW . TextFormat::OBFUSCATED . "||");
+		$player->sendMessage(TextFormat::LIGHT_PURPLE . "+" . $achievement->getPoints() . " achievement points");
+		$player->sendMessage(TextFormat::AQUA . "= = = = = = = = = = = =");
 	}
 
 	public function save(){

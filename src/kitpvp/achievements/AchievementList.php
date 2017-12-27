@@ -18,11 +18,13 @@ class AchievementList{
 		"team_2" => [
 			"displayName" => "i hate u",
 			"description" => "Manually disband your team",
+			"hidden" => true,
 			"points" => self::POINTS_TIER0
 		],
 		"team_3" => [
 			"displayName" => "Avenger",
 			"description" => "Kill the player that killed your teammate in the arena",
+			"hidden" => true,
 			"points" => self::POINTS_TIER0
 		],
 		"team_4" => [
@@ -153,11 +155,13 @@ class AchievementList{
 		"lol_noob" => [
 			"displayName" => "Lol, Noob!",
 			"description" => "Die with 0 kills as the Noob kit in the arena",
+			"hidden" => true,
 			"points" => self::POINTS_TIER0,
 		],
 		"wasted" => [
 			"displayName" => "Waste of techits",
 			"description" => "Die with 0 kills with any kit other than Noob in the arena",
+			"hidden" => true,
 			"points" => self::POINTS_TIER1,
 		],
 		"close_call" => [
@@ -168,11 +172,13 @@ class AchievementList{
 		"multiple_flamethrower" => [
 			"displayName" => "Spreading flames",
 			"description" => "Ignite 2 or more players with one Flame ball (Flamethrower)",
+			"hidden" => true,
 			"points" => self::POINTS_TIER2,
 		],
 		"archer_gun" => [
 			"displayName" => "2 can play at that game",
 			"description" => "Shoot an archer with a gun",
+			"hidden" => true,
 			"points" => self::POINTS_TIER1,
 		],
 		/*"enchanter_kill" => [
@@ -193,11 +199,13 @@ class AchievementList{
 		"countered" => [
 			"displayName" => "Get countered!",
 			"description" => "Land a Concussion Grenade on someone with the Scout kit",
+			"hidden" => true,
 			"points" => self::POINTS_TIER2,
 		],
 		"faker" => [
 			"displayName" => "Faker",
 			"description" => "Shoot 10 arrows and miss all of them",
+			"hidden" => true,
 			"points" => self::POINTS_TIER1
 		],
 

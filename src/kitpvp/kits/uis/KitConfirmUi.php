@@ -47,11 +47,11 @@ class KitConfirmUi extends CustomForm{
 			return;
 		}
 		if(!$kit->hasRequiredRank($player)){
-			$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "You must be at least rank " . TextFormat::YELLOW . TextFormat::BOLD . strtoupper($kit->getRequiredRank()) . TextFormat::RESET . TextFormat::GRAY . " to purchase this kit! Purchase this rank at ".TextFormat::YELLOW.Links::SHOP);
+			$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You must be at least rank " . TextFormat::YELLOW . TextFormat::BOLD . strtoupper($kit->getRequiredRank()) . TextFormat::RESET . TextFormat::GRAY . " to purchase this kit! Purchase this rank at ".TextFormat::YELLOW.Links::SHOP);
 			return;
 		}
 		if(!$kit->hasEnoughCurrency($player)){
-			$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "You do not have enough Techits to purchase this kit! (".$kit->getPrice().")");
+			$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You do not have enough Techits to purchase this kit! (".$kit->getPrice().")");
 			return;
 		}
 		$kit->purchase($player);

@@ -33,24 +33,24 @@ class QueueSelectUi extends SimpleForm{
 	public function handle($response, Player $player){
 		$duels = KitPvP::getInstance()->getDuels();
 		if($duels->inDuel($player)){
-			$player->sendMessage(TextFormat::RED . "You cannot use this menu while in a duel!");
+			$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You cannot use this menu while in a duel!");
 			return;
 		}
 		foreach($this->queues as $key => $queue){
 			if($response == $key){
 				if(!$queue->inQueue($player)){
 					$queue->addPlayer($player, $duels->getPreferredMap($player));
-					$player->sendMessage(TextFormat::GREEN . "You have joined the '" . $queue->getName() . "' queue!");
+					$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You have joined the " . TextFormat::AQUA . $queue->getName() . TextFormat::GRAY . " queue!");
 					return;
 				}
 				$queue->removePlayer($player);
-				$player->sendMessage(TextFormat::GREEN . "Left '" . $queue->getName() . "' queue.");
+				$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Left " . TextFormat::AQUA . $queue->getName() . TextFormat::GRAY ." queue.");
 				return;
 			}
 		}
 		if($response == count($this->queues)){
 			if($player->getRank() == "default"){
-				$player->sendMessage(TextFormat::RED . "This feature requires a premium rank! Purchase one at " . TextFormat::YELLOW . Links::SHOP);
+				$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "This feature requires a premium rank! Purchase one at " . TextFormat::YELLOW . Links::SHOP);
 				return;
 			}
 			$player->showModal(new PreferredMapUi());

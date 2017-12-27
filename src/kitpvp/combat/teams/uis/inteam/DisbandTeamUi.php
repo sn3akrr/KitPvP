@@ -27,7 +27,6 @@ class DisbandTeamUi extends ModalWindow{
 		}
 		if($response){
 			$this->team->disband($player->getName() . " left");
-			return;
 			$as = KitPvP::getInstance()->getAchievements()->getSession($player);
 			if(!$as->hasAchievement("team_2")){
 				$as->get("team_2");

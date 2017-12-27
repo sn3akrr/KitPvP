@@ -27,13 +27,13 @@ class PreferredMapUi extends SimpleForm{
 
 	public function handle($response, Player $player){
 		if(KitPvP::getInstance()->getDuels()->inDuel($player)){
-			$player->sendMessage(TextFormat::RED . "You cannot use this menu while in a duel!");
+			$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You cannot use this menu while in a duel!");
 			return;
 		}
 		foreach($this->arenas as $key => $arena){
 			if($key == $response){
 				KitPvP::getInstance()->getDuels()->setPreferredMap($player, $arena->getId());
-				$player->sendMessage(TextFormat::GREEN . "Set preferred arena to '" . $arena->getName() . "'. Your next duel will take place in this map.");
+				$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Set preferred arena to " . TextFormat::LIGHT_PURPLE . $arena->getName() . TextFormat::GRAY . ". Your next duel will take place in this map.");
 			}
 		}
 		$player->showModal(new QueueSelectUi($player));

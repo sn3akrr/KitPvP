@@ -41,7 +41,7 @@ class Slay{
 			if($player instanceof Player){
 				if($this->canRemoveInvincibility($player)){
 					$this->removeInvincibility($player);
-					$player->sendMessage(TextFormat::AQUA."Invincibility> ".TextFormat::GREEN."You are no longer invincible.");
+					$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You are no longer invincible.");	
 				}
 			}else{
 				unset($this->invincibility[$name]);
@@ -128,7 +128,7 @@ class Slay{
 			$this->combat->getLogging()->removeCombat($killer);
 			$killer->addTechits(5);
 
-			$teams = KitPvP::getInstance()->getTeams();
+			$teams = KitPvP::getInstance()->getCombat()->getTeams();
 			if($teams->inTeam($killer)){
 				$team = $teams->getPlayerTeam($killer);
 				$opposite = $team->getOppositePlayer($killer);
@@ -148,7 +148,7 @@ class Slay{
 			$streak = $this->combat->getStreaks()->getStreak($dead);
 			if(!isset($streak) || $streak == 0){
 				$as = KitPvP::getInstance()->getAchievements()->getSession($dead);
-				$ks = KitPvP::getInstance()->getSession($dead);
+				$ks = KitPvP::getInstance()->getKits()->getSession($dead);
 				if($ks->hasKit()){
 					$kit = $ks->getKit()->getName();
 					switch($kit){
@@ -176,22 +176,22 @@ class Slay{
 				if($assist != $killer && $assist != $dead){
 					$assist->addTechits(2);
 					$assist->addGlobalExp(1);
-					$assist->sendMessage(TextFormat::AQUA."Assist> ".TextFormat::GREEN."Earned 2 Techits for helping kill ".$dead->getName()."!");
+					$assist->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Earned " . TextFormat::AQUA . "2 Techits" . TextFormat::GRAY . " for helping kill " . TextFormat::RED . $dead->getName()."!");
 				}
 			}
 			$this->unsetAssistingPlayers($dead);
 			$this->setLastKiller($dead, $killer);
 			if($this->getLastKiller($killer) == $dead->getName()){
 				foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
-					$player->sendMessage(TextFormat::AQUA."Revenge> ".TextFormat::GREEN.$killer->getName()." got revenge against ".$dead->getName()."!");
+					$player->sendMessage(TextFormat::RED . TextFormat::BOLD . ">> " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName(). TextFormat::GRAY . " got revenge against " . TextFormat::YELLOW . $dead->getName() . "!");
 				}
 				$killer->addTechits(3);
 				$killer->addGlobalExp(2);
 				$this->unsetLastKiller($killer);
 			}
 
-			$killer->sendMessage(TextFormat::AQUA."Slay> ".TextFormat::GREEN."You killed ".$dead->getName()." and earned 5 Techits!");
-			$dead->sendMessage(TextFormat::AQUA."Slay> ".TextFormat::RED.$killer->getName()." killed you with ".($killer->getHealth() / 2)." <3's left!");
+			$killer->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You killed " . TextFormat::RED . $dead->getName() . TextFormat::GRAY . " and earned " . TextFormat::AQUA . "5 Techits!");
+			$dead->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName(). TextFormat::GRAY . " killed you with " . TextFormat::AQUA . ($killer->getHealth() / 2). TextFormat::RED . " <3's". TextFormat::GRAY . " left!");
 		}else{
 			$duel = $duels->getPlayerDuel($dead);
 			$duel->setWinner($killer);
@@ -257,7 +257,7 @@ class Slay{
 
 	public function setInvincible(Player $player, $time = 10){
 		$this->invincible[$player->getName()] = time() + $time;
-		$player->sendMessage(TextFormat::AQUA."Invincibility> ".TextFormat::GREEN."You have ".$time." seconds of invincibility!");	
+		$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You have ". TextFormat::WHITE . $time . TextFormat::GRAY . " seconds of invincibility!");	
 	}
 
 	public function canRemoveInvincibility(Player $player){
@@ -270,7 +270,7 @@ class Slay{
 
 	public function getAssistingPlayers(Player $player){
 		$players = [];
-		if(!isset($this->assists[$player->getName()])) return;
+		if(!isset($this->assists[$player->getName()])) return [];
 		foreach($this->assists[$player->getName()] as $assist){
 			$pl = $this->plugin->getServer()->getPlayerExact($assist);
 			if($pl instanceof Player){

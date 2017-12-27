@@ -51,8 +51,7 @@ class Duel{
 		$arena->teleport($player1, $player2);
 		foreach($this->players as $player){
 
-			$player->sendMessage(TextFormat::GRAY . "Welcome to " . TextFormat::YELLOW . "Duels " . TextFormat::RED . "BETA" . TextFormat::GRAY . "! Playing map: " . TextFormat::YELLOW . $arena->getName() . TextFormat::GRAY . ". You have " . TextFormat::YELLOW . $this->prepare_time . TextFormat::GRAY . " seconds to prepare.");
-			//$player->showModal(new DuelEnterUi($player, $this));
+			$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Welcome to " . TextFormat::AQUA . "Duels " . TextFormat::RED . "BETA" . TextFormat::GRAY . "! Playing map: " . TextFormat::LIGHT_PURPLE . $arena->getName() . TextFormat::GRAY . ". You have " . TextFormat::WHITE . $this->prepare_time . TextFormat::GRAY . " seconds to prepare.");
 
 			KitPvP::getInstance()->getDuels()->setPreferredMap($player);
 			foreach(Server::getInstance()->getOnlinePlayers() as $p){
@@ -79,7 +78,7 @@ class Duel{
 					$this->setGameStatus(self::GAME_FIGHT);
 					$this->setTimer($this->getFightTime());
 					foreach($this->getPlayers() as $player){
-						$player->sendMessage(TextFormat::RED . "You can now move! Go fight! You have 5 minutes.");
+						$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You can now move! Go fight! You have " . TextFormat::WHITE . "5" . TextFormat::GRAY . " minutes.");
 						foreach(Server::getInstance()->getOnlinePlayers() as $p){
 							if(!isset($this->players[$p->getName()])){
 								$player->despawnFrom($p);
@@ -182,21 +181,21 @@ class Duel{
 		$loser = $this->getLoser();
 		if($this->getGameStatus() == 0 || $this->getPlayers() < 2){
 			foreach($this->getPlayers() as $player){
-				$player->sendMessage(TextFormat::RED . "Duel ended. (Player left)");
+				$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "Duel ended. " . TextFormat::RED . "(Player left)");
 			}
 		}elseif($winner == null || $loser == null){
 			foreach($this->getPlayers() as $player){
-				$player->sendMessage(TextFormat::RED . "Duel ended in a draw!");
+				$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "Duel ended in a draw!");
 			}
 		}else{
-			$loser->sendMessage(TextFormat::RED . "Lost duel against " . $winner->getName() . "! Better luck next time.");
+			$loser->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "Lost duel against " . TextFormat::YELLOW . $winner->getName() . TextFormat::GRAY . "! Better luck next time.");
 
 			$duels = KitPvP::getInstance()->getDuels();
 			if(!$duels->hasWon($winner, $loser)){
 				$winner->addTechits(50);
-				$winner->sendMessage(TextFormat::GREEN . "Won duel against " . $loser->getName() . " and earned 50 techits!");
+				$winner->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "Won duel against " . TextFormat::YELLOW . $loser->getName() . TextFormat::GRAY . " and earned " . TextFormat::AQUA . "50 techits" . TextFormat::GRAY . "!");
 			}else{
-				$winner->sendMessage(TextFormat::GREEN . "Won duel against " . $loser->getName() . "! (No prize given due to already winning against this player.)");
+				$winner->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "Won duel against " . TextFormat::YELLOW . $loser->getName() . TextFormat::GRAY . "! " . TextFormat::RED . "(No prize given due to already winning against this player.)");
 			}
 
 			//Duel stats
@@ -205,7 +204,7 @@ class Duel{
 			$duels->setWon($winner, $loser);
 
 			foreach(Server::getInstance()->getOnlinePlayers() as $player){
-				$player->sendMessage(TextFormat::GREEN . $winner->getName() . " won duel on map " . $this->getArena()->getName() . "!");
+				$player->sendMessage(TextFormat::RED . TextFormat::BOLD . ">> " . TextFormat::RESET . TextFormat::YELLOW . $winner->getName() . TextFormat::GRAY . " won duel on map " . TextFormat::LIGHT_PURPLE . $this->getArena()->getName() . TextFormat::GRAY . "!");
 			}
 		}
 

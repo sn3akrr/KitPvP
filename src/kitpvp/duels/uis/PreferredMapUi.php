@@ -32,7 +32,7 @@ class PreferredMapUi extends SimpleForm{
 		}
 		foreach($this->arenas as $key => $arena){
 			if($key == $response){
-				KitPvP::getInstance()->getDuels()->setPreferredMap($player, $arena->getId());
+				KitPvP::getInstance()->getDuels()->getSession($player)->setPreferredArena($arena->getId());
 				$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Set preferred arena to " . TextFormat::LIGHT_PURPLE . $arena->getName() . TextFormat::GRAY . ". Your next duel will take place in this map.");
 			}
 		}

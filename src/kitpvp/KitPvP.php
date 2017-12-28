@@ -79,6 +79,7 @@ class KitPvP extends PluginBase{
 				$session->getKit()->refund($player);
 			}
 		}
+		$this->getDuels()->close();
 		$this->getAchievements()->close();
 		$this->getKits()->close();
 

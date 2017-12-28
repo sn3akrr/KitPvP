@@ -38,8 +38,9 @@ class QueueSelectUi extends SimpleForm{
 		}
 		foreach($this->queues as $key => $queue){
 			if($response == $key){
+				$session = $duels->getSession($player);
 				if(!$queue->inQueue($player)){
-					$queue->addPlayer($player, $duels->getPreferredMap($player));
+					$queue->addPlayer($player, $session->getPreferredArena());
 					$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You have joined the " . TextFormat::AQUA . $queue->getName() . TextFormat::GRAY . " queue!");
 					return;
 				}

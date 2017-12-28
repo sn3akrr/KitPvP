@@ -27,12 +27,7 @@ class Duel{
 	public $status = self::GAME_PREPARE;
 
 	public $winner = null;
-	public $winnerdata = [];
-
 	public $loser = null;
-	public $loserdata = [];
-
-	public $enddata = [];
 
 	public function __construct($id, Player $player1, Player $player2, Arena $arena, $prepare_time = 15, $fight_time = 300){
 		$this->id = $id;
@@ -53,7 +48,7 @@ class Duel{
 
 			$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Welcome to " . TextFormat::AQUA . "Duels " . TextFormat::RED . "BETA" . TextFormat::GRAY . "! Playing map: " . TextFormat::LIGHT_PURPLE . $arena->getName() . TextFormat::GRAY . ". You have " . TextFormat::WHITE . $this->prepare_time . TextFormat::GRAY . " seconds to prepare.");
 
-			KitPvP::getInstance()->getDuels()->setPreferredMap($player);
+			KitPvP::getInstance()->getDuels()->getSession($player)->setPreferredArena();
 			foreach(Server::getInstance()->getOnlinePlayers() as $p){
 				if(!isset($this->players[$p->getName()])){
 					$player->despawnFrom($p);
@@ -202,6 +197,9 @@ class Duel{
 			//Duel achievements
 
 			$duels->setWon($winner, $loser);
+
+			$duels->getSession($winner)->addWin();
+			$duels->getSession($loser)->addLoss();
 
 			foreach(Server::getInstance()->getOnlinePlayers() as $player){
 				$player->sendMessage(TextFormat::RED . TextFormat::BOLD . ">> " . TextFormat::RESET . TextFormat::YELLOW . $winner->getName() . TextFormat::GRAY . " won duel on map " . TextFormat::LIGHT_PURPLE . $this->getArena()->getName() . TextFormat::GRAY . "!");

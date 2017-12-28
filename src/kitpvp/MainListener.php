@@ -41,25 +41,10 @@ class MainListener implements Listener{
 		$player = $e->getPlayer();
 		$player->teleport(...$this->plugin->getArena()->getSpawnPosition());
 
+		$this->plugin->getDuels()->createSession($player);
 		$this->plugin->getKits()->createSession($player);
 		$this->plugin->getAchievements()->createSession($player);
 		if(!$this->plugin->getLeaderboard()->hasStats($player)) $this->plugin->getLeaderboard()->newStats($player);
-
-		if($player->getName() == "m4l0ne23"){
-			$pk = new \pocketmine\network\mcpe\protocol\AddEntityPacket();
-			$pk->entityRuntimeId = 999;
-			$pk->type = \pocketmine\entity\EntityIds::ELDER_GUARDIAN;
-			$pk->position = $player->asVector3();
-			$pk->yaw = $pk->pitch = 0;
-			$flags = 0;
-			$flags |= 1 << \pocketmine\entity\Entity::DATA_FLAG_INVISIBLE;
-			$pk->metadata = [
-				\pocketmine\entity\Entity::DATA_FLAGS => [\pocketmine\entity\Entity::DATA_TYPE_LONG, $flags],
-				\pocketmine\entity\Entity::DATA_TARGET_EID => [\pocketmine\entity\Entity::DATA_TYPE_LONG, $player->getId()],
-				\pocketmine\entity\Entity::DATA_COLOUR => [\pocketmine\entity\Entity::DATA_TYPE_BYTE, 5],
-			];
-			$player->dataPacket($pk);
-		}
 	}
 
 	public function onMove(PlayerMoveEvent $e){

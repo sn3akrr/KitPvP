@@ -26,12 +26,17 @@ class Duels{
 	public $requests = [];
 	public static $requestCount = 1;
 
-	public $pm = [];
+	public $sessions = [];
 
-	public $wins = [];
+	public $wins = []; //Saved here, doesn't reset on session termination
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
+		$db = $plugin->database;
+
+		foreach([
+			"CREATE TABLE IF NOT EXISTS duels_stats(xuid BIGINT(16) NOT NULL UNIQUE, wins INT NOT NULL DEFAULT '0', losses INT NOT NULL DEFAULT '0')",
+		] as $query) $db->query($query);
 
 		$this->setupArenas();
 		$this->setupQueues();
@@ -51,6 +56,12 @@ class Duels{
 		}
 	}
 
+	public function close(){
+		foreach($this->sessions as $name => $session){
+			$session->save();
+		}
+	}
+
 	public function onQuit(Player $player){
 		if($this->inDuel($player)){
 			$duel = $this->getPlayerDuel($player);
@@ -62,7 +73,7 @@ class Duels{
 				$queue->removePlayer($player);
 			}
 		}
-		$this->setPreferredMap($player, null);
+		$this->deleteSession($player);
 	}
 
 	public function setupArenas(){
@@ -125,14 +136,14 @@ class Duels{
 
 	public function inDuel(Player $player){
 		foreach($this->getDuels() as $id => $duel){
-			if(isset($duel->getPlayers()[$player->getname()])) return true;
+			if(isset($duel->getPlayers()[$player->getName()])) return true;
 		}
 		return false;
 	}
 
 	public function getPlayerDuel(Player $player){
 		foreach($this->getDuels() as $id => $duel){
-			if(isset($duel->getPlayers()[$player->getname()])) return $duel;
+			if(isset($duel->getPlayers()[$player->getName()])) return $duel;
 		}
 		return null;
 	}
@@ -153,26 +164,17 @@ class Duels{
 		return $this->requests;
 	}
 
-	// Preferred map selection //
-	public function setPreferredMap(Player $player, $map = null){
-		if($map == null){
-			unset($this->pm[$player->getName()]);
-		}else{
-			$this->pm[$player->getName()] = $map;
-		}
-		foreach($this->getQueues() as $queue){
-			if($queue->inQueue($player)){
-				$queue->addPlayer($player, $map);
-			}
-		}
+	public function getSession(Player $player){
+		return $this->sessions[$player->getName()] ?? $this->createSession($player);
 	}
 
-	public function hasPreferredMap(Player $player){
-		return isset($this->pm[$player->getName()]);
+	public function createSession(Player $player){
+		return $this->sessions[$player->getName()] = new Session($player);
 	}
 
-	public function getPreferredMap(Player $player){
-		return $this->pm[$player->getName()] ?? null;
+	public function deleteSession(Player $player){
+		$this->getSession($player)->save();
+		unset($this->sessions[$player->getName()]);
 	}
 
 	// Check if player has won against another //

@@ -35,7 +35,7 @@ class Duels{
 		$db = $plugin->database;
 
 		foreach([
-			"CREATE TABLE IF NOT EXISTS duels_stats(xuid BIGINT(16) NOT NULL UNIQUE, wins INT NOT NULL DEFAULT '0', losses INT NOT NULL DEFAULT '0')",
+			"CREATE TABLE IF NOT EXISTS duels_stats(xuid BIGINT(16) NOT NULL UNIQUE, wins INT NOT NULL DEFAULT '0', losses INT NOT NULL DEFAULT '0', draws INT NOT NULL DEFAULT '0')",
 		] as $query) $db->query($query);
 
 		$this->setupArenas();

@@ -14,6 +14,7 @@ class Session{
 
 	public $wins = 0;
 	public $losses = 0;
+	public $draws = 0;
 
 	public $preferredArena = null;
 
@@ -29,9 +30,9 @@ class Session{
 		$xuid = $this->getXuid();
 
 		$db = KitPvP::getInstance()->database;
-		$stmt = $db->prepare("SELECT wins, losses FROM duels_stats WHERE xuid=?");
+		$stmt = $db->prepare("SELECT wins, losses, draws FROM duels_stats WHERE xuid=?");
 		$stmt->bind_param("i", $xuid);
-		$stmt->bind_result($wins, $losses);
+		$stmt->bind_result($wins, $losses, $draws);
 		if($stmt->execute()){
 			$stmt->fetch();
 		}
@@ -39,6 +40,7 @@ class Session{
 
 		$this->wins = (int) $wins;
 		$this->losses = (int) $losses;
+		$this->draws = (int) $draws;
 	}
 
 	public function getUser(){
@@ -69,6 +71,14 @@ class Session{
 		$this->losses++;
 	}
 
+	public function getDraws(){
+		return $this->draws;
+	}
+
+	public function addDraw(){
+		$this->draws++;
+	}
+
 	public function hasPreferredArena(){
 		return $this->getPreferredArena() != "";
 	}
@@ -90,10 +100,11 @@ class Session{
 		$xuid = $this->getXuid();
 		$wins = $this->getWins();
 		$losses = $this->getLosses();
+		$draws = $this->getDraws();
 
 		$db = KitPvP::getInstance()->database;
-		$stmt = $db->prepare("INSERT INTO duels_stats(xuid, wins, losses) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE wins=VALUES(wins), losses=VALUES(losses)");
-		$stmt->bind_param("iii", $xuid, $wins, $losses);
+		$stmt = $db->prepare("INSERT INTO duels_stats(xuid, wins, losses, draws) VALUES(?, ?, ?, ?) ON DUPLICATE KEY UPDATE wins=VALUES(wins), losses=VALUES(losses), draws=VALUES(draws)");
+		$stmt->bind_param("iii", $xuid, $wins, $losses, $draws);
 		$stmt->execute();
 		$stmt->close();
 	}

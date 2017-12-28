@@ -64,7 +64,7 @@ class Session{
 	}
 
 	public function addKit(KitObject $kit){
-		$this->activeKit = clone $kit;
+		$this->activeKit = $kit;
 		$as = KitPvP::getInstance()->getAchievements()->getSession($this->getPlayer());
 		switch($kit->getName()){
 			case "noob":

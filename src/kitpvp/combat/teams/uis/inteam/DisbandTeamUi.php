@@ -8,8 +8,6 @@ use kitpvp\combat\teams\Team;
 
 use core\ui\windows\ModalWindow;
 
-use kitpvp\KitPvP;
-
 class DisbandTeamUi extends ModalWindow{
 
 	public $team;

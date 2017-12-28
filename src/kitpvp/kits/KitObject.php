@@ -51,6 +51,12 @@ class KitObject{
 		$this->cooldown = $cooldown;
 	}
 
+	public function __clone(){
+		foreach($this->getAbilities() as $key => $ability){
+			$this->abilities[$key] = clone $this->abilities[$key];
+		}
+	}
+
 	public function getName(){
 		return $this->name;
 	}
@@ -84,14 +90,6 @@ class KitObject{
 			if($ability->getName() == $name) return $ability;
 		}
 		return null;
-	}
-
-	public function initAbilities(){
-		foreach($this->getAbilities() as $key => $ability){
-			$new = clone $ability;
-			unset($this->abilities[$key]);
-			$this->abilities[$key] = $new;
-		}
 	}
 
 	public function getSpecial(){
@@ -144,8 +142,6 @@ class KitObject{
 		foreach($this->getSpecial() as $special){
 			$player->getInventory()->addItem($special);
 		}
-
-		$this->initAbilities();
 		foreach($this->getAbilities() as $ability){
 			if($ability->activateOnEquip()) $ability->activate($player);
 		}
@@ -176,7 +172,6 @@ class KitObject{
 	public function replenish(Player $player){
 		$player->getInventory()->clearAll();
 		$player->removeAllEffects();
-		//todo: ability resetting.
 
 		$this->equip($player);
 	}

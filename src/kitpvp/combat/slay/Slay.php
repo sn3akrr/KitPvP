@@ -131,7 +131,7 @@ class Slay{
 			$teams = KitPvP::getInstance()->getCombat()->getTeams();
 			if($teams->inTeam($killer)){
 				$team = $teams->getPlayerTeam($killer);
-				$opposite = $team->getOppositePlayer($killer);
+				$opposite = $team->getOppositeMember($killer);
 				if($this->getLastKiller($opposite) == $dead->getName()){
 					$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
 					if(!$as->hasAchievement("team_3")){

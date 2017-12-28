@@ -113,7 +113,7 @@ class Arena{
 		$session = $kits->getSession($player);
 		if(!$session->hasKit()){
 			$kits->getKit("noob")->equip($player);
-			$player->sendMessage(TextFormat::AQUA."Kits> ".TextFormat::GREEN."You were automatically given the Noob kit!");
+			$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You were automatically given the " . TextFormat::YELLOW . "Noob" . TextFormat::GRAY . " kit!");
 		}
 
 		$duels = $this->plugin->getDuels();
@@ -121,7 +121,7 @@ class Arena{
 		foreach($queues as $queue){
 			if($queue->inQueue($player)){
 				$queue->removePlayer($player);
-				$player->sendMessage(TextFormat::RED . "Left '" . $queue->getName() . "' queue.");
+				$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Left " . TextFormat::AQUA . $queue->getName() . TextFormat::GRAY . " queue.");
 			}
 		}
 

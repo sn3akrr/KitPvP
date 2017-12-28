@@ -104,7 +104,7 @@ class Session{
 
 		$db = KitPvP::getInstance()->database;
 		$stmt = $db->prepare("INSERT INTO duels_stats(xuid, wins, losses, draws) VALUES(?, ?, ?, ?) ON DUPLICATE KEY UPDATE wins=VALUES(wins), losses=VALUES(losses), draws=VALUES(draws)");
-		$stmt->bind_param("iii", $xuid, $wins, $losses, $draws);
+		$stmt->bind_param("iiii", $xuid, $wins, $losses, $draws);
 		$stmt->execute();
 		$stmt->close();
 	}

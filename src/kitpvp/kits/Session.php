@@ -14,7 +14,6 @@ class Session{
 	public $xuid;
 
 	public $activeKit = null;
-	public $ability = [];
 
 	public $bowShots = 0;
 	public $missedBowShots = 0;
@@ -65,7 +64,7 @@ class Session{
 	}
 
 	public function addKit(KitObject $kit){
-		$this->activeKit = $kit;
+		$this->activeKit = clone $kit;
 		$as = KitPvP::getInstance()->getAchievements()->getSession($this->getPlayer());
 		switch($kit->getName()){
 			case "noob":
@@ -102,16 +101,12 @@ class Session{
 	}
 
 	public function removeKit(){
+		$kit = $this->getKit();
+		foreach($kit->getAbilities() as $ability){
+			if($ability->isActive()) $ability->deactivate($this->getPlayer());
+		}
 		$this->activeKit = null;
 		Server::getInstance()->getPluginManager()->callEvent(new KitUnequipEvent($this->getPlayer()));
-	}
-
-	public function getAbilityArray(){
-		return $this->ability; //Only GETS, SETTING doesn't work from this.
-	}
-
-	public function resetAbilityArray(){
-		$this->ability = [];
 	}
 
 	public function getBowShots(){

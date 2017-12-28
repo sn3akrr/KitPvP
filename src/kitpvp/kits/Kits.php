@@ -25,8 +25,29 @@ use kitpvp\kits\components\{
 };
 use kitpvp\combat\special\other\Spell;
 use kitpvp\kits\event\KitUnequipEvent;
-use kitpvp\combat\special\SpecialIds as SID;
 
+use kitpvp\kits\abilities\{
+	components\AbilityTicker,
+	components\AbilityListener,
+	components\AbilityTask,
+
+	Ability,
+
+	Curse,
+	StealthMode,
+	LastChance,
+	DoubleJump,
+	Bounceback,
+	Adrenaline,
+	LifeSteal,
+	Miracle,
+	Recover,
+	AimAssist,
+	Slender,
+	ArrowDodge,
+	FireAura,
+	HealthBoost
+};
 use kitpvp\combat\special\items\{
 	FryingPan,
 	BookOfSpells,
@@ -51,7 +72,12 @@ class Kits{
 
 	public $plugin;
 	public $database;
-	public $kits;
+
+	public $abilities = [];
+	public $tickers = [];
+
+	public $kits = [];
+	public $invisible = [];
 
 	public $sessions = [];
 
@@ -67,6 +93,70 @@ class Kits{
 			"kit" => new Kit($plugin, "kit", "Equip a kit!"),
 		] as $name => $class) $this->plugin->getServer()->getCommandMap()->register($name, $class);
 
+		$this->registerAbilities();
+		$this->registerKits();
+
+		$plugin->getServer()->getPluginManager()->registerEvents(new AbilityListener($plugin, $this), $plugin);
+		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new AbilityTask($plugin), 1);
+	}
+
+	public function close(){
+		foreach($this->sessions as $name => $session){
+			$session->save();
+		}
+	}
+
+	public function registerAbilities(){
+		$this->abilities = [
+			new Curse(),
+			new StealthMode(),
+			new LastChance(),
+			new DoubleJump(),
+			new Bounceback(),
+			new Adrenaline(),
+			new LifeSteal(),
+			new Miracle(),
+			new Recover(),
+			new AimAssist(),
+			new Slender(),
+			new ArrowDodge(),
+			new FireAura(),
+			new HealthBoost(),
+		];
+		$this->registerAbilityTickers();
+	}
+
+	public function registerAbilityTickers(){
+		foreach($this->getAbilities() as $ability){
+			if($ability->doesTick()){
+				$this->tickers[$ability->getName()] = new AbilityTicker($ability->getName(), $ability->getTickRate());
+			}
+		}
+	}
+
+	public function getAbilityTickers(){
+		return $this->tickers;
+	}
+
+	public function getAbilities(){
+		return $this->abilities;
+	}
+
+	public function getAbility($name){
+		foreach($this->getAbilities() as $ability){
+			if($ability->getName() == $name) return clone $ability;
+		}
+		return null;
+	}
+
+	public function getCorrespondingTicker(Ability $ability){
+		foreach($this->getAbilityTickers() as $ticker){
+			if($ticker->getName() == $ability->getName()) return $ticker;
+		}
+		return null;
+	}
+
+	public function registerKits(){
 		foreach([
 			"noob" => new KitObject("noob", "default", 0, [
 				Item::get(272),
@@ -93,7 +183,7 @@ class Kits{
 			], [
 				Effect::getEffect(Effect::FIRE_RESISTANCE)
 			], [
-				"Curse" => "5% chance of attackers being poisoned"
+				$this->getAbility("curse"),
 			], [
 				new BookOfSpells(),
 			]),
@@ -111,8 +201,8 @@ class Kits{
 				Effect::getEffect(Effect::HASTE),
 				Effect::getEffect(Effect::SPEED),
 			], [
-				"Stealth Mode" => "Invisibility when holding still or sneaking",
-				"Last Chance" => "Knocks back players and 5 second invisibility when low on health"
+				$this->getAbility("stealth mode"),
+				$this->getAbility("last chance"),
 			], [
 				new ConcussionGrenade(0, 3)
 			]),
@@ -130,8 +220,8 @@ class Kits{
 				Effect::getEffect(Effect::HASTE),
 				Effect::getEffect(Effect::SPEED)->setAmplifier(3),
 			], [
-				"Double Jump" => "Self explanitory",
-				"Bounceback" => "25% chance players attacking you will get recoil knockback"
+				$this->getAbility("double jump"),
+				$this->getAbility("bounceback"),
 			], [
 				new BrassKnuckles()
 			]),
@@ -149,7 +239,7 @@ class Kits{
 				Effect::getEffect(Effect::SPEED)->setAmplifier(1),
 				Effect::getEffect(Effect::DAMAGE_RESISTANCE)
 			], [
-				"Adrenaline" => "Increased jump and speed boost when low on health"
+				$this->getAbility("adrenaline"),
 			], [
 				new Gun()
 			], 1),
@@ -163,9 +253,9 @@ class Kits{
 				Item::get(300),
 				Item::get(313)
 			], [], [
-				"Life Steal" => "Gain health when killing players",
-				"Miracle" => "Regains 2.5 hearts when low on health one time",
-				"Recover" => "Slowly regenerate health over time"
+				$this->getAbility("life steal"),
+				$this->getAbility("miracle"),
+				$this->getAbility("recover"),
 			], [
 				new ReflexHammer(),
 				new Defibrillator(),
@@ -186,7 +276,7 @@ class Kits{
 				Effect::getEffect(Effect::SPEED),
 				Effect::getEffect(Effect::JUMP)
 			], [
-				"Aim Assist" => "Bow automatically aims on nearby target"
+				$this->getAbility("aim assist"),
 			], [
 				new SpikedClub(),
 				new Kunai(0, 3),
@@ -205,8 +295,8 @@ class Kits{
 				Effect::getEffect(Effect::MINING_FATIGUE)->setAmplifier(1),
 				Effect::getEffect(Effect::STRENGTH),
 			], [
-				"Slender" => "All enemies nearby are blinded when you're low on health, one time use",
-				"Arrow Dodge" => "25% chance of arrow attacks to be dodged"
+				$this->getAbility("slender"),
+				$this->getAbility("arrow dodge"),
 			], [
 				new EnderPearl(0, 4),
 				new Decoy(0, 3),
@@ -224,7 +314,7 @@ class Kits{
 				Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setAmplifier(1),
 				Effect::getEffect(Effect::FIRE_RESISTANCE)
 			], [
-				"Fire Aura" => "Enemies nearby are slowly damaged when nearby"
+				$this->getAbility("fire aura"),
 			], [
 				new FireAxe(),
 				new FlameThrower(),
@@ -242,22 +332,13 @@ class Kits{
 				Effect::getEffect(Effect::SPEED)->setAmplifier(2),
 				Effect::getEffect(Effect::MINING_FATIGUE)->setAmplifier(1)
 			], [
-				"Health Boost" => "2 extra hearts",
-				"Bounceback" => "25% chance players attacking you will get recoil knockback"
+				$this->getAbility("health boost"),
+				$this->getAbility("bounceback"),
 			], [
 				new MaloneSword(),
 			], 3),
 
 		] as $name => $class) $this->kits[$name] = $class;
-
-		$plugin->getServer()->getPluginManager()->registerEvents(new KitPowerListener($plugin, $this), $plugin);
-		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new KitPowerTask($plugin), 5);
-	}
-
-	public function close(){
-		foreach($this->sessions as $name => $session){
-			$session->save();
-		}
 	}
 
 	public function kitExists($name){
@@ -300,12 +381,11 @@ class Kits{
 
 	// special stuffs \\
 	public function isInvisible(Player $player){
-		return $this->getSession($player)->ability["invisible"] ?? false;
+		return $this->invisible[$player->getName()] ?? false;
 	}
 
 	public function setInvisible(Player $player, $bool){
-		$session = $this->getSession($player);
-		$session->ability["invisible"] = (bool) $bool;
+		$this->invisible[$player->getName()] = (bool) $bool;
 		switch($bool){
 			case true:
 				$player->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);

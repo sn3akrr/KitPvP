@@ -79,6 +79,13 @@ class KitObject{
 		return $this->abilities;
 	}
 
+	public function getAbility($name){
+		foreach($this->getAbilities() as $ability){
+			if($ability->getName() == $name) return $ability;
+		}
+		return null;
+	}
+
 	public function getSpecial(){
 		return $this->special;
 	}
@@ -129,12 +136,21 @@ class KitObject{
 		foreach($this->getSpecial() as $special){
 			$player->getInventory()->addItem($special);
 		}
-
+		foreach($this->getAbilities() as $ability){
+			if($ability->activateOnEquip()) $ability->activate($player);
+		}
 		Server::getInstance()->getPluginManager()->callEvent(new KitEquipEvent($player, $this));
 		$player->getLevel()->addSound(new AnvilFallSound($player), [$player]);
 
 		$kits = KitPvP::getInstance()->getKits();
 		$kits->getSession($player)->addKit($this);
+
+		foreach($kits->kits as $kit){
+			if($kit->getName() != $this->getName()){
+				$kit->subtractPlayerCooldown($player);
+			}
+		}
+
 		$num = $kits->getKitNum($this->getName());
 		Core::getInstance()->getEntities()->getFloatingText()->getText("equipped-" . $num)->update($player, true);
 	}
@@ -196,8 +212,8 @@ class KitObject{
 		}
 		if(count($this->getAbilities()) !== 0){
 			$string .= "\n  ".TextFormat::RESET.TextFormat::BOLD."Abilities:".TextFormat::RESET."\n";
-			foreach($this->getAbilities() as $name => $description){
-				$string .= "    ".TextFormat::DARK_RED.$name.TextFormat::GRAY." - ".TextFormat::RED.$description."\n";
+			foreach($this->getAbilities() as $ability){
+				$string .= "    ".TextFormat::DARK_RED.$ability->getName().TextFormat::GRAY." - ".TextFormat::RED.$ability->getDescription()."\n";
 			}
 			$string .= "\n\n";
 		}

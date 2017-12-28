@@ -86,6 +86,14 @@ class KitObject{
 		return null;
 	}
 
+	public function initAbilities(){
+		foreach($this->getAbilities() as $key => $ability){
+			$new = clone $ability;
+			unset($this->abilities[$key]);
+			$this->abilities[$key] = $new;
+		}
+	}
+
 	public function getSpecial(){
 		return $this->special;
 	}
@@ -136,9 +144,12 @@ class KitObject{
 		foreach($this->getSpecial() as $special){
 			$player->getInventory()->addItem($special);
 		}
+
+		$this->initAbilities();
 		foreach($this->getAbilities() as $ability){
 			if($ability->activateOnEquip()) $ability->activate($player);
 		}
+
 		Server::getInstance()->getPluginManager()->callEvent(new KitEquipEvent($player, $this));
 		$player->getLevel()->addSound(new AnvilFallSound($player), [$player]);
 
@@ -165,6 +176,7 @@ class KitObject{
 	public function replenish(Player $player){
 		$player->getInventory()->clearAll();
 		$player->removeAllEffects();
+		//todo: ability resetting.
 
 		$this->equip($player);
 	}

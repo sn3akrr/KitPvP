@@ -31,6 +31,9 @@ class DoubleJump extends Ability{
 				$this->canJump = false;
 			}
 		}else{
+			if($player->isFlying()){
+				$player->setGamemode(1); $player->setGamemode(0);
+			}
 			if(time() - $this->lastJump >= self::JUMP_COOLDOWN){
 				$player->setAllowFlight(true);
 				$this->canJump = true;
@@ -38,7 +41,7 @@ class DoubleJump extends Ability{
 				$player->sendTip("Double jump recharging");
 			}
 		}
-		parent::tick();
+		return true; //ALWAYS ticks
 	}
 
 	public function activate(Player $player, $target = null){
@@ -47,7 +50,6 @@ class DoubleJump extends Ability{
 	}
 
 	public function deactivate(){
-		$this->player->setAllowFlight(false);
 		$this->player->setGamemode(1); $this->player->setGamemode(0);
 		parent::deactivate();
 	}

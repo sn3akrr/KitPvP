@@ -36,7 +36,6 @@ class AbilityListener implements Listener{
 
 	public function onUnequip(KitUnequipEvent $e){
 		$player = $e->getPlayer();
-		$this->kits->getSession($player)->resetAbilityArray();
 		$this->kits->setInvisible($player, false); //check might make invalid..?
 	}
 

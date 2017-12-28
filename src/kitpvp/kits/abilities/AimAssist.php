@@ -30,7 +30,7 @@ class AimAssist extends Ability{
 				}
 			}
 			$this->target = $target;
-			return parent::tick();
+			return true;
 		}
 		$target = $this->target;
 		$x = $player->x - $target->x;
@@ -41,7 +41,7 @@ class AimAssist extends Ability{
 		if($z > 0) $yaw = -$yaw + 180;
 		$player->teleport($player, $yaw, $pitch + 0.25);
 
-		$this->deactivate($player);
+		return false;
 	}
 
 	public function deactivate(){

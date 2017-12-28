@@ -102,6 +102,8 @@ class Session{
 
 	public function removeKit(){
 		$kit = $this->getKit();
+		if($kit == null) return;
+
 		foreach($kit->getAbilities() as $ability){
 			if($ability->isActive()) $ability->deactivate($this->getPlayer());
 		}

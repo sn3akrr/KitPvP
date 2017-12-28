@@ -346,7 +346,7 @@ class Kits{
 	}
 
 	public function getKit($name){
-		return $this->kits[$name] ?? new KitObject("invalid", "default", 0, [], [], [], []);
+		return clone $this->kits[$name] ?? new KitObject("invalid", "default", 0, [], [], [], []);
 	}
 
 	public function getKitNum($name){

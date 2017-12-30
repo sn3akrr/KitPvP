@@ -78,27 +78,27 @@ class AchievementList{
 			"points" => self::POINTS_TIER1
 		],
 		"kills_3" => [
-			"displayName" => "Kills 3",
+			"displayName" => "Killer!",
 			"description" => "Get 10 kills in the arena",
 			"points" => self::POINTS_TIER1
 		],
 		"kills_4" => [
-			"displayName" => "Kills 4",
+			"displayName" => "kills_4",
 			"description" => "Get 25 kills in the arena",
 			"points" => self::POINTS_TIER2
 		],
 		"kills_5" => [
-			"displayName" => "Kills 5",
+			"displayName" => "kills_5",
 			"description" => "Get 50 kills in the arena",
 			"points" => self::POINTS_TIER2
 		],
 		"kills_6" => [
-			"displayName" => "Kills 6",
+			"displayName" => "What's that smell?",
 			"description" => "Get 100 kills in the arena",
 			"points" => self::POINTS_TIER3
 		],
 		"kills_7" => [
-			"displayName" => "Kills 7",
+			"displayName" => "Bloodbath Time!",
 			"description" => "Get 250 kills in the arena",
 			"points" => self::POINTS_TIER4
 		],
@@ -207,6 +207,11 @@ class AchievementList{
 			"description" => "Shoot 10 arrows and miss all of them",
 			"hidden" => true,
 			"points" => self::POINTS_TIER1
+		],
+		"perfect" => [
+			"displayName" => "Perfect Kill!",
+			"description" => "Kill someone without losing any health",
+			"points" => self::POINTS_TIER3
 		],
 
 		//First Equips

@@ -155,7 +155,7 @@ class EventListener implements Listener{
 				}
 			break;
 		}
-		if($item->isConsumable()){
+		if($item->isConsumable() && $e->getAction() == 3){
 			$new = clone $item;
 			$new->setCount($item->getCount() - 1);
 			$player->getInventory()->setItemInHand($new);

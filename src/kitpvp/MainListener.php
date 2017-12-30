@@ -21,7 +21,7 @@ use pocketmine\event\block\{
 };
 use pocketmine\level\sound\GhastShootSound;
 
-use pocketmine\network\protocol\mcpe\InteractPacket;
+use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\utils\TextFormat;
 use pocketmine\level\Position;
 

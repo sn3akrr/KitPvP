@@ -99,9 +99,6 @@ class Session{
 
 	public function get($id){
 		$player = $this->getPlayer();
-
-		if($player->getName() != "m4l0ne23") return;
-
 		$this->addAchievement($id);
 		$achievement = $this->getAchievement($id);
 		$this->addPoints($achievement->getPoints());

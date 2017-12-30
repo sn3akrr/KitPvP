@@ -25,8 +25,6 @@ class ListUI extends SimpleForm{
 		$this->self = $self; //TODO: Implement
 		$this->page = $page;
 
-		echo "Page: ".$page, PHP_EOL;
-
 		$a = KitPvP::getInstance()->getAchievements();
 
 		parent::__construct("Achievements (" . $page . "/" . $a->getTotalPages() . ")", "You have " . $session->getPoints() . " achievement points and " . $session->getAchievementCount() . "/" . $a->getAchievementCount() . " achievements unlocked." . PHP_EOL . PHP_EOL . "Tap an achievement for more details!");

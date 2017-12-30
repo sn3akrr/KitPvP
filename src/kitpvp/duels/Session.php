@@ -61,6 +61,15 @@ class Session{
 
 	public function addWin(){
 		$this->wins++;
+
+		$ap = KitPvP::getInstance()->getAchievements()->getSession($this->getPlayer());
+		$wins = $this->getWins();
+		if($wins >= 1) if(!$ap->hasAchievement("duel_1")) $ap->get("duel_1");
+		if($wins >= 5) if(!$ap->hasAchievement("duel_2")) $ap->get("duel_2");
+		if($wins >= 10) if(!$ap->hasAchievement("duel_3")) $ap->get("duel_3");
+		if($wins >= 25) if(!$ap->hasAchievement("duel_4")) $ap->get("duel_4");
+		if($wins >= 50) if(!$ap->hasAchievement("duel_5")) $ap->get("duel_5");
+		if($wins >= 100) if(!$ap->hasAchievement("duel_6")) $ap->get("duel_6");
 	}
 
 	public function getLosses(){

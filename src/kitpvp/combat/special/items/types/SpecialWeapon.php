@@ -1,5 +1,8 @@
 <?php namespace kitpvp\combat\special\items\types;
 
+use pocketmine\Player;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+
 use pocketmine\item\Item;
 use pocketmine\utils\TextFormat;
 use pocketmine\nbt\tag\ListTag;
@@ -57,6 +60,14 @@ class SpecialWeapon extends Item{
 
 	public function getDescription(){
 		return "";
+	}
+
+	public function usePrimary(Player $player, Player $target, EntityDamageByEntityEvent $event){
+
+	}
+
+	public function useSecondary(Player $player){
+
 	}
 
 }

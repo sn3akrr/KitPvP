@@ -6,6 +6,7 @@ use pocketmine\network\mcpe\protocol\{
 	AddEntityPacket,
 	RemoveEntityPacket
 };
+use pocketmine\item\Food;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\entity\{
 	Entity,
@@ -166,6 +167,9 @@ class Slay{
 			$this->addDeath($dead);
 			$this->combat->getLogging()->removeCombat($dead);
 			$this->combat->getBodies()->addBody($dead);
+			foreach($dead->getInventory()->getContents() as $item){
+				if($item instanceof Food) $dead->getLevel()->dropItem($dead, $item);
+			}
 			$this->plugin->getArena()->exitArena($dead);
 			$this->resetPlayer($dead);
 			$this->killChildren($dead);
@@ -206,6 +210,9 @@ class Slay{
 		$this->combat->getStreaks()->setStreak($player, 0);
 		$this->combat->getLogging()->removeCombat($player);
 		$this->combat->getBodies()->addBody($player);
+		foreach($player->getInventory()->getContents() as $item){
+			if($item instanceof Food) $player->getLevel()->dropItem($player, $item);
+		}
 		$this->plugin->getArena()->exitArena($player);
 
 		$this->unsetAssistingPlayers($player);

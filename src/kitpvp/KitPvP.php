@@ -47,6 +47,10 @@ class KitPvP extends PluginBase{
 		$this->getServer()->getLevelByName("m4")->setTime(18000);
 		$this->getServer()->getLevelByName("m4")->stopTime();
 
+		$this->getServer()->loadLevel("atm");
+		$this->getServer()->getLevelByName("atm")->setTime(0);
+		$this->getServer()->getLevelByName("atm")->stopTime();
+
 		$this->getServer()->loadLevel("KitSpawn");
 		$this->getServer()->getLevelByName("KitSpawn")->setTime(18000);
 		$this->getServer()->getLevelByName("KitSpawn")->stopTime();

@@ -177,14 +177,14 @@ class Predator extends Human{
 
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
-		if($this->distance($target) <= 1.5 && $this->attackWait <= 0){
+		if($this->distance($target) <= 1.1 && $this->attackWait <= 0){
 			$event = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getBaseAttackDamage());
 			if($target->getHealth() - $event->getFinalDamage() <= 0){
 				KitPvP::getInstance()->getCombat()->getSlay()->processKill($this, $target);
 				$this->target = null;
 				$event->setCancelled(true);
 			}
-			$this->broadcastEntityEvent(2);
+			$this->broadcastEntityEvent(4);
 			$target->attack($event);
 			$this->attackWait = 20;
 		}
@@ -208,8 +208,17 @@ class Predator extends Human{
 	}
 
 	public function kill(){
-		KitPvP::getInstance()->getCombat()->getSlay()->processKill($this->getTarget(), $this);
+		if($this->getTarget() != null) KitPvP::getInstance()->getCombat()->getSlay()->processKill($this->getTarget(), $this);
 		parent::kill();
+	}
+
+	public function spawnToAll(){
+		parent::spawnToAll();
+		if($this->isBoss()){
+			foreach(Server::getInstance()->getOnlinePlayers() as $player){
+				$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "A " . TextFormat::YELLOW . $this->getType() . TextFormat::GRAY . " has spawned! Kill it for a big prize.");
+			}
+		}
 	}
 
 	//Targetting//

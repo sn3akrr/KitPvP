@@ -21,6 +21,8 @@ class Predators{
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
 
+		Entity::registerEntity(Predator::class);
+
 		Entity::registerEntity(Knight::class);
 		Entity::registerEntity(Pawn::class);
 		Entity::registerEntity(King::class);
@@ -49,7 +51,7 @@ class Predators{
 	public function setup(){
 		$level = $this->plugin->getServer()->getLevelByName(Structure::LEVEL);
 		foreach(Structure::LOCATIONS as $id => $data){
-			$this->spawners[] = new Spawner($id, $data["type"], $data["ticks"], new Position($data["x"], $data["y"], $data["z"], $level));
+			$this->spawners[] = new Spawner($id, $data["type"], $data["ticks"], $data["distance"] ?? 20, new Position($data["x"], $data["y"], $data["z"], $level));
 		}
 	}
 

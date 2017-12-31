@@ -20,19 +20,19 @@ use kitpvp\arena\predators\entities\{
 
 class Spawner{
 
-	const SPAWN_DISTANCE = 20;
-
 	public $id;
 	public $type;
 	public $baseSpawnRate;
+	public $spawnDistance;
 	public $position;
 
 	public $spawnRate = 5;
 
-	public function __construct($id, $type, $spawnRate, Position $pos){
+	public function __construct($id, $type, $spawnRate, $spawnDistance = -1, Position $pos){
 		$this->id = $id;
 		$this->type = $type;
 		$this->baseSpawnRate = $spawnRate;
+		$this->spawnDistance = $spawnDistance;
 		$this->position = $pos;
 	}
 
@@ -43,7 +43,7 @@ class Spawner{
 
 		$canSpawn = false;
 		foreach($this->getPosition()->getLevel()->getPlayers() as $player){
-			if($player->distance($this->getPosition()->asVector3()) <= self::SPAWN_DISTANCE){
+			if($player->distance($this->getPosition()->asVector3()) <= $this->getSpawnDistance()){
 				$canSpawn = true;
 				break;
 			}
@@ -60,8 +60,13 @@ class Spawner{
 					$predators++;
 					if(strtolower($e->getType()) == $this->getType()) $type++;
 				}
-				if($predators >= $this->getBaseSpawnLimit()) return;
-				if($type >= $this->getTypeSpawnLimit()) return;
+				if(
+					$predators >= $this->getBaseSpawnLimit() || 
+					$type >= $this->getTypeSpawnLimit()
+				){
+					$entity->close();
+					return;
+				}
 			}
 			$entity->spawnToAll();
 		}
@@ -106,8 +111,8 @@ class Spawner{
 				$entity = new King($level, $nbt);
 			break;
 
-			case "android":
-				$entity = new Android($level, $nbt);
+			case "robot":
+				$entity = new Robot($level, $nbt);
 			break;
 			case "cyborg":
 				$entity = new Cyborg($level, $nbt);
@@ -154,6 +159,10 @@ class Spawner{
 
 	public function getTypeSpawnLimit(){
 		return Structure::SPAWN_LIMITS[$this->getType()];
+	}
+
+	public function getSpawnDistance(){
+		return $this->spawnDistance == -1 ? 9999 : $this->spawnDistance;
 	}
 
 	public function getPosition(){

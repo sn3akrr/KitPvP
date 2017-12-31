@@ -23,6 +23,8 @@ class MainTask extends PluginTask{
 			}
 		}
 
+		$this->plugin->getArena()->tick();
+
 		$this->plugin->getCombat()->tick();
 
 		$this->plugin->getDuels()->tick();

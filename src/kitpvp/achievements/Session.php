@@ -6,6 +6,7 @@ use pocketmine\utils\TextFormat;
 use core\stats\User;
 
 use kitpvp\KitPvP;
+use core\Core;
 
 class Session{
 
@@ -107,6 +108,8 @@ class Session{
 		$player->sendMessage(TextFormat::YELLOW . TextFormat::OBFUSCATED . "||" . TextFormat::RESET . TextFormat::GRAY . " Achievement get! (" . TextFormat::YELLOW . $achievement->getName() . TextFormat::GRAY . ") " . TextFormat::YELLOW . TextFormat::OBFUSCATED . "||");
 		$player->sendMessage(TextFormat::LIGHT_PURPLE . "+" . $achievement->getPoints() . " achievement points");
 		$player->sendMessage(TextFormat::AQUA . "= = = = = = = = = = = =");
+
+		Core::getInstance()->getEntities()->getFloatingText()->getText("achievements-2")->update($player, true);
 	}
 
 	public function save(){

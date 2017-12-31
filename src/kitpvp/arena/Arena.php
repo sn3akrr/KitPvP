@@ -4,8 +4,13 @@ use pocketmine\level\Position;
 use pocketmine\level\Location;
 use pocketmine\utils\TextFormat;
 use pocketmine\Player;
+use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 
 use kitpvp\KitPvP;
+use kitpvp\arena\{
+	envoys\Envoys,
+	predators\Predators
+};
 
 use core\vote\Vote;
 use core\Core;
@@ -13,12 +18,34 @@ use core\Core;
 class Arena{
 
 	public $plugin;
-	public $positions;
+
+	public $envoys;
 
 	public $regions = [];
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
+
+		$this->envoys = new Envoys($plugin);
+		$this->predators = new Predators($plugin);
+
+		$this->setupRegions();
+	}
+
+	public function tick(){
+		$this->getEnvoys()->tick();
+		$this->getPredators()->tick();
+	}
+
+	public function getEnvoys(){
+		return $this->envoys;
+	}
+
+	public function getPredators(){
+		return $this->predators;
+	}
+
+	public function setupRegions(){
 		$level = $this->plugin->getServer()->getLevelByName("atm");
 		foreach([
 			new Region("the wild west", [
@@ -212,6 +239,10 @@ class Arena{
 			$attribute = $player->getAttributeMap()->getAttribute(5);
 			$attribute->setValue($attribute->getValue() / (1 + 0.2 * 5), true);
 		}
+
+		$pk = new GameRulesChangedPacket();
+		$pk->gameRules["showcoordinates"] = [1, true];
+		$player->dataPacket($pk);
 	}
 
 	public function exitArena(Player $player){
@@ -221,6 +252,10 @@ class Arena{
 		$this->plugin->getKits()->getSession($player)->removeKit();
 
 		unset($this->plugin->jump[$player->getName()]);
+
+		$pk = new GameRulesChangedPacket();
+		$pk->gameRules["showcoordinates"] = [1, false];
+		$player->dataPacket($pk);
 	}
 
 	public function getSpawnPosition(){

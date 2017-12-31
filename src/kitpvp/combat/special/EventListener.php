@@ -167,8 +167,8 @@ class EventListener implements Listener{
 
 		$player = $e->getEntity();
 		$teams = $this->plugin->getCombat()->getTeams();
-		if($player instanceof Player){
-			if($this->plugin->getArena()->inSpawn($player)){
+		if($player instanceof Player || $player instanceof Envoy){
+			if($player instanceof Player && $this->plugin->getArena()->inSpawn($player)){
 				$e->setCancelled(true);
 				return;
 			}
@@ -190,11 +190,13 @@ class EventListener implements Listener{
 							$e->setDamage(3);
 							$e->setDamage(3, 4);
 
-							$ks = $this->plugin->getKits()->getSession($player);
-							if($ks->hasKit()){
-								if($ks->getKit()->getName() == "archer"){
-									$as = $this->plugin->getAchievements()->getSession($killer);
-									if(!$as->hasAchievement("archer_gun")) $as->get("archer_gun");
+							if($player instanceof Player){
+								$ks = $this->plugin->getKits()->getSession($player);
+								if($ks->hasKit()){
+									if($ks->getKit()->getName() == "archer"){
+										$as = $this->plugin->getAchievements()->getSession($killer);
+										if(!$as->hasAchievement("archer_gun")) $as->get("archer_gun");
+									}
 								}
 							}
 						}
@@ -269,7 +271,7 @@ class EventListener implements Listener{
 							$e->setDamage(mt_rand(2,3));
 							$e->setDamage(mt_rand(1,2), 4);
 							$e->setKnockback(0.65);
-							$this->special->bleed($player, $killer, mt_rand(3,8));
+							if($player instanceof Player) $this->special->bleed($player, $killer, mt_rand(3,8));
 						break;
 						case "fireaxe":
 							$e->setDamage(mt_rand(2,4));

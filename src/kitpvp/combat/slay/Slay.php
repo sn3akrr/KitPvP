@@ -142,8 +142,12 @@ class Slay{
 			}
 
 			if($killer->getHealth() <= 4){
-				$as = KitPvP::getInstance()->getAchievements()->getSession($dead);
+				$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
 				if(!$as->hasAchievement("close_call")) $as->get("close_call");
+			}
+			if($killer->getHealth() == $killer->getMaxHealth()){
+				$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
+				if(!$as->hasAchievement("perfect")) $as->get("perfect");
 			}
 
 			$streak = $this->combat->getStreaks()->getStreak($dead);
@@ -168,7 +172,10 @@ class Slay{
 			$this->combat->getLogging()->removeCombat($dead);
 			$this->combat->getBodies()->addBody($dead);
 			foreach($dead->getInventory()->getContents() as $item){
-				if($item instanceof Food) $dead->getLevel()->dropItem($dead, $item);
+				if($item instanceof Food){
+					$dead->getLevel()->dropItem($dead, $item);
+					break;
+				}
 			}
 			$this->plugin->getArena()->exitArena($dead);
 			$this->resetPlayer($dead);
@@ -211,7 +218,10 @@ class Slay{
 		$this->combat->getLogging()->removeCombat($player);
 		$this->combat->getBodies()->addBody($player);
 		foreach($player->getInventory()->getContents() as $item){
-			if($item instanceof Food) $player->getLevel()->dropItem($player, $item);
+			if($item instanceof Food){
+				$player->getLevel()->dropItem($player, $item);
+				break;
+			}
 		}
 		$this->plugin->getArena()->exitArena($player);
 

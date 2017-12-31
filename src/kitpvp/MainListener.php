@@ -11,6 +11,7 @@ use pocketmine\event\player\{
 	PlayerInteractEvent,
 	PlayerJumpEvent
 };
+use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\entity\{
 	EntityDamageEvent,
 	EntityDamageByEntityEvent
@@ -26,6 +27,11 @@ use pocketmine\utils\TextFormat;
 use pocketmine\level\Position;
 
 use kitpvp\uis\MainUi;
+use kitpvp\arena\envoys\pickups\{
+	EffectPickup,
+	FreePlay,
+	TechitCluster
+};
 
 use core\Core;
 
@@ -113,6 +119,28 @@ class MainListener implements Listener{
 
 			$attribute = $player->getAttributeMap()->getAttribute(5);
 			$attribute->setValue($attribute->getValue() * (1 + 0.2 * 5), true);
+		}
+	}
+
+	public function onPickup(InventoryPickupItemEvent $e){
+		$player = $e->getInventory()->getHolder();
+		if($player instanceof Player){
+			$item = $e->getItem();
+			if($item instanceof EffectPickup){
+				$effect = $item->getEffect();
+				$player->addEffect($effect);
+			}
+			if($item instanceof FreePlay){
+				$type = $item->getFreePlayType();
+				$count = $item->getCount();
+				$this->plugin->getKits()->getSession($player)->addFreePlays($type, $count);
+				$player->sendMessage(TextFormat::OBFUSCATED . "||" . TextFormat::RESET . " " . TextFormat::GRAY . "Picked up " . TextFormat::YELLOW . "x".$count." ".$type." Free Play".($count > 1 ? "s" : "").TextFormat::GRAY."! ".TextFormat::WHITE.TextFormat::OBFUSCATED."||");
+			}
+			if($item instanceof TechitCluster){
+				$count = $item->getTechitWorth();
+				$player->addTechits($count);
+				$player->sendMessage(TextFormat::OBFUSCATED . "||" . TextFormat::RESET . " " . TextFormat::GRAY . "Picked up " . TextFormat::AQUA . $count." Techits".TextFormat::GRAY."! ".TextFormat::WHITE.TextFormat::OBFUSCATED."||");
+			}
 		}
 	}
 

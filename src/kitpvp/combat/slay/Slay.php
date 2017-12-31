@@ -16,6 +16,7 @@ use pocketmine\Player;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
+use kitpvp\arena\predators\entities\Predator;
 
 use core\Core;
 
@@ -121,93 +122,129 @@ class Slay{
 		}
 	}
 
-	public function processKill(Player $killer, Player $dead){
-		$duels = $this->plugin->getDuels();
-		if(!$duels->inDuel($dead)){
-			$this->addKill($killer);
-			$this->combat->getStreaks()->addStreak($killer);
-			$this->combat->getLogging()->removeCombat($killer);
-			$killer->addTechits(5);
+	public function processKill(Entity $killer, Entity $dead){
+		if($killer instanceof Player){
+			if($dead instanceof Player){
+				$duels = $this->plugin->getDuels();
+				if(!$duels->inDuel($dead)){
+					$this->addKill($killer);
+					$this->combat->getStreaks()->addStreak($killer);
+					$this->combat->getLogging()->removeCombat($killer);
+					$killer->addTechits(5);
 
-			$teams = KitPvP::getInstance()->getCombat()->getTeams();
-			if($teams->inTeam($killer)){
-				$team = $teams->getPlayerTeam($killer);
-				$opposite = $team->getOppositeMember($killer);
-				if($this->getLastKiller($opposite) == $dead->getName()){
-					$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
-					if(!$as->hasAchievement("team_3")){
-						$as->hasAchievement("team_3");
+					$teams = KitPvP::getInstance()->getCombat()->getTeams();
+					if($teams->inTeam($killer)){
+						$team = $teams->getPlayerTeam($killer);
+						$opposite = $team->getOppositeMember($killer);
+						if($this->getLastKiller($opposite) == $dead->getName()){
+							$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
+							if(!$as->hasAchievement("team_3")){
+								$as->hasAchievement("team_3");
+							}
+						}
+					}
+
+					if($killer->getHealth() <= 4){
+						$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
+						if(!$as->hasAchievement("close_call")) $as->get("close_call");
+					}
+					if($killer->getHealth() == $killer->getMaxHealth()){
+						$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
+						if(!$as->hasAchievement("perfect")) $as->get("perfect");
+					}
+
+					$streak = $this->combat->getStreaks()->getStreak($dead);
+					if(!isset($streak) || $streak == 0){
+						$as = KitPvP::getInstance()->getAchievements()->getSession($dead);
+						$ks = KitPvP::getInstance()->getKits()->getSession($dead);
+						if($ks->hasKit()){
+							$kit = $ks->getKit()->getName();
+							switch($kit){
+								case "noob":
+									if(!$as->hasAchievement("lol_noob")) $as->get("lol_noob");
+								break;
+								default:
+									if(!$as->hasAchievement("wasted")) $as->get("wasted");
+								break;
+							}
+						}
+					}
+
+					$this->strikeLightning($dead);
+					$this->addDeath($dead);
+					$this->combat->getLogging()->removeCombat($dead);
+					$this->combat->getBodies()->addBody($dead);
+					foreach($dead->getInventory()->getContents() as $item){
+						if($item instanceof Food){
+							$dead->getLevel()->dropItem($dead, $item);
+							break;
+						}
+					}
+					$this->plugin->getArena()->exitArena($dead);
+					$this->resetPlayer($dead);
+					$this->killChildren($dead);
+
+					$this->combat->getStreaks()->resetStreak($dead, $killer);
+
+					foreach($this->getAssistingPlayers($dead) as $assist){
+						if($assist != $killer && $assist != $dead){
+							$assist->addTechits(2);
+							$assist->addGlobalExp(1);
+							$assist->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Earned " . TextFormat::AQUA . "2 Techits" . TextFormat::GRAY . " for helping kill " . TextFormat::RED . $dead->getName()."!");
+						}
+					}
+					$this->unsetAssistingPlayers($dead);
+					$this->setLastKiller($dead, $killer);
+					if($this->getLastKiller($killer) == $dead->getName()){
+						foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
+							$player->sendMessage(TextFormat::RED . TextFormat::BOLD . ">> " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName(). TextFormat::GRAY . " got revenge against " . TextFormat::YELLOW . $dead->getName() . "!");
+						}
+						$killer->addTechits(3);
+						$killer->addGlobalExp(2);
+						$this->unsetLastKiller($killer);
+					}
+
+					$killer->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You killed " . TextFormat::RED . $dead->getName() . TextFormat::GRAY . " and earned " . TextFormat::AQUA . "5 Techits!");
+					$dead->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName(). TextFormat::GRAY . " killed you with " . TextFormat::AQUA . ($killer->getHealth() / 2). TextFormat::RED . " <3's". TextFormat::GRAY . " left!");
+				}else{
+					$duel = $duels->getPlayerDuel($dead);
+					$duel->setWinner($killer);
+					$duel->setLoser($dead);
+					$duel->end();
+				}
+			}elseif($dead instanceof Predator){
+				$killer->sendMessage("you killed a ".$dead->getType()."!");
+			}elseif($dead instanceof Envoy){
+
+			}
+		}elseif($killer instanceof Predator){
+			if($dead instanceof Player){
+				$dead->sendMessage("died to a ".$killer->getType()."!");
+
+				$this->strikeLightning($dead);
+				$this->addDeath($dead);
+				$this->combat->getLogging()->removeCombat($dead);
+				$this->combat->getBodies()->addBody($dead);
+				foreach($dead->getInventory()->getContents() as $item){
+					if($item instanceof Food){
+						$dead->getLevel()->dropItem($dead, $item);
+						break;
+					}
+				}
+				$this->plugin->getArena()->exitArena($dead);
+				$this->resetPlayer($dead);
+				$this->killChildren($dead);
+
+				$this->combat->getStreaks()->resetStreak($dead, $killer);
+
+				foreach($this->getAssistingPlayers($dead) as $assist){
+					if($assist != $killer && $assist != $dead){
+						$assist->addTechits(2);
+						$assist->addGlobalExp(1);
+						$assist->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Earned " . TextFormat::AQUA . "2 Techits" . TextFormat::GRAY . " for helping kill " . TextFormat::RED . $dead->getName()."!");
 					}
 				}
 			}
-
-			if($killer->getHealth() <= 4){
-				$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
-				if(!$as->hasAchievement("close_call")) $as->get("close_call");
-			}
-			if($killer->getHealth() == $killer->getMaxHealth()){
-				$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
-				if(!$as->hasAchievement("perfect")) $as->get("perfect");
-			}
-
-			$streak = $this->combat->getStreaks()->getStreak($dead);
-			if(!isset($streak) || $streak == 0){
-				$as = KitPvP::getInstance()->getAchievements()->getSession($dead);
-				$ks = KitPvP::getInstance()->getKits()->getSession($dead);
-				if($ks->hasKit()){
-					$kit = $ks->getKit()->getName();
-					switch($kit){
-						case "noob":
-							if(!$as->hasAchievement("lol_noob")) $as->get("lol_noob");
-						break;
-						default:
-							if(!$as->hasAchievement("wasted")) $as->get("wasted");
-						break;
-					}
-				}
-			}
-
-			$this->strikeLightning($dead);
-			$this->addDeath($dead);
-			$this->combat->getLogging()->removeCombat($dead);
-			$this->combat->getBodies()->addBody($dead);
-			foreach($dead->getInventory()->getContents() as $item){
-				if($item instanceof Food){
-					$dead->getLevel()->dropItem($dead, $item);
-					break;
-				}
-			}
-			$this->plugin->getArena()->exitArena($dead);
-			$this->resetPlayer($dead);
-			$this->killChildren($dead);
-
-			$this->combat->getStreaks()->resetStreak($dead, $killer);
-
-			foreach($this->getAssistingPlayers($dead) as $assist){
-				if($assist != $killer && $assist != $dead){
-					$assist->addTechits(2);
-					$assist->addGlobalExp(1);
-					$assist->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Earned " . TextFormat::AQUA . "2 Techits" . TextFormat::GRAY . " for helping kill " . TextFormat::RED . $dead->getName()."!");
-				}
-			}
-			$this->unsetAssistingPlayers($dead);
-			$this->setLastKiller($dead, $killer);
-			if($this->getLastKiller($killer) == $dead->getName()){
-				foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
-					$player->sendMessage(TextFormat::RED . TextFormat::BOLD . ">> " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName(). TextFormat::GRAY . " got revenge against " . TextFormat::YELLOW . $dead->getName() . "!");
-				}
-				$killer->addTechits(3);
-				$killer->addGlobalExp(2);
-				$this->unsetLastKiller($killer);
-			}
-
-			$killer->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You killed " . TextFormat::RED . $dead->getName() . TextFormat::GRAY . " and earned " . TextFormat::AQUA . "5 Techits!");
-			$dead->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName(). TextFormat::GRAY . " killed you with " . TextFormat::AQUA . ($killer->getHealth() / 2). TextFormat::RED . " <3's". TextFormat::GRAY . " left!");
-		}else{
-			$duel = $duels->getPlayerDuel($dead);
-			$duel->setWinner($killer);
-			$duel->setLoser($dead);
-			$duel->end();
 		}
 
 	}

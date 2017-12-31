@@ -50,6 +50,10 @@ use kitpvp\combat\special\entities\{
 	ThrownKunai
 };
 use kitpvp\combat\special\items\ConcussionGrenade;
+use kitpvp\arena\{
+	envoys\entities\Envoy,
+	predators\entities\Predator
+};
 
 class EventListener implements Listener{
 
@@ -82,11 +86,13 @@ class EventListener implements Listener{
 			case "bookofspells":
 				$count = 0;
 				$spell = $this->special->getRandomSpell();
-				foreach($player->getLevel()->getPlayers() as $p){
-					if($p->distance($player) <= 10 && $p != $player){
-						if(!$teams->sameTeam($player, $p)){
-							$spell->cast($player, $p);
-							$count++;
+				foreach($player->getLevel()->getEntities() as $p){
+					if($p instanceof Player || $p instanceof Predator || $p instanceof Envoy){
+						if($p->distance($player) <= 10 && $p != $player){
+							if(!$p instanceof Player || !$teams->sameTeam($player, $p)){
+								$spell->cast($player, $p);
+								$count++;
+							}
 						}
 					}
 				}
@@ -167,7 +173,7 @@ class EventListener implements Listener{
 
 		$player = $e->getEntity();
 		$teams = $this->plugin->getCombat()->getTeams();
-		if($player instanceof Player || $player instanceof Envoy){
+		if($player instanceof Player || $player instanceof Envoy || $player instanceof Predator){
 			if($player instanceof Player && $this->plugin->getArena()->inSpawn($player)){
 				$e->setCancelled(true);
 				return;
@@ -179,10 +185,12 @@ class EventListener implements Listener{
 					if($e instanceof EntityDamageByChildEntityEvent){
 						$child = $e->getChild();
 						if($child instanceof ThrownConcussionGrenade){
-							foreach($child->getViewers() as $player){
-								if($player->distance($child) <= 5 && $player != $killer){
-									$grenade = new ConcussionGrenade();
-									$grenade->concuss($player, $killer);
+							foreach($child->getLevel()->getEntities() as $entity){
+								if($entity instanceof Player || $entity instanceof Envoy || $entity instanceof Predator){
+									if($entity->distance($child) <= 5 && $entity != $killer){
+										$grenade = new ConcussionGrenade();
+										$grenade->concuss($entity, $killer);
+									}
 								}
 							}
 						}
@@ -221,7 +229,7 @@ class EventListener implements Listener{
 
 					$ticker = $this->special->getTickerByItem($item);
 					if($ticker == null) return;
-					if($ticker->hasCooldown($player)) return;
+					if($ticker->hasCooldown($killer)) return;
 					switch($ticker->getName()){
 						case "fryingpan":
 							$e->setKnockback(0.50);
@@ -253,7 +261,7 @@ class EventListener implements Listener{
 						case "defibrillator":
 							$ticker->use($killer);
 							$this->plugin->getCombat()->getSlay()->strikeLightning($player);
-							$player->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
+							if($player instanceof Player) $player->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
 							$killer->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
 							$e->setDamage(3);
 							$e->setDamage(2, 4);

@@ -1,12 +1,14 @@
 <?php namespace kitpvp\combat\streaks;
 
 use pocketmine\utils\TextFormat;
+use pocketmine\Player;
+use pocketmine\entity\Entity;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
+use kitpvp\arena\predators\entities\Predator;
 
 use core\Core;
-use core\AtPlayer as Player;
 
 class Streaks{
 
@@ -62,17 +64,10 @@ class Streaks{
 		}
 	}
 
-	public function resetStreak(Player $player, Player $killer){
+	public function resetStreak(Player $player, Entity $killer){
 		$reward = $this->hasSignificantStreak($player);
 		$streak = $this->getStreak($player);
 		$this->setStreak($player, 0);
-		if($reward){
-			foreach($this->plugin->getServer()->getOnlinePlayers() as $p){
-				$p->sendMessage(TextFormat::AQUA."Streak> ".TextFormat::LIGHT_PURPLE.$killer->getName()." broke ".$player->getName()."'s kill streak of ".$streak." and earned ".($streak * 2)." Techits!");
-			}
-			$killer->addTechits($streak * 2);
-			$killer->addGlobalExp($streak);
-		}
 		$player->setXpLevel(0);
 
 		$lb = $this->plugin->getLeaderboard();
@@ -81,13 +76,28 @@ class Streaks{
 			$player->sendMessage(TextFormat::GREEN . "New highest streak reached!");
 		}
 
-		$a = KitPvP::getInstance()->getAchievements();
-		if($streak >= 5){
-			$as = $a->getSession($player);
-			if(!$as->hasAchievement("streak_killer")) $as->get("streak_killer");
-			if($streak == 23){
+		if($killer instanceof Player){
+			if($reward){
+				foreach($this->plugin->getServer()->getOnlinePlayers() as $p){
+					$p->sendMessage(TextFormat::AQUA."Streak> ".TextFormat::LIGHT_PURPLE.$killer->getName()." broke ".$player->getName()."'s kill streak of ".$streak." and earned ".($streak * 2)." Techits!");
+				}
+				$killer->addTechits($streak * 2);
+				$killer->addGlobalExp($streak);
+			}
+			$a = KitPvP::getInstance()->getAchievements();
+			if($streak >= 5){
 				$as = $a->getSession($player);
-				if($as->hasAchievement("malone_streak")) $as->get("malone_streak");
+				if(!$as->hasAchievement("streak_killer")) $as->get("streak_killer");
+				if($streak == 23){
+					$as = $a->getSession($player);
+					if($as->hasAchievement("malone_streak")) $as->get("malone_streak");
+				}
+			}
+		}elseif($killer instanceof Predator){
+			if($reward){
+				foreach($this->plugin->getServer()->getOnlinePlayers() as $p){
+					$p->sendMessage($player->getName()." lost their streak to a ".$killer->getType()."! What a loser!");
+				}
 			}
 		}
 	}

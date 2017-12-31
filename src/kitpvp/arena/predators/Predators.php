@@ -3,7 +3,11 @@
 use pocketmine\entity\Entity;
 use pocketmine\level\Position;
 use kitpvp\arena\predators\entities\{
-	Predator
+	Predator,
+	Knight, Pawn, King,
+	Robot, Cyborg, PowerMech,
+	Jungleman, Caveman, Gorilla,
+	Bandit, Cowboy, Sheriff
 };
 
 use kitpvp\KitPvP;
@@ -17,7 +21,21 @@ class Predators{
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
 
-		Entity::registerEntity(Predator::class);
+		Entity::registerEntity(Knight::class);
+		Entity::registerEntity(Pawn::class);
+		Entity::registerEntity(King::class);
+
+		Entity::registerEntity(Robot::class);
+		Entity::registerEntity(Cyborg::class);
+		Entity::registerEntity(PowerMech::class);
+
+		Entity::registerEntity(Jungleman::class);
+		Entity::registerEntity(Caveman::class);
+		Entity::registerEntity(Gorilla::class);
+
+		Entity::registerEntity(Bandit::class);
+		Entity::registerEntity(Cowboy::class);
+		Entity::registerEntity(Sheriff::class);
 
 		$this->setup();
 	}
@@ -31,7 +49,7 @@ class Predators{
 	public function setup(){
 		$level = $this->plugin->getServer()->getLevelByName(Structure::LEVEL);
 		foreach(Structure::LOCATIONS as $id => $data){
-			$this->spawners[] = new Spawner($id, new Position($data["x"], $data["y"], $data["z"], $level));
+			$this->spawners[] = new Spawner($id, $data["type"], $data["ticks"], new Position($data["x"], $data["y"], $data["z"], $level));
 		}
 	}
 

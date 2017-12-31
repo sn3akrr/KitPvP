@@ -2,6 +2,7 @@
 
 use pocketmine\Player;
 use pocketmine\level\particle\FlameParticle;
+use pocketmine\entity\projectile\Projectile;
 
 use kitpvp\KitPvP;
 
@@ -18,8 +19,8 @@ class FireAura extends Ability{
 	public function tick(){
 		$player = $this->player;
 		$dmg = false;			
-		foreach($player->getViewers() as $p){
-			if($p->distance($player) <= 6 && $p != $player){
+		foreach($player->getLevel()->getEntities() as $p){
+			if($p->distance($player) <= 6 && $p != $player && !$p instanceof Projectile){
 				if($p->getHealth() - 2 <= 0){}else{
 					$dmg = true;
 					KitPvP::getInstance()->getCombat()->getSlay()->damageAs($player, $p, 2);

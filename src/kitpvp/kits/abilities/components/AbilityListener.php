@@ -62,54 +62,54 @@ class AbilityListener implements Listener{
 		if($player instanceof Player){
 			if($e instanceof EntityDamageByEntityEvent){
 				$killer = $e->getDamager();
-				if($killer instanceof Player){
-					$session = $this->kits->getSession($player);
-					if($session->hasKit()){
-						$kit = $session->getKit();
-						$abilities = $kit->getAbilities();
+				$session = $this->kits->getSession($player);
+				if($session->hasKit()){
+					$kit = $session->getKit();
+					$abilities = $kit->getAbilities();
 
-						if($player->getHealth() - $e->getFinalDamage() <= 5){
-							foreach($abilities as $ability){
-								switch($ability->getName()){
-									case "last chance":
-									case "slender":
-									case "adrenaline":
-									case "miracle":
-										if(!$ability->isUsed()){
-											$ability->activate($player);
-										}
-									break;
-								}
-							}
-						}
+					if($player->getHealth() - $e->getFinalDamage() <= 5){
 						foreach($abilities as $ability){
 							switch($ability->getName()){
-								case "bounceback":
-									$chance = mt_rand(1,100);
-									if($chance <= 25){
-										$ability->activate($player, $killer);
-									}
-								break;
-								case "curse":
-									$chance = mt_rand(1,100);
-									if($chance <= 1){
-										$ability->activate($player, $killer);
-									}
-								break;
-								case "arrow dodge":
-									if($e instanceof EntityDamageByChildEntityEvent){
-										$child = $e->getChild();
-										if($child instanceof Arrow){
-											$chance = mt_rand(0,100);
-											if($chance <= 25){
-												$ability->activate($player, $e);
-											}
-										}
+								case "last chance":
+								case "slender":
+								case "adrenaline":
+								case "miracle":
+									if(!$ability->isUsed()){
+										$ability->activate($player);
 									}
 								break;
 							}
 						}
 					}
+					foreach($abilities as $ability){
+						switch($ability->getName()){
+							case "bounceback":
+								$chance = mt_rand(1,100);
+								if($chance <= 25){
+									$ability->activate($player, $killer);
+								}
+							break;
+							case "curse":
+								$chance = mt_rand(1,100);
+								if($chance <= 1){
+									$ability->activate($player, $killer);
+								}
+							break;
+							case "arrow dodge":
+								if($e instanceof EntityDamageByChildEntityEvent){
+									$child = $e->getChild();
+									if($child instanceof Arrow){
+										$chance = mt_rand(0,100);
+										if($chance <= 25){
+											$ability->activate($player, $e);
+										}
+									}
+								}
+							break;
+						}
+					}
+				}
+				if($killer instanceof Player){
 					$session = $this->kits->getSession($killer);
 					if($session->hasKit()){
 						$kit = $session->getKit();

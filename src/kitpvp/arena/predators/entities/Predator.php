@@ -32,18 +32,25 @@ class Predator extends Human{
 	public $nextMoveTick = 100;
 
 	public $jumpTicks = 5;
+	public $attackWait = 20;
+
 
 	public $attackDamage = 4;
-	public $attackWait = 20;
 	public $speed = 0.35;
+	public $startingHealth = 20;
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
 
-		$this->setHealth(40);
-		$this->setNametag($this->getNametag());
+		$this->setMaxHealth($this->startingHealth);
+		$this->setHealth($this->startingHealth);
 
+		$this->setNametag($this->getNametag());
 		$this->generateRandomPosition();
+	}
+
+	public function isBoss(){
+		return false;
 	}
 
 	public function getType(){
@@ -173,9 +180,9 @@ class Predator extends Human{
 		if($this->distance($target) <= 1.5 && $this->attackWait <= 0){
 			$event = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getBaseAttackDamage());
 			if($target->getHealth() - $event->getFinalDamage() <= 0){
+				KitPvP::getInstance()->getCombat()->getSlay()->processKill($this, $target);
 				$this->target = null;
 				$event->setCancelled(true);
-				KitPvP::getInstance()->getCombat()->getSlay()->processSuicide($target);
 			}
 			$this->broadcastEntityEvent(2);
 			$target->attack($event);
@@ -198,6 +205,11 @@ class Predator extends Human{
 				}
 			}
 		}
+	}
+
+	public function kill(){
+		KitPvP::getInstance()->getCombat()->getSlay()->processKill($this->getTarget(), $this);
+		parent::kill();
 	}
 
 	//Targetting//

@@ -15,6 +15,10 @@ class Boss extends Predator{
 		parent::__construct($level, $nbt);
 	}
 
+	public function getNametag(){
+		return TextFormat::YELLOW . TextFormat::BOLD . "[BOSS] " .  TextFormat::RESET . parent::getNametag();
+	}
+
 	public function isBoss(){
 		return true;
 	}

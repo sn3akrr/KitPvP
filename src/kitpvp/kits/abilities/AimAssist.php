@@ -23,8 +23,8 @@ class AimAssist extends Ability{
 		if($this->target == null){
 			$distance = self::MAX_DISTANCE;
 			$target = null;
+			$teams = KitPvP::getInstance()->getCombat()->getTeams();
 			foreach($player->getLevel()->getEntities() as $p){
-				$teams = KitPvP::getInstance()->getCombat()->getTeams();
 				if($p != $player && $p instanceof Living && $player->distance($p) <= $distance && (!$p instanceof Player || !$teams->sameTeam($player, $p))){
 					$distance = $player->distance($p);
 					$target = $p;

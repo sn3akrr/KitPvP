@@ -69,6 +69,7 @@ class Predator extends Human{
 			return false;
 		}
 		$this->setNametag($this->getNametag());
+
 		if($this->hasTarget()){
 			return $this->attackTarget();
 		}
@@ -96,10 +97,10 @@ class Predator extends Human{
 		}else{
 			$this->motionY -= $this->gravity;
 		}
+		$this->move($this->motionX, $this->motionY, $this->motionZ);
 		if($this->shouldJump()){
 			$this->jump();
 		}
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
 		if($this->atRandomPosition() || $this->findNewPositionTicks === 0){
 			$this->generateRandomPosition();
@@ -119,6 +120,9 @@ class Predator extends Human{
 		$this->pitch = rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
 
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
+		if($this->shouldJump()){
+			$this->jump();
+		}
 
 		$this->updateMovement();
 		return $this->isAlive();
@@ -144,10 +148,10 @@ class Predator extends Human{
 		}else{
 			$this->motionY -= $this->gravity;
 		}
+		$this->move($this->motionX, $this->motionY, $this->motionZ);
 		if($this->shouldJump()){
 			$this->jump();
 		}
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
 		$x = $target->x - $this->x;
 		$y = $target->y - $this->y;
@@ -164,6 +168,9 @@ class Predator extends Human{
 		$this->pitch = rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
 
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
+		if($this->shouldJump()){
+			$this->jump();
+		}
 
 		if($this->distance($target) <= 1.1 && $this->attackWait <= 0){
 			$event = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getBaseAttackDamage());
@@ -267,7 +274,7 @@ class Predator extends Human{
 	}
 
 	public function getSpeed(){
-		return $this->speed;
+		return ($this->isInsideOfWater() ? $this->speed / 2 : $this->speed);
 	}
 
 	public function getBaseAttackDamage(){
@@ -310,6 +317,9 @@ class Predator extends Human{
 			$this->getLevel()->getBlock($this->asVector3()->subtract(0,0.5)->round()) instanceof Slab &&
 			$this->getFrontBlock()->getId() != 0
 		){
+			$fb = $this->getFrontBlock();
+			if($fb instanceof Slab && $fb->getDamage() & 0x08 > 0) return 8;
+			if($fb instanceof Stair && $fb->getDamage() & 0x04 > 0) return 8;
 			return 4;
 		}
 		return 8;
@@ -318,7 +328,7 @@ class Predator extends Human{
 	public function jump(){
 		$this->motionY = $this->gravity * $this->getJumpMultiplier();
 		$this->move($this->motionX * 1.25, $this->motionY, $this->motionZ * 1.25);
-		$this->jumpTicks = ($this->getJumpMultiplier() == 4 ? 2 : 5);
+		$this->jumpTicks = 5; //($this->getJumpMultiplier() == 4 ? 2 : 5);
 	}
 
 }

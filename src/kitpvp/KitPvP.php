@@ -51,14 +51,6 @@ class KitPvP extends PluginBase{
 		$this->getServer()->getLevelByName("atm")->setTime(0);
 		$this->getServer()->getLevelByName("atm")->stopTime();
 
-		$this->getServer()->loadLevel("KitSpawn");
-		$this->getServer()->getLevelByName("KitSpawn")->setTime(18000);
-		$this->getServer()->getLevelByName("KitSpawn")->stopTime();
-
-		$this->getServer()->loadLevel("KitArena");
-		$this->getServer()->getLevelByName("KitArena")->setTime(0);
-		$this->getServer()->getLevelByName("KitArena")->stopTime();
-
 		$this->getServer()->loadLevel("duels");
 		$this->getServer()->getLevelByName("duels")->setTime(0);
 		$this->getServer()->getLevelByName("duels")->stopTime();
@@ -74,6 +66,9 @@ class KitPvP extends PluginBase{
 
 		$this->getServer()->getPluginManager()->registerEvents(new MainListener($this), $this);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new MainTask($this), 20);
+
+		//$this->getServer()->setDefaultLevel($this->getServer()->getLevelByName("m4"));
+		//$this->getServer()->unloadLevel($this->getServer()->getLevelByName("KitSpawn"));
 	}
 
 	public function onDisable(){

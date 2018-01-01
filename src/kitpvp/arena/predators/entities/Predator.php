@@ -200,7 +200,7 @@ class Predator extends Human{
 		if($source instanceof EntityDamageByEntityEvent){
 			$killer = $source->getDamager();
 			if($killer instanceof Player){
-				if($this->target != $killer->getName()){
+				if($this->target != $killer->getName() && mt_rand(1,5) == 1){
 					$this->target = $killer->getName();
 				}
 			}
@@ -210,15 +210,6 @@ class Predator extends Human{
 	public function kill(){
 		if($this->getTarget() != null) KitPvP::getInstance()->getCombat()->getSlay()->processKill($this->getTarget(), $this);
 		parent::kill();
-	}
-
-	public function spawnToAll(){
-		parent::spawnToAll();
-		if($this->isBoss()){
-			foreach(Server::getInstance()->getOnlinePlayers() as $player){
-				$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "A " . TextFormat::YELLOW . $this->getType() . TextFormat::GRAY . " has spawned! Kill it for a big prize.");
-			}
-		}
 	}
 
 	//Targetting//

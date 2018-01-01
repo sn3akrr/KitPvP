@@ -181,21 +181,11 @@ class AchievementList{
 			"hidden" => true,
 			"points" => self::POINTS_TIER1,
 		],
-		/*"enchanter_kill" => [
-			"displayName" => "What doesn't kill me makes me stronger",
-			"description" => "Kill someone with the Enchanter kit using the Book of Spells",
-			"points" => self::POINTS_TIER1,
+		"noob_malone" => [
+			"displayName" => "Wh... Wha... HOW?",
+			"description" => "Get killed by a noob as m4l0ne23",
+			"points" => self::POINTS_TIER0
 		],
-		"3_on_killer" => [
-			"displayName" => "You don't know who you're messing with",
-			"description" => "Kill someone 3 times that killed you once",
-			"points" => self::POINTS_TIER2,
-		],
-		"pyromancer_drown" => [
-			"displayName" => "My one weakness",
-			"description" => "Drown as Pyromancer",
-			"points" => self::POINTS_TIER1,
-		],*/
 		"countered" => [
 			"displayName" => "Get countered!",
 			"description" => "Land a Concussion Grenade on someone with the Scout kit",
@@ -265,5 +255,14 @@ class AchievementList{
 			"description" => "Equip the m4l0ne23 kit for the first time",
 			"points" => self::POINTS_TIER0
 		],
+
+		//Predators
+		"this_town" => [
+			"displayName" => "This town ain't big enough",
+			"description" => "Shoot a cowboy with a gun",
+			"points" => self::POINTS_TIER2
+		],
+
+		//Bosses
 	];
 }

@@ -4,11 +4,10 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Skin;
 
-class Sheriff extends Predator{
+class Sheriff extends Boss{
 
-	public $attackDamage = 6;
+	public $attackDamage = 8;
 	public $speed = 0.5;
-	public $startingHealth = 100;
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
@@ -17,10 +16,6 @@ class Sheriff extends Predator{
 
 	public function getType(){
 		return "Sheriff";
-	}
-
-	public function isBoss(){
-		return true;
 	}
 
 }

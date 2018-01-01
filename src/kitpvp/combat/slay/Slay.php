@@ -16,7 +16,11 @@ use pocketmine\Player;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
-use kitpvp\arena\predators\entities\Predator;
+use kitpvp\arena\predators\entities\{
+	Predator,
+	Boss
+};
+use kitpvp\arena\envoys\entities\Envoy;
 
 use core\Core;
 
@@ -132,39 +136,44 @@ class Slay{
 					$this->combat->getLogging()->removeCombat($killer);
 					$killer->addTechits(5);
 
+					$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
 					$teams = KitPvP::getInstance()->getCombat()->getTeams();
 					if($teams->inTeam($killer)){
 						$team = $teams->getPlayerTeam($killer);
 						$opposite = $team->getOppositeMember($killer);
 						if($this->getLastKiller($opposite) == $dead->getName()){
-							$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
 							if(!$as->hasAchievement("team_3")){
 								$as->hasAchievement("team_3");
 							}
 						}
 					}
 
+
 					if($killer->getHealth() <= 4){
-						$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
 						if(!$as->hasAchievement("close_call")) $as->get("close_call");
 					}
 					if($killer->getHealth() == $killer->getMaxHealth()){
-						$as = KitPvP::getInstance()->getAchievements()->getSession($killer);
 						if(!$as->hasAchievement("perfect")) $as->get("perfect");
 					}
 
 					$streak = $this->combat->getStreaks()->getStreak($dead);
 					if(!isset($streak) || $streak == 0){
-						$as = KitPvP::getInstance()->getAchievements()->getSession($dead);
+						$das = KitPvP::getInstance()->getAchievements()->getSession($dead);
 						$ks = KitPvP::getInstance()->getKits()->getSession($dead);
 						if($ks->hasKit()){
 							$kit = $ks->getKit()->getName();
 							switch($kit){
 								case "noob":
-									if(!$as->hasAchievement("lol_noob")) $as->get("lol_noob");
+									if(!$das->hasAchievement("lol_noob")) $das->get("lol_noob");
+								break;
+								case "m4l0ne23":
+									$ds = KitPvP::getInstance()->getKits()->getSession($killer);
+ 									if($ds->hasKit() && $ds->getKit()->getName() == "m4l0ne23"){
+										if(!$as->hasAchievement("noob_malone")) $as->get("noob_malone");
+									}
 								break;
 								default:
-									if(!$as->hasAchievement("wasted")) $as->get("wasted");
+									if(!$das->hasAchievement("wasted")) $das->get("wasted");
 								break;
 							}
 						}
@@ -213,13 +222,24 @@ class Slay{
 					$duel->end();
 				}
 			}elseif($dead instanceof Predator){
-				$killer->sendMessage("you killed a ".$dead->getType()."!");
+				$techits = 0;
+				if($dead instanceof Boss){
+					$techits = 200;
+					foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
+						$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName() . TextFormat::GRAY . " just killed a " . TextFormat::DARK_PURPLE . $dead->getType() . " Boss " . TextFormat::GRAY . "and earned " . TextFormat::AQUA . $techits . " Techits" . TextFormat::GRAY."!");
+					}
+				}else{
+					$techits = 2;
+					$killer->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "You killed a " . TextFormat::YELLOW . $dead->getType() . TextFormat::GRAY . " and earned " . TextFormat::AQUA . $techits . " Techits" . TextFormat::GRAY . "!");
+				}
 			}elseif($dead instanceof Envoy){
-
+				foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
+					$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "Envoy at " . TextFormat::LIGHT_PURPLE . $dead->getDropPoint()->getName() . TextFormat::GRAY . " has been claimed by " . TextFormat::YELLOW . $killer->getName() . TextFormat::GRAY . ".");
+				}
 			}
 		}elseif($killer instanceof Predator){
 			if($dead instanceof Player){
-				$dead->sendMessage("died to a ".$killer->getType()."!");
+				$dead->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You were killed by a " . TextFormat::DARK_PURPLE . $killer->getType());
 
 				$this->strikeLightning($dead);
 				$this->addDeath($dead);

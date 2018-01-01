@@ -54,7 +54,6 @@ class Spawner{
 
 			$predators = 0;
 			$type = 0;
-			$entity = $this->getEntity();
 			foreach($this->getPosition()->getLevel()->getEntities() as $e){
 				if($e instanceof Predator){
 					$predators++;
@@ -64,10 +63,10 @@ class Spawner{
 					$predators >= $this->getBaseSpawnLimit() || 
 					$type >= $this->getTypeSpawnLimit()
 				){
-					$entity->close();
 					return;
 				}
 			}
+			$entity = $this->getEntity();
 			$entity->spawnToAll();
 		}
 	}

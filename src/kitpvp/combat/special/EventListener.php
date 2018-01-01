@@ -207,6 +207,20 @@ class EventListener implements Listener{
 									}
 								}
 							}
+
+							if($player instanceof Predator){
+								switch($player->getType()){
+									case "Caveman":
+									case "Jungleman":
+
+									break;
+									case "Cowboy":
+										$as = $this->plugin->getAchievements()->getSession($killer);
+										if(!$as->hasAchievement("this_town")) $as->get("this_town");
+									break;
+								}
+							}
+
 						}
 						if($child instanceof ThrownKunai){
 							$e->setDamage(mt_rand(1,6));

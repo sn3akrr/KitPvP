@@ -1,4 +1,4 @@
-<?php namespace kitpvp\arena\envoys;
+<?php namespace kitpvp\arena\predators;
 
 use pocketmine\Server;
 

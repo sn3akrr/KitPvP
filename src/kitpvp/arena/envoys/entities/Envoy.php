@@ -30,6 +30,8 @@ class Envoy extends Human{
 
 	public $ny = 0;
 
+	public $killer = null;
+
 	public function __construct(Level $level, CompoundTag $nbt, DropPoint $dropPoint){
 		parent::__construct($level, $nbt);
 
@@ -49,7 +51,7 @@ class Envoy extends Human{
 		$pk->position = $this->getOffsetPosition($this);
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
-		$pk->headYaw = $this->ny; //TODO
+		$pk->headYaw = $this->ny;
 
 		foreach($this->getViewers() as $viewer){
 			$viewer->dataPacket($pk);
@@ -79,13 +81,7 @@ class Envoy extends Human{
 			if($source instanceof EntityDamageByEntityEvent){
 				$killer = $source->getDamager();
 				if($killer instanceof Player){
-					foreach(Server::getInstance()->getOnlinePlayers() as $player){
-						$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "Envoy at " . TextFormat::LIGHT_PURPLE . $this->getDropPoint()->getName() . TextFormat::GRAY . " has been claimed by " . TextFormat::YELLOW . $killer->getName() . TextFormat::GRAY . ".");
-					}
-				}else{
-					foreach(Server::getInstance()->getOnlinePlayers() as $player){
-						$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "Envoy at " . TextFormat::LIGHT_PURPLE . $this->getDropPoint()->getName() . TextFormat::GRAY . " has been claimed.");
-					}
+					$this->killer = $killer;
 				}
 			}
 			$this->kill();
@@ -93,8 +89,16 @@ class Envoy extends Human{
 		}
 	}
 
-	public function onDeath(){
-		parent::onDeath();
+	public function kill(){
+		parent::kill();
+		$killer = $this->killer;
+		if($killer instanceof Player){
+			KitPvP::getInstance()->getCombat()->getSlay()->processKill($this->killer, $this);
+		}else{
+			foreach(Server::getInstance()->getOnlinePlayers() as $player){
+				$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Envoy at " . TextFormat::LIGHT_PURPLE . $this->getDropPoint()->getName() . TextFormat::GRAY . " has despawned!");
+			}
+		}
 	}
 
 	public function getDrops() : array{

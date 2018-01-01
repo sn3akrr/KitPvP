@@ -3,7 +3,10 @@
 use kitpvp\combat\special\items\types\Throwable;
 
 use pocketmine\Player;
-use pocketmine\entity\Effect;
+use pocketmine\entity\{
+	Effect,
+	Entity
+};
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 use kitpvp\KitPvP;
@@ -21,28 +24,30 @@ class ConcussionGrenade extends Throwable{
 		return "Blinds and slows down opponents within 5 blocks. Easy escape route.";
 	}
 
-	public function concuss(Player $player, Player $thrower){
+	public function concuss(Entity $victim, victim $thrower){
 		$combat = KitPvP::getInstance()->getCombat();
 		$teams = $combat->getTeams();
-		if($teams->sameTeam($player, $thrower)){
+		if($teams->sameTeam($victim, $thrower)){
 			return;
 		}
-		$combat->getSlay()->damageAs($thrower, $player, 5);
+		$combat->getSlay()->damageAs($thrower, $victim, 5);
 
 		$pk = new LevelEventPacket();
 		$pk->evid = 3501;
-		$pk->position = $player->asVector3();
+		$pk->position = $victim->asVector3();
 		$pk->data = 0;
-		foreach($player->getViewers() as $p) $p->dataPacket($pk);
+		foreach($victim->getViewers() as $p) $p->dataPacket($pk);
 
-		$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 8)->setAmplifier(3));
-		$player->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 8));
+		$victim->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 8)->setAmplifier(3));
+		$victim->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 8));
 
-		$session = KitPvP::getInstance()->getKits()->getSession($player);
-		if($session->hasKit() && $session->getKit()->getName() == "scout"){
-			$as = KitPvP::getInstance()->getAchievements()->getSession($thrower);
-			if(!$as->hasAchievement("countered")){
-				$as->get("countered");
+		if($victim instanceof Player){
+			$session = KitPvP::getInstance()->getKits()->getSession($victim);
+			if($session->hasKit() && $session->getKit()->getName() == "scout"){
+				$as = KitPvP::getInstance()->getAchievements()->getSession($thrower);
+				if(!$as->hasAchievement("countered")){
+					$as->get("countered");
+				}
 			}
 		}
 	}

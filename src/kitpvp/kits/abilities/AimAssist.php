@@ -25,7 +25,7 @@ class AimAssist extends Ability{
 			$target = null;
 			foreach($player->getLevel()->getEntities() as $p){
 				$teams = KitPvP::getInstance()->getCombat()->getTeams();
-				if($p != $player && $p instanceof Living && $player->distance($p) <= $distance && (!$player instanceof Player || !$teams->sameTeam($player, $p)){
+				if($p != $player && $p instanceof Living && $player->distance($p) <= $distance && (!$p instanceof Player || !$teams->sameTeam($player, $p))){
 					$distance = $player->distance($p);
 					$target = $p;
 				}
@@ -42,6 +42,7 @@ class AimAssist extends Ability{
 		if($z > 0) $yaw = -$yaw + 180;
 		$player->teleport($player, $yaw, $pitch + 0.25);
 
+		$this->deactivate();
 		return false;
 	}
 

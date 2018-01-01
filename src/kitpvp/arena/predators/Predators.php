@@ -51,7 +51,7 @@ class Predators{
 	public function setup(){
 		$level = $this->plugin->getServer()->getLevelByName(Structure::LEVEL);
 		foreach(Structure::LOCATIONS as $id => $data){
-			$this->spawners[] = new Spawner($id, $data["type"], $data["ticks"], $data["distance"] ?? 20, new Position($data["x"], $data["y"], $data["z"], $level));
+			$this->spawners[] = new Spawner($id, $data["type"], $data["ticks"], $data["distance"] ?? 20, $data["online"] ?? -1, new Position($data["x"], $data["y"], $data["z"], $level));
 		}
 	}
 

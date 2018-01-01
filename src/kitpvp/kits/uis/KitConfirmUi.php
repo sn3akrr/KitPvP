@@ -54,6 +54,11 @@ class KitConfirmUi extends CustomForm{
 			$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You do not have enough Techits to purchase this kit! (".$kit->getPrice().")");
 			return;
 		}
+		if($kit->hasPlayerCooldown($player)){
+			$cooldown = $kit->getPlayerCooldown($player);
+			$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "You have a cooldown! You cannot use this kit for another " . TextFormat::WHITE . $cooldown . " play" . ($cooldown > 1 ? "s" : "") . TextFormat::GRAY . "!");
+			return;
+		}
 		$kit->purchase($player);
 		$player->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Successfully purchased the ". TextFormat::YELLOW . $kit->getName() . TextFormat::GRAY ." kit!");
 	}

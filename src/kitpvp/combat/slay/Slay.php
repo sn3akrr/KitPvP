@@ -223,14 +223,24 @@ class Slay{
 				}
 			}elseif($dead instanceof Predator){
 				$techits = 0;
+				$assisting = 0;
 				if($dead instanceof Boss){
-					$techits = 200;
+					$techits = 150;
+					$assisting = 25;
 					foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
 						$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName() . TextFormat::GRAY . " just killed a " . TextFormat::DARK_PURPLE . $dead->getType() . " Boss " . TextFormat::GRAY . "and earned " . TextFormat::AQUA . $techits . " Techits" . TextFormat::GRAY."!");
 					}
 				}else{
 					$techits = 2;
+					$assisting = 1;
 					$killer->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "You killed a " . TextFormat::YELLOW . $dead->getType() . TextFormat::GRAY . " and earned " . TextFormat::AQUA . $techits . " Techits" . TextFormat::GRAY . "!");
+				}
+				$killer->addTechits($techits);
+				foreach($dead->getAssisting() as $player){
+					if($player != $killer){
+						$player->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Earned " . TextFormat::AQUA . $assisting . " Techits " . TextFormat::GRAY . "for helping kill " . TextFormat::DARK_PURPLE . $dead->getType() . TextFormat::GRAY . "!");
+						$player->addTechits($assisting);
+					}
 				}
 			}elseif($dead instanceof Envoy){
 				foreach($this->plugin->getServer()->getOnlinePlayers() as $player){

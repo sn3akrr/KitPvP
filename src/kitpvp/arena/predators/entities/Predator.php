@@ -14,6 +14,11 @@ use pocketmine\{
 	Server,
 	Player
 };
+use pocketmine\block\{
+	Slab,
+	Stair,
+	Flowable
+};
 
 use kitpvp\KitPvP;
 
@@ -34,10 +39,11 @@ class Predator extends Human{
 	public $jumpTicks = 5;
 	public $attackWait = 20;
 
-
 	public $attackDamage = 4;
 	public $speed = 0.35;
 	public $startingHealth = 20;
+
+	public $assisting = [];
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
@@ -99,7 +105,7 @@ class Predator extends Human{
 		}else{
 			$this->motionY -= $this->gravity;
 		}
-		if($this->isCollidedHorizontally && $this->jumpTicks === 0) {
+		if($this->shouldJump()){
 			$this->jump();
 		}
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
@@ -156,7 +162,7 @@ class Predator extends Human{
 		}else{
 			$this->motionY -= $this->gravity;
 		}
-		if($this->isCollidedHorizontally && $this->jumpTicks === 0){
+		if($this->shouldJump()){
 			$this->jump();
 		}
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
@@ -200,8 +206,11 @@ class Predator extends Human{
 		if($source instanceof EntityDamageByEntityEvent){
 			$killer = $source->getDamager();
 			if($killer instanceof Player){
-				if($this->target != $killer->getName() && mt_rand(1,5) == 1){
+				if($this->target != $killer->getName() && mt_rand(1,5) == 1 || $this->target == ""){
 					$this->target = $killer->getName();
+				}
+				if(!isset($this->assisting[$killer->getName()])){
+					$this->assisting[$killer->getName()] = true;
 				}
 			}
 		}
@@ -283,10 +292,51 @@ class Predator extends Human{
 		return $this->attackDamage;
 	}
 
+	public function getAssisting(){
+		$assisting = [];
+		foreach($this->assisting as $name => $bool){
+			$player = Server::getInstance()->getPlayerExact($name);
+			if($player instanceof Player) $assisting[] = $player;
+		}
+		return $assisting;
+	}
+
+	public function getFrontBlock($y = 0, $multiplier = 1){
+		$dv = $this->getDirectionVector();
+		$pos = $this->asVector3()->add($dv->x * $multiplier, $y, $dv->z * $multiplier)->round();
+		return $this->getLevel()->getBlock($pos);
+	}
+
+	public function shouldJump(){
+		if($this->jumpTicks > 0) return false;
+
+		return $this->isCollidedHorizontally || 
+		($this->getFrontBlock()->getId() != 0 || $this->getFrontBlock(-1) instanceof Stair) ||
+		($this->getLevel()->getBlock($this->asVector3()->add(0,-0,5)) instanceof Slab &&
+		(!$this->getFrontBlock(-0.5) instanceof Slab && $this->getFrontBlock(-0.5)->getId() != 0)) &&
+		$this->getFrontBlock(1)->getId() == 0 && 
+		$this->getFrontBlock(2)->getId() == 0 && 
+		!$this->getFrontBlock() instanceof Flowable &&
+		$this->jumpTicks == 0;
+	}
+
+	public function getJumpMultiplier(){
+		if(
+			$this->getFrontBlock() instanceof Slab ||
+			$this->getFrontBlock() instanceof Stair ||
+
+			$this->getLevel()->getBlock($this->asVector3()->subtract(0,0.5)->round()) instanceof Slab &&
+			$this->getFrontBlock()->getId() != 0
+		){
+			return 4;
+		}
+		return 8;
+	}
+
 	public function jump(){
-		$this->motionY = $this->gravity * 8;
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
-		$this->jumpTicks = 5;
+		$this->motionY = $this->gravity * $this->getJumpMultiplier();
+		$this->move($this->motionX * 1.25, $this->motionY, $this->motionZ * 1.25);
+		$this->jumpTicks = ($this->getJumpMultiplier() == 4 ? 2 : 5);
 	}
 
 }

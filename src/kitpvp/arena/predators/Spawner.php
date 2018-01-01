@@ -10,6 +10,7 @@ use pocketmine\nbt\tag\{
 	ShortTag,
 	StringTag
 };
+use pocketmine\Server;
 use kitpvp\arena\predators\entities\{
 	Predator,
 	Knight, Pawn, King,
@@ -22,17 +23,23 @@ class Spawner{
 
 	public $id;
 	public $type;
+
 	public $baseSpawnRate;
 	public $spawnDistance;
+
+	public $neededOnline;
+
 	public $position;
 
 	public $spawnRate = 5;
 
-	public function __construct($id, $type, $spawnRate, $spawnDistance = -1, Position $pos){
+	public function __construct($id, $type, $spawnRate, $spawnDistance = -1, $neededOnline = -1, Position $pos){
 		$this->id = $id;
 		$this->type = $type;
 		$this->baseSpawnRate = $spawnRate;
 		$this->spawnDistance = $spawnDistance;
+		$this->neededOnline = $neededOnline;
+
 		$this->position = $pos;
 	}
 
@@ -49,9 +56,8 @@ class Spawner{
 			}
 		}
 
-		if($canSpawn && $this->spawnRate == 0){
+		if($canSpawn && $this->spawnRate == 0 && count(Server::getInstance()->getOnlinePlayers()) >= $this->getNeededOnline()){
 			$this->spawnRate = $this->baseSpawnRate;
-
 			$predators = 0;
 			$type = 0;
 			foreach($this->getPosition()->getLevel()->getEntities() as $e){
@@ -69,6 +75,8 @@ class Spawner{
 			$entity = $this->getEntity();
 			$entity->spawnToAll();
 		}
+		if($this->spawnRate == 0) $this->spawnRate = $this->baseSpawnRate;
+
 	}
 
 	public function getEntity(){
@@ -162,6 +170,10 @@ class Spawner{
 
 	public function getSpawnDistance(){
 		return $this->spawnDistance == -1 ? 9999 : $this->spawnDistance;
+	}
+
+	public function getNeededOnline(){
+		return $this->neededOnline;
 	}
 
 	public function getPosition(){

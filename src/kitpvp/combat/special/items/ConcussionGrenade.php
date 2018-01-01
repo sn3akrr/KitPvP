@@ -24,7 +24,7 @@ class ConcussionGrenade extends Throwable{
 		return "Blinds and slows down opponents within 5 blocks. Easy escape route.";
 	}
 
-	public function concuss(Entity $victim, victim $thrower){
+	public function concuss(Entity $victim, Player $thrower){
 		$combat = KitPvP::getInstance()->getCombat();
 		$teams = $combat->getTeams();
 		if($teams->sameTeam($victim, $thrower)){

@@ -102,7 +102,10 @@ class Kits{
 
 	public function close(){
 		foreach($this->sessions as $name => $session){
-			$session->save();
+			if($session->hasKit()){
+				$session->getKit()->refund($session->getPlayer());
+			}
+			$session->close();
 		}
 	}
 
@@ -343,6 +346,10 @@ class Kits{
 
 	public function kitExists($name){
 		return isset($this->kits[$name]);
+	}
+
+	public function getBaseKit($name){
+		return $this->kits[$name] ?? new KitObject("invalid", "default", 0, [], [], [], []);
 	}
 
 	public function getKit($name){

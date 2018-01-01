@@ -157,6 +157,7 @@ class KitObject{
 				$kit->subtractPlayerCooldown($player);
 			}
 		}
+		$kits->getBaseKit($this->getName())->cooldowns[$player->getName()] = $this->getCooldown();
 
 		$num = $kits->getKitNum($this->getName());
 		Core::getInstance()->getEntities()->getFloatingText()->getText("equipped-" . $num)->update($player, true);

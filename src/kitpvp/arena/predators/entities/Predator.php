@@ -31,10 +31,7 @@ class Predator extends Human{
 	public $findNewTargetTicks = 0;
 
 	public $randomPosition = null;
-	public $findNewPositionTicks = 300;
-
-	public $stopped = false;
-	public $nextMoveTick = 100;
+	public $findNewPositionTicks = 200;
 
 	public $jumpTicks = 5;
 	public $attackWait = 20;
@@ -47,10 +44,8 @@ class Predator extends Human{
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
-
 		$this->setMaxHealth($this->startingHealth);
 		$this->setHealth($this->startingHealth);
-
 		$this->setNametag($this->getNametag());
 		$this->generateRandomPosition();
 	}
@@ -74,7 +69,6 @@ class Predator extends Human{
 			return false;
 		}
 		$this->setNametag($this->getNametag());
-
 		if($this->hasTarget()){
 			return $this->attackTarget();
 		}
@@ -89,11 +83,8 @@ class Predator extends Human{
 		if($this->jumpTicks > 0){
 			$this->jumpTicks--;
 		}
-		if(!$this->findNewPositionTicks > 0){
+		if($this->findNewPositionTicks > 0){
 			$this->findNewPositionTicks--;
-		}
-		if(!$this->nextMoveTick > 0){
-			$this->nextMoveTick--;
 		}
 
 		if(!$this->isOnGround()){
@@ -110,19 +101,9 @@ class Predator extends Human{
 		}
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
-		if($this->nextMoveTick === 0){
-			if($this->stopped){
-				$this->stopped = false;
-			}else{
-				$this->stopped = true;
-			}
-			$this->nextMoveTick = mt_rand(60,160);
-		}
-		if($this->stopped == true) return true;
-
 		if($this->atRandomPosition() || $this->findNewPositionTicks === 0){
 			$this->generateRandomPosition();
-			$this->findNewPositionTicks = 300;
+			$this->findNewPositionTicks = 200;
 			return true;
 		}
 
@@ -136,6 +117,7 @@ class Predator extends Human{
 
 		$this->yaw = rad2deg(atan2(-$x, $z));
 		$this->pitch = rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
+
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
 		$this->updateMovement();

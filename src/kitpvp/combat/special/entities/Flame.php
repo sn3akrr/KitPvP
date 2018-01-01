@@ -52,19 +52,17 @@ class Flame extends Projectile{
 		}
 
 		if($this->getLevel() != null){
-			foreach($this->getLevel()->getPlayers() as $player){
-				if($player != $owner){
-					if($player->distance($this) <= 4){
-						$teams = KitPvP::getInstance()->getCombat()->getTeams();
-						if(!$teams->sameTeam($player, $owner)){
-							$player->setOnFire(2);
-							KitPvP::getInstance()->getCombat()->getSlay()->damageAs($owner, $player, 0);
-							if(!isset($this->lit[$player->getName()])) $this->lit[$player->getName()] = true;
-							if(count($this->lit) >= 2 && $this->get == false){
-								$this->get = true;
-								$as = KitPvP::getInstance()->getAchievements()->getSession($owner);
-								if(!$as->hasAchievement("multiple_flamethrower")) $as->get("multiple_flamethrower");
-							}
+			foreach($this->getLevel()->getEntities() as $player){
+				if($player != $owner && $player->distance($this) <= 4){
+					$teams = KitPvP::getInstance()->getCombat()->getTeams();
+					if(!$player instanceof Projectile || ($player instanceof Player && !$teams->sameTeam($player, $owner))){
+						$player->setOnFire(2);
+						KitPvP::getInstance()->getCombat()->getSlay()->damageAs($owner, $player, 0);
+						if($player instanceof Player) if(!isset($this->lit[$player->getName()])) $this->lit[$player->getName()] = true;
+						if(count($this->lit) >= 2 && $this->get == false){
+							$this->get = true;
+							$as = KitPvP::getInstance()->getAchievements()->getSession($owner);
+							if(!$as->hasAchievement("multiple_flamethrower")) $as->get("multiple_flamethrower");
 						}
 					}
 				}

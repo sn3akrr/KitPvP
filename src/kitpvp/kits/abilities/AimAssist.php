@@ -1,7 +1,7 @@
 <?php namespace kitpvp\kits\abilities;
 
 use pocketmine\Player;
-use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\Living;
 
 use kitpvp\KitPvP;
 
@@ -25,7 +25,7 @@ class AimAssist extends Ability{
 			$target = null;
 			foreach($player->getLevel()->getEntities() as $p){
 				$teams = KitPvP::getInstance()->getCombat()->getTeams();
-				if($p != $player && !$p instanceof Projectile && $player->distance($p) <= $distance && (!$teams->sameTeam($player, $p))){
+				if($p != $player && $p instanceof Living && $player->distance($p) <= $distance && (!$player instanceof Player || !$teams->sameTeam($player, $p)){
 					$distance = $player->distance($p);
 					$target = $p;
 				}

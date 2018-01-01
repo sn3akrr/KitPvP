@@ -26,6 +26,7 @@ use pocketmine\level\sound\{
 	AnvilFallSound
 };
 use pocketmine\entity\{
+	Living,
 	Entity,
 	Effect,
 	Arrow
@@ -87,7 +88,7 @@ class EventListener implements Listener{
 				$count = 0;
 				$spell = $this->special->getRandomSpell();
 				foreach($player->getLevel()->getEntities() as $p){
-					if($p instanceof Player || $p instanceof Predator || $p instanceof Envoy){
+					if($p instanceof Living){
 						if($p->distance($player) <= 10 && $p != $player){
 							if(!$p instanceof Player || !$teams->sameTeam($player, $p)){
 								$spell->cast($player, $p);
@@ -173,7 +174,7 @@ class EventListener implements Listener{
 
 		$player = $e->getEntity();
 		$teams = $this->plugin->getCombat()->getTeams();
-		if($player instanceof Player || $player instanceof Envoy || $player instanceof Predator){
+		if($player instanceof Living){
 			if($player instanceof Player && $this->plugin->getArena()->inSpawn($player)){
 				$e->setCancelled(true);
 				return;
@@ -186,7 +187,7 @@ class EventListener implements Listener{
 						$child = $e->getChild();
 						if($child instanceof ThrownConcussionGrenade){
 							foreach($child->getLevel()->getEntities() as $entity){
-								if($entity instanceof Player || $entity instanceof Envoy || $entity instanceof Predator){
+								if($entity instanceof Living){
 									if($entity->distance($child) <= 5 && $entity != $killer){
 										$grenade = new ConcussionGrenade();
 										$grenade->concuss($entity, $killer);

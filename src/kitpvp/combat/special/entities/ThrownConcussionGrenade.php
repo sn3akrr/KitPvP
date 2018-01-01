@@ -50,10 +50,10 @@ class ThrownConcussionGrenade extends Projectile{
 		}
 		if($this->onGround or $this->isCollided){
 			$special = KitPvP::getInstance()->getCombat()->getSpecial();
-			foreach($this->getViewers() as $player){
-				if($player->distance($this) <= 5 && $player != $this->getOwningEntity() && $player instanceof Player){
+			foreach($this->getLevel()->getEntities() as $entity){
+				if($entity->distance($this) <= 5 && $entity != $this->getOwningEntity() && !$entity instanceof Projectile){
 					$grenade = new ConcussionGrenade();
-					$grenade->concuss($player, $this->getOwningEntity());
+					$grenade->concuss($entity, $this->getOwningEntity());
 				}
 				$this->close();
 				$hasUpdate = true;

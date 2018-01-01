@@ -105,7 +105,7 @@ class Kits{
 			if($session->hasKit()){
 				$session->getKit()->refund($session->getPlayer());
 			}
-			$session->close();
+			$session->save();
 		}
 	}
 
@@ -353,7 +353,7 @@ class Kits{
 	}
 
 	public function getKit($name){
-		return clone $this->kits[$name] ?? new KitObject("invalid", "default", 0, [], [], [], []);
+		return clone $this->kits[$name];
 	}
 
 	public function getKitNum($name){

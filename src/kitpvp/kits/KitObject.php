@@ -101,7 +101,7 @@ class KitObject{
 	}
 
 	public function hasPlayerCooldown(Player $player){
-		return isset($this->cooldowns[$player->getName()]);
+		return isset($this->cooldowns[$player->getName()]) && $this->cooldowns[$player->getName()] > 0;
 	}
 
 	public function getPlayerCooldown(Player $player){

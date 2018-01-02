@@ -164,17 +164,27 @@ class Duels{
 		return $this->requests;
 	}
 
-	public function getSession(Player $player){
-		return $this->sessions[$player->getName()] ?? $this->createSession($player);
+	public function createSession($player){
+		$session = new Session($player);
+		$this->sessions[$session->getUser()->getGamertag()] = $session;
+
+		return $session;
 	}
 
-	public function createSession(Player $player){
-		return $this->sessions[$player->getName()] = new Session($player);
+	public function getSession($player){
+		if($player instanceof Player) $player = $player->getName();
+		
+		return $this->sessions[$player] ?? $this->createSession($player);
 	}
 
-	public function deleteSession(Player $player){
-		$this->getSession($player)->save();
-		unset($this->sessions[$player->getName()]);
+	public function deleteSession($player, $save = true){
+		if($player instanceof Player) $player = $player->getName();
+
+		if($save){
+			$this->sessions[$player]->save();
+		}
+
+		unset($this->sessions[$player]);
 	}
 
 	// Check if player has won against another //

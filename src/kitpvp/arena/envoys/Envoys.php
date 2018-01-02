@@ -18,6 +18,8 @@ class Envoys{
 
 	public $nextDrop = 0;
 
+	public $sessions = [];
+
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
 		$this->database = $plugin->database;
@@ -120,6 +122,29 @@ class Envoys{
 			}
 		}*/
 		return $drops;
+	}
+
+	public function createSession($player){
+		$session = new Session($player);
+		$this->sessions[$session->getUser()->getGamertag()] = $session;
+
+		return $session;
+	}
+
+	public function getSession($player){
+		if($player instanceof Player) $player = $player->getName();
+		
+		return $this->sessions[$player] ?? $this->createSession($player);
+	}
+
+	public function deleteSession($player, $save = true){
+		if($player instanceof Player) $player = $player->getName();
+
+		if($save){
+			$this->sessions[$player]->save();
+		}
+
+		unset($this->sessions[$player]);
 	}
 
 }

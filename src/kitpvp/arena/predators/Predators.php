@@ -15,8 +15,9 @@ use kitpvp\KitPvP;
 class Predators{
 
 	public $plugin;
-
 	public $spawners = [];
+
+	public $sessions = [];
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
@@ -57,6 +58,29 @@ class Predators{
 
 	public function getSpawners(){
 		return $this->spawners;
+	}
+
+	public function createSession($player){
+		$session = new Session($player);
+		$this->sessions[$session->getUser()->getGamertag()] = $session;
+
+		return $session;
+	}
+
+	public function getSession($player){
+		if($player instanceof Player) $player = $player->getName();
+		
+		return $this->sessions[$player] ?? $this->createSession($player);
+	}
+
+	public function deleteSession($player, $save = true){
+		if($player instanceof Player) $player = $player->getName();
+
+		if($save){
+			$this->sessions[$player]->save();
+		}
+
+		unset($this->sessions[$player]);
 	}
 
 }

@@ -12,7 +12,8 @@ use pocketmine\nbt\tag\{
 };
 use pocketmine\Server;
 use kitpvp\arena\predators\entities\{
-	Predator,
+	Predator, Boss,
+
 	Knight, Pawn, King,
 	Robot, Cyborg, PowerMech,
 	Jungleman, Caveman, Gorilla,
@@ -58,21 +59,27 @@ class Spawner{
 
 		if($canSpawn && $this->spawnRate == 0 && count(Server::getInstance()->getOnlinePlayers()) >= $this->getNeededOnline()){
 			$this->spawnRate = $this->baseSpawnRate;
+
 			$predators = 0;
 			$type = 0;
+			$boss = 0;
+
+			$entity = $this->getEntity();
 			foreach($this->getPosition()->getLevel()->getEntities() as $e){
-				if($e instanceof Predator){
+				if($e instanceof Predator && $e != $entity){
 					$predators++;
 					if(strtolower($e->getType()) == $this->getType()) $type++;
+					if($e instanceof Boss) $boss++;
 				}
 				if(
 					$predators >= $this->getBaseSpawnLimit() || 
-					$type >= $this->getTypeSpawnLimit()
+					$type >= $this->getTypeSpawnLimit() ||
+					($boss >= 2 && $entity instanceof Boss)
 				){
+					$entity->close();
 					return;
 				}
 			}
-			$entity = $this->getEntity();
 			$entity->spawnToAll();
 		}
 		if($this->spawnRate == 0) $this->spawnRate = $this->baseSpawnRate;

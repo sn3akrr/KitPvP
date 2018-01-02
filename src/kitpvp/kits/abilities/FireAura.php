@@ -20,7 +20,7 @@ class FireAura extends Ability{
 		$player = $this->player;
 		$dmg = false;
 		$teams = KitPvP::getInstance()->getCombat()->getTeams();
-		foreach($player->getLevel()->getEntities() as $p){
+		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->grow(5, 5, 5)) as $p){
 			if($p != $player && $p instanceof Living && $player->distance($p) < 6 && (!$p instanceof Player || !$teams->sameTeam($player, $p))){
 				if($p->getHealth() - 2 <= 0){}else{
 					$dmg = true;

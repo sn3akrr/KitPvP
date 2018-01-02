@@ -13,6 +13,7 @@ class Boss extends Predator{
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
+		$this->setScale(1.5);
 	}
 
 	public function getNametag(){
@@ -21,6 +22,15 @@ class Boss extends Predator{
 
 	public function isBoss(){
 		return true;
+	}
+
+	public function whistle(){
+		foreach($this->getLevel()->getNearbyEntities($this->getBoundingBox()->grow(15, 15, 15)) as $entity){
+			if($entity instanceof Predator && $entity->canWhistle){
+				$entity->target = $this->target;
+				$entity->canWhistle = false;
+			}
+		}
 	}
 
 	public function spawnToAll(){

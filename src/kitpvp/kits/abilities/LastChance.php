@@ -16,8 +16,8 @@ class LastChance extends Ability{
 	public function activate(Player $player, $target = null){
 		$player->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 5));
 		$player->addEffect(Effect::getEffect(Effect::INVISIBILITY)->setDuration(20 * 5));
-		foreach($player->getViewers() as $p){
-			if($p->distance($player) <= 4 && $p != $player){
+		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->grow(4, 4, 4)) as $p){
+			if($p != $player){
 				$dv = $p->getDirectionVector();
 				$p->knockback($p, 0 -$dv->x, -$dv->z, 0.8);
 			}

@@ -1,6 +1,9 @@
 <?php namespace kitpvp\arena\predators\entities;
 
-use pocketmine\entity\Human;
+use pocketmine\entity\{
+	Human,
+	Entity
+};
 use pocketmine\level\Level;
 use pocketmine\event\entity\{
 	EntityDamageEvent,
@@ -35,6 +38,8 @@ class Predator extends Human{
 
 	public $jumpTicks = 5;
 	public $attackWait = 20;
+
+	public $canWhistle = true;
 
 	public $attackDamage = 4;
 	public $speed = 0.35;
@@ -113,8 +118,13 @@ class Predator extends Human{
 		$y = $position->y - $this->getY();
 		$z = $position->z - $this->getZ();
 
-		$this->motionX = $this->getSpeed() * 0.15 * ($x / (abs($x) + abs($z)));
-		$this->motionZ = $this->getSpeed() * 0.15 * ($z / (abs($x) + abs($z)));
+		if($x * $x + $z * $z < 4 + $this->getScale()) {
+			$this->motionX = 0;
+			$this->motionZ = 0;
+		} else {
+			$this->motionX = $this->getSpeed() * 0.15 * ($x / (abs($x) + abs($z)));
+			$this->motionZ = $this->getSpeed() * 0.15 * ($z / (abs($x) + abs($z)));
+		}
 
 		$this->yaw = rad2deg(atan2(-$x, $z));
 		$this->pitch = rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
@@ -172,12 +182,13 @@ class Predator extends Human{
 			$this->jump();
 		}
 
-		if($this->distance($target) <= 1.1 && $this->attackWait <= 0){
+		if($this->distance($target) <= $this->getScale() + 0.3 && $this->attackWait <= 0){
 			$event = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getBaseAttackDamage());
 			if($target->getHealth() - $event->getFinalDamage() <= 0){
+				$event->setCancelled(true);
 				KitPvP::getInstance()->getCombat()->getSlay()->processKill($this, $target);
 				$this->target = null;
-				$event->setCancelled(true);
+				$this->findNewTarget();
 			}
 			$this->broadcastEntityEvent(4);
 			$target->attack($event);
@@ -201,6 +212,24 @@ class Predator extends Human{
 				if(!isset($this->assisting[$killer->getName()])){
 					$this->assisting[$killer->getName()] = true;
 				}
+
+				if($this->getHealth() <= $this->getMaxHealth() / 2 && mt_rand(0,2) == 1 && $this->canWhistle){
+					$this->whistle();
+					$this->canWhistle = false;
+				}
+			}
+		}
+	}
+
+	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4){
+		parent::knockBack($attacker, $damage, $x, $z, $base * 2);
+	}
+
+	public function whistle(){
+		foreach($this->getLevel()->getNearbyEntities($this->getBoundingBox()->grow(15, 15, 15)) as $entity){
+			if($entity instanceof $this && !$entity->hasTarget() && $entity->canWhistle){
+				$entity->target = $this->target;
+				$entity->canWhistle = false;
 			}
 		}
 	}
@@ -290,9 +319,9 @@ class Predator extends Human{
 		return $assisting;
 	}
 
-	public function getFrontBlock($y = 0, $multiplier = 1){
+	public function getFrontBlock($y = 0){
 		$dv = $this->getDirectionVector();
-		$pos = $this->asVector3()->add($dv->x * $multiplier, $y, $dv->z * $multiplier)->round();
+		$pos = $this->asVector3()->add($dv->x * $this->getScale(), $y + 1, $dv->z * $this->getScale())->round();
 		return $this->getLevel()->getBlock($pos);
 	}
 

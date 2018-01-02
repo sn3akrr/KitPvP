@@ -225,7 +225,7 @@ class Slay{
 				$techits = 0;
 				$assisting = 0;
 				if($dead instanceof Boss){
-					$techits = 150;
+					$techits = 100;
 					$assisting = 25;
 					foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
 						$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName() . TextFormat::GRAY . " just killed a " . TextFormat::DARK_PURPLE . $dead->getType() . " Boss " . TextFormat::GRAY . "and earned " . TextFormat::AQUA . $techits . " Techits" . TextFormat::GRAY."!");

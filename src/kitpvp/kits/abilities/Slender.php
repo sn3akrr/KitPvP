@@ -17,8 +17,8 @@ class Slender extends Ability{
 	public function activate(Player $player, $target = null){
 		$player->addEffect(Effect::getEffect(Effect::INVISIBILITY)->setDuration(20 * 5));
 		$player->getLevel()->addSound(new EndermanTeleportSound($player));
-		foreach($player->getLevel()->getEntities() as $p){
-			if($p->distance($player) <= 4 && $p != $player){
+		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->grow(4, 4, 4)) as $p){
+			if($p != $player){
 				$dv = $p->getDirectionVector();
 				$p->knockback($p, 0 -$dv->x, -$dv->z, 0.8);
 				$p->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 7));

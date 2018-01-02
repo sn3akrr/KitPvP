@@ -39,7 +39,7 @@ class Structure{
 		],
 		"western-boss" => [
 			"type" => "sheriff",
-			"ticks" => 245,
+			"ticks" => 188,
 			"distance" => -1,
 			"x" => 3016,
 			"y" => 50,
@@ -62,7 +62,7 @@ class Structure{
 		],
 		"castle-boss" => [
 			"type" => "king",
-			"ticks" => 135,
+			"ticks" => 145,
 			"distance" => -1,
 			"x" => 3054,
 			"y" => 48,
@@ -85,7 +85,7 @@ class Structure{
 		],
 		"mountains-boss" => [
 			"type" => "gorilla",
-			"ticks" => 150,
+			"ticks" => 225,
 			"distance" => -1,
 			"x" => 2956,
 			"y" => 62,
@@ -110,7 +110,7 @@ class Structure{
 		],
 		"city-boss" => [
 			"type" => "powermech",
-			"ticks" => 120,
+			"ticks" => 155,
 			"distance" => -1,
 			"x" => 3141,
 			"y" => 48,

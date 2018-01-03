@@ -325,6 +325,7 @@ class Predator extends Human{
 		return $this->getLevel()->getBlock($pos);
 	}
 
+
 	public function shouldJump(){
 		if($this->jumpTicks > 0) return false;
 

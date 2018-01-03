@@ -198,7 +198,6 @@ class Slay{
 					foreach($this->getAssistingPlayers($dead) as $assist){
 						if($assist != $killer && $assist != $dead){
 							$assist->addTechits(2);
-							$assist->addGlobalExp(1);
 							$assist->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Earned " . TextFormat::AQUA . "2 Techits" . TextFormat::GRAY . " for helping kill " . TextFormat::RED . $dead->getName()."!");
 						}
 					}
@@ -209,7 +208,6 @@ class Slay{
 							$player->sendMessage(TextFormat::RED . TextFormat::BOLD . ">> " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName(). TextFormat::GRAY . " got revenge against " . TextFormat::YELLOW . $dead->getName() . "!");
 						}
 						$killer->addTechits(3);
-						$killer->addGlobalExp(2);
 						$this->unsetLastKiller($killer);
 					}
 
@@ -270,7 +268,6 @@ class Slay{
 				foreach($this->getAssistingPlayers($dead) as $assist){
 					if($assist != $killer && $assist != $dead){
 						$assist->addTechits(2);
-						$assist->addGlobalExp(1);
 						$assist->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Earned " . TextFormat::AQUA . "2 Techits" . TextFormat::GRAY . " for helping kill " . TextFormat::RED . $dead->getName()."!");
 					}
 				}

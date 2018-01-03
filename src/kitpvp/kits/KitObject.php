@@ -19,6 +19,7 @@ use kitpvp\kits\event\{
 use kitpvp\combat\special\items\types\SpecialWeapon;
 
 use core\Core;
+use core\stats\Structure;
 
 class KitObject{
 
@@ -115,8 +116,8 @@ class KitObject{
 	}
 
 	public function hasRequiredRank(Player $player){
-		$prh = Core::getInstance()->getStats()->getRank()->getRankHierarchy($player->getRank());
-		$rh = Core::getInstance()->getStats()->getRank()->getRankHierarchy($this->getRequiredRank());
+		$prh = Structure::RANK_HIERARCHY[$player->getRank()];
+		$rh = Structure::RANK_HIERARCHY[$this->getRequiredRank()];
 
 		if($rh > $prh) return false;
 		return true;

@@ -73,16 +73,15 @@ class Streaks{
 		$lb = $this->plugin->getLeaderboard();
 		if($lb->getStreak($player) < $streak){
 			$lb->setStreak($player, $streak);
-			$player->sendMessage(TextFormat::GREEN . "New highest streak reached!");
+			$player->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "New highest streak of " . TextFormat::GREEN . $streak . TextFormat::GRAY . " has been recorded! Good job!");
 		}
 
 		if($killer instanceof Player){
 			if($reward){
 				foreach($this->plugin->getServer()->getOnlinePlayers() as $p){
-					$p->sendMessage(TextFormat::AQUA."Streak> ".TextFormat::LIGHT_PURPLE.$killer->getName()." broke ".$player->getName()."'s kill streak of ".$streak." and earned ".($streak * 2)." Techits!");
+					$p->sendMessage(TextFormat::LIGHT_PURPLE . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName() . TextFormat::GRAY . " broke " . TextFormat::YELLOW . $player->getName() . "'s " . TextFormat::GRAY . "kill streak of " . TextFormat::WHITE . $streak . TextFormat::GRAY . " and earned ". TextFormat::AQUA . ($streak * 2) . " Techits" . TextFormat::GRAY . "!");
 				}
 				$killer->addTechits($streak * 2);
-				$killer->addGlobalExp($streak);
 			}
 			$a = KitPvP::getInstance()->getAchievements();
 			if($streak >= 5){
@@ -96,7 +95,7 @@ class Streaks{
 		}elseif($killer instanceof Predator){
 			if($reward){
 				foreach($this->plugin->getServer()->getOnlinePlayers() as $p){
-					$p->sendMessage($player->getName()." lost their streak to a ".$killer->getType()."! What a loser!");
+					$p->sendMessage(TextFormat::LIGHT_PURPLE . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::YELLOW . $player->getName() . TextFormat::GRAY . " lost their streak to a " . TextFormat::DARK_PURPLE . $killer->getType() . TextFormat::GRAY . "! How embarrassing!");
 				}
 			}
 		}

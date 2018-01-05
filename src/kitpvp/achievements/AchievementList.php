@@ -69,68 +69,68 @@ class AchievementList{
 		//Kills stuff
 		"kills_1" => [
 			"displayName" => "First Murder!",
-			"description" => "Get 1 kill in the arena",
+			"description" => "Kill 1 player in the arena",
 			"points" => self::POINTS_TIER1
 		],
 		"kills_2" => [
 			"displayName" => "Having fun?",
-			"description" => "Get 5 kills in the arena",
+			"description" => "Kill 5 players in the arena",
 			"points" => self::POINTS_TIER1
 		],
 		"kills_3" => [
 			"displayName" => "Killer!",
-			"description" => "Get 10 kills in the arena",
+			"description" => "Kill 10 players in the arena",
 			"points" => self::POINTS_TIER1
 		],
 		"kills_4" => [
-			"displayName" => "kills_4",
-			"description" => "Get 25 kills in the arena",
+			"displayName" => "#NoEmpathy",
+			"description" => "Kill 25 players in the arena",
 			"points" => self::POINTS_TIER2
 		],
 		"kills_5" => [
-			"displayName" => "kills_5",
-			"description" => "Get 50 kills in the arena",
+			"displayName" => "Mansaughter",
+			"description" => "Kill 50 players in the arena",
 			"points" => self::POINTS_TIER2
 		],
 		"kills_6" => [
 			"displayName" => "What's that smell?",
-			"description" => "Get 100 kills in the arena",
+			"description" => "Kill 100 players in the arena",
 			"points" => self::POINTS_TIER3
 		],
 		"kills_7" => [
 			"displayName" => "Bloodbath Time!",
-			"description" => "Get 250 kills in the arena",
+			"description" => "Kill 250 players in the arena",
 			"points" => self::POINTS_TIER4
 		],
 		"kills_8" => [
 			"displayName" => "Rampaged Savage",
-			"description" => "Get 500 kills in the arena",
+			"description" => "Kill 500 players in the arena",
 			"points" => self::POINTS_TIER4
 		],
 		"kills_9" => [
 			"displayName" => "Block Game Butcher",
-			"description" => "Get 750 kills in the arena",
+			"description" => "Kill 750 players in the arena",
 			"points" => self::POINTS_TIER5
 		],
 		"kills_10" => [
 			"displayName" => "Serial Killer",
-			"description" => "Get 1000 kills in the arena",
+			"description" => "Kill 1000 players in the arena",
 			"points" => self::POINTS_TIER5
 		],
 
 		//Streak stuff
 		"streak_1" => [
-			"displayName" => "Streak 1",
+			"displayName" => "On a roll!",
 			"description" => "Get a 5 kill streak in the arena",
 			"points" => self::POINTS_TIER1
 		],
 		"streak_2" => [
-			"displayName" => "Streak 2",
+			"displayName" => "Monster!",
 			"description" => "Get a 10 kill streak in the arena",
 			"points" => self::POINTS_TIER2
 		],
 		"streak_3" => [
-			"displayName" => "Streak 3",
+			"displayName" => "Rampage!",
 			"description" => "Get a 20 kill streak in the arena",
 			"points" => self::POINTS_TIER3
 		],
@@ -256,7 +256,369 @@ class AchievementList{
 			"points" => self::POINTS_TIER0
 		],
 
+		//Envoys
+		"envoy_1" => [
+			"displayName" => "Free stuff!",
+			"description" => "Collect 1 envoy in the arena",
+			"points" => self::POINTS_TIER0
+		],
+		"envoy_2" => [
+			"displayName" => "On a mission",
+			"description" => "Collect 5 envoys in the arena",
+			"points" => self::POINTS_TIER1
+		],
+		"envoy_3" => [
+			"displayName" => "Treasure Hunter",
+			"description" => "Collect 25 envoys in the arena",
+			"points" => self::POINTS_TIER2
+		],
+		"envoy_4" => [
+			"displayName" => "All ur loot belong to me",
+			"description" => "Collect 100 envoys in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"envoy_5" => [
+			"displayName" => "Master of Greed",
+			"description" => "Collect 1000 envoys in the arena",
+			"points" => self::POINTS_TIER5
+		],
+
 		//Predators
+		/*"knight_1" => [
+			"displayName" => " ",
+			"description" => "Kill 1 Knight in the arena",
+			"points" => self::POINTS_TIER0
+		],
+		"knight_2" => [
+			"displayName" => " ",
+			"description" => "Kill 25 Knights in the arena",
+			"points" => self::POINTS_TIER1
+		],
+		"knight_3" => [
+			"displayName" => " ",
+			"description" => "Kill 100 Knights in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"knight_4" => [
+			"displayName" => " ",
+			"description" => "Kill 1000 Knights in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"knight_5" => [
+			"displayName" => " ",
+			"description" => "Kill 10000 Knights in the arena",
+			"points" => self::POINTS_TIER5
+		],
+		"knight_die" => [
+			"displayName" => " ",
+			"description" => "Get killed by a Knight",
+			"points" => self::POINTS_TIER0
+		],
+
+		"pawn_1" => [
+			"displayName" => " ",
+			"description" => "Kill 1 Pawn in the arena",
+			"points" => self::POINTS_TIER0
+		],
+		"pawn_2" => [
+			"displayName" => " ",
+			"description" => "Kill 25 Pawns in the arena",
+			"points" => self::POINTS_TIER1
+		],
+		"pawn_3" => [
+			"displayName" => " ",
+			"description" => "Kill 100 Pawns in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"pawn_4" => [
+			"displayName" => "Pure evil!",
+			"description" => "Kill 1000 Pawns in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"pawn_5" => [
+			"displayName" => "Checkmate.",
+			"description" => "Kill 10000 Pawns in the arena",
+			"points" => self::POINTS_TIER5
+		],
+		"pawn_die" => [
+			"displayName" => " ",
+			"description" => "Get killed by a Pawn",
+			"points" => self::POINTS_TIER0
+		],
+
+		"robot_1" => [
+			"displayName" => " ",
+			"description" => "Kill 1 Robot in the arena",
+			"points" => self::POINTS_TIER0
+		],
+		"robot_2" => [
+			"displayName" => " ",
+			"description" => "Kill 25 Robots in the arena",
+			"points" => self::POINTS_TIER1
+		],
+		"robot_3" => [
+			"displayName" => " ",
+			"description" => "Kill 100 Robots in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"robot_4" => [
+			"displayName" => " ",
+			"description" => "Kill 1000 Robots in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"robot_5" => [
+			"displayName" => "Short Circuited",
+			"description" => "Kill 10000 Robots in the arena",
+			"points" => self::POINTS_TIER5
+		],
+		"robot_die" => [
+			"displayName" => "CODE RED",
+			"description" => "Get killed by a Robot",
+			"points" => self::POINTS_TIER0
+		],
+
+		"cyborg_1" => [
+			"displayName" => " ",
+			"description" => "Kill 1 Cyborg in the arena",
+			"points" => self::POINTS_TIER0
+		],
+		"cyborg_2" => [
+			"displayName" => " ",
+			"description" => "Kill 25 Cyborgs in the arena",
+			"points" => self::POINTS_TIER1
+		],
+		"cyborg_3" => [
+			"displayName" => " ",
+			"description" => "Kill 100 Cyborgs in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"cyborg_4" => [
+			"displayName" => " ",
+			"description" => "Kill 1000 Cyborgs in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"cyborg_5" => [
+			"displayName" => " ",
+			"description" => "Kill 10000 Cyborgs in the arena",
+			"points" => self::POINTS_TIER5
+		],
+		"cyborg_die" => [
+			"displayName" => "",
+			"description" => "Get killed by a Cyborg",
+			"points" => self::POINTS_TIER0
+		],
+
+		"jungleman_1" => [
+			"displayName" => " ",
+			"description" => "Kill 1 Jungleman in the arena",
+			"points" => self::POINTS_TIER0
+		],
+		"jungleman_2" => [
+			"displayName" => " ",
+			"description" => "Kill 25 Junglemens in the arena",
+			"points" => self::POINTS_TIER1
+		],
+		"jungleman_3" => [
+			"displayName" => " ",
+			"description" => "Kill 100 Junglemens in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"jungleman_4" => [
+			"displayName" => " ",
+			"description" => "Kill 1000 Junglemens in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"jungleman_5" => [
+			"displayName" => " ",
+			"description" => "Kill 10000 Junglemens in the arena",
+			"points" => self::POINTS_TIER5
+		],
+		"jungleman_die" => [
+			"displayName" => " ",
+			"description" => "Get killed by a Jungleman",
+			"points" => self::POINTS_TIER0
+		],
+
+		"caveman_1" => [
+			"displayName" => "Evolution",
+			"description" => "Kill 1 Caveman in the arena",
+			"points" => self::POINTS_TIER0
+		],
+		"caveman_2" => [
+			"displayName" => " ",
+			"description" => "Kill 25 Cavemen in the arena",
+			"points" => self::POINTS_TIER1
+		],
+		"caveman_3" => [
+			"displayName" => " ",
+			"description" => "Kill 100 Cavemen in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"caveman_4" => [
+			"displayName" => " ",
+			"description" => "Kill 1000 Cavemen in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"caveman_5" => [
+			"displayName" => " ",
+			"description" => "Kill 10000 Cavemen in the arena",
+			"points" => self::POINTS_TIER5
+		],
+		"caveman_die" => [
+			"displayName" => " ",
+			"description" => "Get killed by a Caveman",
+			"points" => self::POINTS_TIER0
+		],
+
+		"bandit_1" => [
+			"displayName" => " ",
+			"description" => "Kill 1 Bandit in the arena",
+			"points" => self::POINTS_TIER0
+		],
+		"bandit_2" => [
+			"displayName" => " ",
+			"description" => "Kill 25 Bandits in the arena",
+			"points" => self::POINTS_TIER1
+		],
+		"bandit_3" => [
+			"displayName" => "",
+			"description" => "Kill 100 Bandits in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"bandit_4" => [
+			"displayName" => " ",
+			"description" => "Kill 1000 Bandits in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"bandit_5" => [
+			"displayName" => "The New Sheriff",
+			"description" => "Kill 10000 Bandits in the arena",
+			"points" => self::POINTS_TIER5
+		],
+		"bandit_die" => [
+			"displayName" => " ",
+			"description" => "Get killed by a Bandit",
+			"points" => self::POINTS_TIER0
+		],
+
+		"cowboy_1" => [
+			"displayName" => " ",
+			"description" => "Kill 1 Cowboy in the arena",
+			"points" => self::POINTS_TIER0
+		],
+		"cowboy_2" => [
+			"displayName" => " ",
+			"description" => "Kill 25 Cowboys in the arena",
+			"points" => self::POINTS_TIER1
+		],
+		"cowboy_3" => [
+			"displayName" => " ",
+			"description" => "Kill 100 Cowboys in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"cowboy_4" => [
+			"displayName" => " ",
+			"description" => "Kill 1000 Cowboys in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"cowboy_5" => [
+			"displayName" => "The Night Rider",
+			"description" => "Kill 10000 Cowboys in the arena",
+			"points" => self::POINTS_TIER5
+		],
+		"cowboy_die" => [
+			"displayName" => " ",
+			"description" => "Get killed by a Cowboy",
+			"points" => self::POINTS_TIER0
+		],
+
+		"king_1" => [
+			"displayName" => "Overthrown",
+			"description" => "Kill 1 King Boss in the arena",
+			"points" => self::POINTS_TIER2
+		],
+		"king_2" => [
+			"displayName" => "Fallen Kingdom",
+			"description" => "Kill 50 King Bosses in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"king_3" => [
+			"displayName" => "King Slayer",
+			"description" => "Kill 250 King Bosses in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"king_death" => [
+			"displayName" => "Off with your head!",
+			"description" => "Get killed by the King Boss",
+			"points" => self::POINTS_TIER0
+		],
+
+		"powermech_1" => [
+			"displayName" => "Does not compute",
+			"description" => "Kill 1 PowerMech Boss in the arena",
+			"points" => self::POINTS_TIER2
+		],
+		"powermech_2" => [
+			"displayName" => " ",
+			"description" => "Kill 50 PowerMech Bosses in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"powermech_3" => [
+			"displayName" => " ",
+			"description" => "Kill 250 PowerMech Bosses in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"powermech_death" => [
+			"displayName" => "Overpowered",
+			"description" => "Get killed by the PowerMech Boss",
+			"points" => self::POINTS_TIER0
+		],
+
+		"gorilla_1" => [
+			"displayName" => " ",
+			"description" => "Kill 1 Gorilla Boss in the arena",
+			"points" => self::POINTS_TIER2
+		],
+		"gorilla_2" => [
+			"displayName" => " ",
+			"description" => "Kill 50 Gorilla Bosses in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"gorilla_3" => [
+			"displayName" => " ",
+			"description" => "Kill 250 Gorilla Bosses in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"gorilla_death" => [
+			"displayName" => "Harambe's Revenge",
+			"description" => "Get killed by the Gorilla Boss",
+			"points" => self::POINTS_TIER0
+		],
+
+		"sheriff_1" => [
+			"displayName" => " ",
+			"description" => "Kill 1 Sheriff Boss in the arena",
+			"points" => self::POINTS_TIER2
+		],
+		"sheriff_2" => [
+			"displayName" => " ",
+			"description" => "Kill 50 Sheriff Bosses in the arena",
+			"points" => self::POINTS_TIER3
+		],
+		"sheriff_3" => [
+			"displayName" => " ",
+			"description" => "Kill 250 Sheriff Bosses in the arena",
+			"points" => self::POINTS_TIER4
+		],
+		"sheriff_death" => [
+			"displayName" => "Under Arrest",
+			"description" => "Get killed by the Sheriff Boss",
+			"points" => self::POINTS_TIER0
+		],
+
+
+		*/
+
 		"this_town" => [
 			"displayName" => "This town ain't big enough",
 			"description" => "Shoot a cowboy with a gun",

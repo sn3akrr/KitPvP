@@ -262,7 +262,7 @@ class Kits{
 			], [
 				new ReflexHammer(),
 				new Defibrillator(),
-				new Syringe(),
+				new Syringe(0,3),
 			], 1),
 
 			"archer" => new KitObject("archer", "ghast", 20, [

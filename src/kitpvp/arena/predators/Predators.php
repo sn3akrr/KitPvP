@@ -60,6 +60,48 @@ class Predators{
 		return $this->spawners;
 	}
 
+	public function getPredatorTypes(){
+		return [
+			"knight", "pawn", "king",
+			"robot", "cyborg", "powermech",
+			"jungleman", "caveman", "gorilla",
+			"bandit", "cowboy", "sheriff",
+		];
+	}
+
+	public function getClassFromType($type){
+		switch(strtolower($type)){
+			case "knight":
+				return Knight::class;
+			case "pawn":
+				return Pawn::class;
+			case "king":
+				return King::class;
+
+			case "robot":
+				return Robot::class;
+			case "cyborg":
+				return Cyborg::class;
+			case "powermech":
+				return PowerMech::class;
+
+			case "jungleman":
+				return Jungleman::class;
+			case "caveman":
+				return Caveman::class;
+			case "gorilla":
+				return Gorilla::class;
+
+			case "bandit":
+				return Bandit::class;
+			case "cowboy":
+				return Cowboy::class;
+			case "sheriff":
+				return Sheriff::class;
+		}
+		return "";
+	}
+
 	public function createSession($player){
 		$session = new Session($player);
 		$this->sessions[$session->getUser()->getGamertag()] = $session;

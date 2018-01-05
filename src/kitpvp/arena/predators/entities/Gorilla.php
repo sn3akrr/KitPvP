@@ -18,4 +18,12 @@ class Gorilla extends Boss{
 		return "Gorilla";
 	}
 
+	public function getReinforcement(Level $level, CompoundTag $nbt){
+		if(mt_rand(0,1) == 0){
+			return new Caveman($level, $nbt);
+		}else{
+			return new Jungleman($level, $nbt);
+		}
+	}
+
 }

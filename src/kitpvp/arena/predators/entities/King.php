@@ -18,4 +18,12 @@ class King extends Boss{
 		return "King";
 	}
 
+	public function getReinforcement(Level $level, CompoundTag $nbt){
+		if(mt_rand(0,1) == 0){
+			return new Knight($level, $nbt);
+		}else{
+			return new Pawn($level, $nbt);
+		}
+	}
+
 }

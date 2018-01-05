@@ -18,4 +18,12 @@ class PowerMech extends Boss{
 		return "PowerMech";
 	}
 
+	public function getReinforcement(Level $level, CompoundTag $nbt){
+		if(mt_rand(0,1) == 0){
+			return new Cyborg($level, $nbt);
+		}else{
+			return new Robot($level, $nbt);
+		}
+	}
+
 }

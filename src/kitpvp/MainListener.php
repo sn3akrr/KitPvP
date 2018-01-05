@@ -47,6 +47,7 @@ class MainListener implements Listener{
 		$player = $e->getPlayer();
 		$player->teleport(...$this->plugin->getArena()->getSpawnPosition());
 
+		$this->plugin->getArena()->onJoin($player);
 		$this->plugin->getDuels()->createSession($player);
 		$this->plugin->getKits()->createSession($player);
 		$this->plugin->getAchievements()->createSession($player);
@@ -80,6 +81,7 @@ class MainListener implements Listener{
 	public function onQuit(PlayerQuitEvent $e){
 		$player = $e->getPlayer();
 
+		$this->plugin->getArena()->onQuit($player);
 		$this->plugin->getKits()->deleteSession($player);
 		$this->plugin->getAchievements()->deleteSession($player);
 		$duels = $this->plugin->getDuels();
@@ -91,6 +93,7 @@ class MainListener implements Listener{
 	public function onInteract(PlayerInteractEvent $e){
 		$player = $e->getPlayer();
 		$block = $e->getBlock();
+		if($block->getId() == 54) $e->setCancelled(true);
 		if($this->plugin->getArena()->inSpawn($player) && $block->getX() == 62 && $block->getY() == 59 && $block->getZ() == 143){
 			$lb = $this->plugin->getLeaderboard();
 			if($lb->getType($player) == 2){

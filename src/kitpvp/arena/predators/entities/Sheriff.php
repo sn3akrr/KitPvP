@@ -18,4 +18,12 @@ class Sheriff extends Boss{
 		return "Sheriff";
 	}
 
+	public function getReinforcement(Level $level, CompoundTag $nbt){
+		if(mt_rand(0,1) == 0){
+			return new Cowboy($level, $nbt);
+		}else{
+			return new Bandit($level, $nbt);
+		}
+	}
+
 }

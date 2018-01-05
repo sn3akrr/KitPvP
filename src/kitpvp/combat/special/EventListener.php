@@ -50,6 +50,7 @@ use kitpvp\combat\special\entities\{
 	ThrownDecoy,
 	ThrownKunai
 };
+use kitpvp\combat\special\items\Decoy;
 use kitpvp\combat\special\items\ConcussionGrenade;
 use kitpvp\arena\{
 	envoys\entities\Envoy,
@@ -233,7 +234,8 @@ class EventListener implements Listener{
 							$killer->teleport($player);
 						}
 						if($child instanceof ThrownDecoy){
-							$ticker->startEffect($killer);
+							$nt = $this->special->getTickerByItem(new Decoy());
+							$nt->startEffect($killer);
 						}
 						if($child instanceof Arrow){
 							$ks = $this->plugin->getKits()->getSession($killer);

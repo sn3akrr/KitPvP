@@ -1,5 +1,6 @@
 <?php namespace kitpvp\arena\envoys;
 
+use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\entity\Entity;
 use pocketmine\level\Position;
@@ -7,6 +8,12 @@ use pocketmine\item\Item;
 
 use kitpvp\KitPvP;
 use kitpvp\arena\envoys\entities\Envoy;
+use kitpvp\combat\special\items\{
+	EnderPearl,
+	Kunai,
+	Syringe,
+	Decoy
+};
 
 class Envoys{
 
@@ -72,7 +79,10 @@ class Envoys{
 				Item::get(Item::STEAK,0,4),
 			],
 			"special" => [
-
+				new Kunai(0,2),
+				new EnderPearl(0,2),
+				new Decoy(0,2),
+				new Syringe(0,1),
 			],
 			"powers" => [
 
@@ -111,16 +121,16 @@ class Envoys{
 	public function getRandomItems(){
 		$drops = [];
 		$rand = mt_rand(0,2);
-		for($i = 0; $i <= 4; $i++){
+		for($i = 0; $i <= 3; $i++){
 			if(mt_rand(0,1) == 1){
 				$drops[] = $this->getRandomItem("food");
 			}
 		}
-		/*for($i = 0; $i <= 2; $i++){
+		for($i = 0; $i <= 2; $i++){
 			if(mt_rand(0,5) == 1){
 				$drops[] = $this->getRandomItem("special");
 			}
-		}*/
+		}
 		return $drops;
 	}
 

@@ -223,8 +223,8 @@ class Slay{
 				$techits = 0;
 				$assisting = 0;
 				if($dead instanceof Boss){
-					$techits = 100;
-					$assisting = 25;
+					$techits = 75;
+					$assisting = 15;
 					foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
 						$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::YELLOW . $killer->getName() . TextFormat::GRAY . " just killed a " . TextFormat::DARK_PURPLE . $dead->getType() . " Boss " . TextFormat::GRAY . "and earned " . TextFormat::AQUA . $techits . " Techits" . TextFormat::GRAY."!");
 					}
@@ -244,6 +244,8 @@ class Slay{
 				foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
 					$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "Envoy at " . TextFormat::LIGHT_PURPLE . $dead->getDropPoint()->getName() . TextFormat::GRAY . " has been claimed by " . TextFormat::YELLOW . $killer->getName() . TextFormat::GRAY . ".");
 				}
+				$session = $this->plugin->getArena()->getEnvoys()->getSession($killer);
+				$session->addCollected();
 			}
 		}elseif($killer instanceof Predator){
 			if($dead instanceof Player){

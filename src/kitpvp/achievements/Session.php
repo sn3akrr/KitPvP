@@ -11,17 +11,12 @@ use core\Core;
 class Session{
 
 	public $user;
-	public $player;
-	public $xuid;
 
 	public $points = 0;
 	public $achievements = [];
 
 	public function __construct($user){
-		$user = new User($user);
-		$this->user = $user;
-		$this->player = $user->getPlayer();
-		$this->xuid = $user->getXuid();
+		$this->user = new User($user);
 
 		$this->load();
 	}
@@ -47,11 +42,11 @@ class Session{
 	}
 
 	public function getPlayer(){
-		return $this->player;
+		return $this->getUser()->getPlayer();
 	}
 
 	public function getXuid(){
-		return $this->xuid;
+		return $this->getUser()->getXuid();
 	}
 
 	public function getPoints(){
@@ -91,11 +86,13 @@ class Session{
 	}
 
 	public function decodeData($data){
-		return unserialize(base64_decode($data));
+		$data = unserialize(base64_decode(zlib_decode(hex2bin($data))));
+		if(is_array($data)) return $data;
+		return zlib_decode($data);
 	}
 
 	public function encodeData($data){
-		return base64_encode(serialize($data));
+		return bin2hex(zlib_encode(base64_encode(serialize($data)), ZLIB_ENCODING_DEFLATE, 1));
 	}
 
 	public function get($id){

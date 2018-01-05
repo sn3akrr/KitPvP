@@ -45,6 +45,16 @@ class Arena{
 		return $this->predators;
 	}
 
+	public function onJoin(Player $player){
+		$this->getEnvoys()->createSession($player);
+		//$this->getPredators()->createSession($player);
+	}
+
+	public function onQuit(Player $player){
+		$this->getEnvoys()->deleteSession($player);
+		//$this->getPredators()->deleteSession($player);
+	}
+
 	public function setupRegions(){
 		$level = $this->plugin->getServer()->getLevelByName("atm");
 		foreach([

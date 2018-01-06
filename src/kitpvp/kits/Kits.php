@@ -86,7 +86,8 @@ class Kits{
 		$this->database = $plugin->database;
 
 		foreach([
-
+			"CREATE TABLE IF NOT EXISTS kits_freeplays(xuid BIGINT(16) NOT NULL UNIQUE, witch INT NOT NULL DEFAULT '0', spy INT NOT NULL DEFAULT '0', scout INT NOT NULL DEFAULT '0', assault INT NOT NULL DEFAULT '0', medic INT NOT NULL DEFAULT '0', archer INT NOT NULL DEFAULT '0', enderman INT NOT NULL DEFAULT '0', pyromancer INT NOT NULL DEFAULT '0', m4l0ne23 INT NOT NULL DEFAULT '0')",
+			"CREATE TABLE IF NOT EXISTS kits_usage(xuid BIGINT(16) NOT NULL UNIQUE, noob INT NOT NULL DEFAULT '0', witch INT NOT NULL DEFAULT '0', spy INT NOT NULL DEFAULT '0', scout INT NOT NULL DEFAULT '0', assault INT NOT NULL DEFAULT '0', medic INT NOT NULL DEFAULT '0', archer INT NOT NULL DEFAULT '0', enderman INT NOT NULL DEFAULT '0', pyromancer INT NOT NULL DEFAULT '0', m4l0ne23 INT NOT NULL DEFAULT '0')",
 		] as $query) $this->database->query($query);
 
 		foreach([

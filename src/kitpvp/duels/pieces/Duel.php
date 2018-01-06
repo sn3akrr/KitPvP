@@ -213,6 +213,7 @@ class Duel{
 		foreach($this->getPlayers() as $player){
 			if($player->getLevel() != null){
 				unset(KitPvP::getInstance()->jump[$player->getName()]);
+				KitPvP::getInstance()->getKits()->getSession($player)->removeKit();
 				KitPvP::getInstance()->getArena()->exitArena($player);
 				KitPvP::getInstance()->getCombat()->getSlay()->resetPlayer($player);
 				foreach(Server::getInstance()->getOnlinePlayers() as $p){

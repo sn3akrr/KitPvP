@@ -15,19 +15,23 @@ class MainTask extends PluginTask{
 	public function onRun(int $currentTick){
 		$this->runs++;
 
-		foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
-			if($player->getHealth() == $player->getMaxHealth()){
-				$player->setFood(20);
-			}else{
-				$player->setFood(17);
+		if($this->runs % 20 == 0){
+			foreach($this->plugin->getServer()->getOnlinePlayers() as $player){
+				if($player->getHealth() == $player->getMaxHealth()){
+					$player->setFood(20);
+				}else{
+					$player->setFood(17);
+				}
 			}
+
+			$this->plugin->getArena()->tick();
+
+			$this->plugin->getCombat()->tick();
+
+			$this->plugin->getDuels()->tick();
 		}
 
-		$this->plugin->getArena()->tick();
-
-		$this->plugin->getCombat()->tick();
-
-		$this->plugin->getDuels()->tick();
+		$this->plugin->getArena()->getSpectate()->tick();
 	}
 
 }

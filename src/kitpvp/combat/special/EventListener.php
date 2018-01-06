@@ -68,8 +68,6 @@ class EventListener implements Listener{
 	}
 
 	public function onInteract(PlayerInteractEvent $e){
-		if($e->isCancelled()) return;
-
 		$player = $e->getPlayer();
 		$teams = $this->plugin->getCombat()->getTeams();
 		$item = $e->getItem();
@@ -91,7 +89,7 @@ class EventListener implements Listener{
 				foreach($player->getLevel()->getEntities() as $p){
 					if($p instanceof Living){
 						if($p->distance($player) <= 10 && $p != $player){
-							if(!$p instanceof Player || !$teams->sameTeam($player, $p)){
+							if(!$p instanceof Player || (!$teams->sameTeam($player, $p) && $this->plugin->getArena()->getSpectate()->isSpectating($p))){
 								$spell->cast($player, $p);
 								$count++;
 							}
@@ -176,13 +174,19 @@ class EventListener implements Listener{
 		$player = $e->getEntity();
 		$teams = $this->plugin->getCombat()->getTeams();
 		if($player instanceof Living){
-			if($player instanceof Player && $this->plugin->getArena()->inSpawn($player)){
-				$e->setCancelled(true);
-				return;
+			if($player instanceof Player){
+				if($this->plugin->getArena()->inSpawn($player)){
+					$e->setCancelled(true);
+					return;
+				}
+				if($this->plugin->getArena()->getSpectate()->isSpectating($player)){
+					$e->setCancelled(true);
+					return;
+				}
 			}
 			if($e instanceof EntityDamageByEntityEvent){
 				$killer = $e->getDamager();
-				if($killer instanceof Player){
+				if($killer instanceof Living){
 					$item = $killer->getInventory()->getItemInHand();
 					if($e instanceof EntityDamageByChildEntityEvent){
 						$child = $e->getChild();
@@ -197,29 +201,33 @@ class EventListener implements Listener{
 							}
 						}
 						if($child instanceof Bullet){
-							$e->setDamage(3);
-							$e->setDamage(3, 4);
-
+							if($killer instanceof Player){
+								$e->setDamage(3);
+								$e->setDamage(3, 4);
+								if($player instanceof Predator){
+									switch($player->getType()){
+										case "Caveman":
+										case "Jungleman":
+	
+										break;
+										case "Cowboy":
+											$as = $this->plugin->getAchievements()->getSession($killer);
+											if(!$as->hasAchievement("this_town")) $as->get("this_town");
+										break;
+									}
+								}
+							}else{
+								$e->setDamage(2);
+							}
 							if($player instanceof Player){
 								$ks = $this->plugin->getKits()->getSession($player);
 								if($ks->hasKit()){
 									if($ks->getKit()->getName() == "archer"){
-										$as = $this->plugin->getAchievements()->getSession($killer);
-										if(!$as->hasAchievement("archer_gun")) $as->get("archer_gun");
+										if($killer instanceof Player){
+											$as = $this->plugin->getAchievements()->getSession($killer);
+											if(!$as->hasAchievement("archer_gun")) $as->get("archer_gun");
+										}
 									}
-								}
-							}
-
-							if($player instanceof Predator){
-								switch($player->getType()){
-									case "Caveman":
-									case "Jungleman":
-
-									break;
-									case "Cowboy":
-										$as = $this->plugin->getAchievements()->getSession($killer);
-										if(!$as->hasAchievement("this_town")) $as->get("this_town");
-									break;
 								}
 							}
 
@@ -230,16 +238,22 @@ class EventListener implements Listener{
 							$dv = $killer->asVector3()->subtract($player->asVector3())->normalize();
 							$player->knockback($killer, 0, $dv->x, $dv->z, 3);
 						}
-						if($child instanceof ThrownEnderPearl){
-							$killer->teleport($player);
-						}
-						if($child instanceof ThrownDecoy){
-							$nt = $this->special->getTickerByItem(new Decoy());
-							$nt->startEffect($killer);
-						}
-						if($child instanceof Arrow){
-							$ks = $this->plugin->getKits()->getSession($killer);
-							$ks->resetMissedShots();
+						if($killer instanceof Player){
+							if($this->plugin->getArena()->getSpectate()->isSpectating($killer)){
+								$e->setCancelled(true);
+								return;
+							}
+							if($child instanceof ThrownEnderPearl){
+								$killer->teleport($player);
+							}
+							if($child instanceof ThrownDecoy){
+								$nt = $this->special->getTickerByItem(new Decoy());
+								$nt->startEffect($killer);
+							}
+							if($child instanceof Arrow){
+								$ks = $this->plugin->getKits()->getSession($killer);
+								$ks->resetMissedShots();
+							}
 						}
 						return;
 					}

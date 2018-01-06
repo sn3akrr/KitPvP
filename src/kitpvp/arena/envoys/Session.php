@@ -22,6 +22,16 @@ class Session{
 		$xuid = $this->getXuid();
 
 		$db = KitPvP::getInstance()->database;
+		$stmt = $db->prepare("SELECT collected FROM envoy_data WHERE xuid=?");
+		$stmt->bind_param("i", $xuid);
+		$stmt->bind_result($collected);
+		if($stmt->execute()){
+			$stmt->fetch();
+		}
+		$stmt->close();
+		if($collected == null) return;
+
+		$this->collected = $collected;
 	}
 
 	public function getUser(){

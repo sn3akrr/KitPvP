@@ -3,6 +3,7 @@
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Skin;
+use pocketmine\item\Item;
 
 class Caveman extends Predator{
 
@@ -17,6 +18,13 @@ class Caveman extends Predator{
 
 	public function getType(){
 		return "Caveman";
+	}
+
+	public function getDrops() : array{
+		if(mt_rand(0,5) == 0){
+			return [Item::get(Item::COOKED_CHICKEN, 0, mt_rand(1,3))];
+		}
+		return [];
 	}
 
 }

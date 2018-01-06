@@ -11,7 +11,11 @@ use pocketmine\event\player\{
 	PlayerInteractEvent,
 	PlayerJumpEvent
 };
-use pocketmine\event\inventory\InventoryPickupItemEvent;
+use pocketmine\event\inventory\{
+	InventoryPickupItemEvent,
+	InventoryTransactionEvent
+};
+use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\event\entity\{
 	EntityDamageEvent,
 	EntityDamageByEntityEvent
@@ -20,6 +24,7 @@ use pocketmine\event\block\{
 	BlockPlaceEvent,
 	BlockBreakEvent
 };
+use pocketmine\item\Item;
 use pocketmine\level\sound\GhastShootSound;
 
 use pocketmine\network\mcpe\protocol\InteractPacket;
@@ -27,11 +32,15 @@ use pocketmine\utils\TextFormat;
 use pocketmine\level\Position;
 
 use kitpvp\uis\MainUi;
+use kitpvp\kits\uis\{
+	KitSelectUi
+};
 use kitpvp\arena\envoys\pickups\{
 	EffectPickup,
 	FreePlay,
 	TechitCluster
 };
+use kitpvp\arena\spectate\uis\CompassUi;
 
 use core\Core;
 
@@ -48,6 +57,10 @@ class MainListener implements Listener{
 		$player->teleport(...$this->plugin->getArena()->getSpawnPosition());
 
 		$this->plugin->getArena()->onJoin($player);
+		foreach($this->plugin->getArena()->getSpectate()->spectating as $name){
+			$p = $this->plugin->getServer()->getPlayerExact($name);
+			if($p instanceof Player) $p->despawnFrom($player);
+		}
 		$this->plugin->getDuels()->createSession($player);
 		$this->plugin->getKits()->createSession($player);
 		$this->plugin->getAchievements()->createSession($player);
@@ -94,7 +107,9 @@ class MainListener implements Listener{
 		$player = $e->getPlayer();
 		$block = $e->getBlock();
 		if($block->getId() == 54) $e->setCancelled(true);
-		if($this->plugin->getArena()->inSpawn($player) && $block->getX() == 62 && $block->getY() == 59 && $block->getZ() == 143){
+
+		$arena = $this->plugin->getArena();
+		if($arena->inSpawn($player) && $block->getX() == 62 && $block->getY() == 59 && $block->getZ() == 143){
 			$lb = $this->plugin->getLeaderboard();
 			if($lb->getType($player) == 2){
 				$lb->setType($player, 0);
@@ -109,6 +124,24 @@ class MainListener implements Listener{
 				Core::getInstance()->getEntities()->getFloatingText()->getText($date . "-you")->update($player, true);
 			}
 			Core::getInstance()->getEntities()->getFloatingText()->getText("leaderboard-type")->update($player, true);
+		}
+
+		$item = $e->getItem();
+		if($arena->inArena($player) && $arena->getSpectate()->isSpectating($player)){
+			switch($item->getId()){
+				case Item::PAPER:
+					//Spectator settings?
+				break;
+				case Item::COMPASS:
+					$player->showModal(new CompassUi($player));
+				break;
+				case Item::NETHER_STAR:
+					$player->showModal(new KitSelectUi($player));
+				break;
+				case Item::BED:
+					$arena->exitArena($player);
+				break;
+			}
 		}
 	}
 
@@ -128,6 +161,10 @@ class MainListener implements Listener{
 	public function onPickup(InventoryPickupItemEvent $e){
 		$player = $e->getInventory()->getHolder();
 		if($player instanceof Player){
+			if($this->plugin->getArena()->getSpectate()->isSpectating($player)){
+				$e->setCancelled(true);
+				return;
+			}
 			$item = $e->getItem();
 			if($item instanceof EffectPickup){
 				$effect = $item->getEffect();
@@ -144,6 +181,14 @@ class MainListener implements Listener{
 				$player->addTechits($count);
 				$player->sendMessage(TextFormat::OBFUSCATED . "||" . TextFormat::RESET . " " . TextFormat::GRAY . "Picked up " . TextFormat::AQUA . $count." Techits".TextFormat::GRAY."! ".TextFormat::WHITE.TextFormat::OBFUSCATED."||");
 			}
+		}
+	}
+
+	public function onTransaction(InventoryTransactionEvent $e){
+		$player = $e->getTransaction()->getSource();
+		$arena = $this->plugin->getArena();
+		if($arena->inArena($player) && $arena->getSpectate()->isSpectating($player)){
+			$e->setCancelled(true);
 		}
 	}
 

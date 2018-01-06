@@ -65,7 +65,7 @@ class KitPvP extends PluginBase{
 		$this->kits = new Kits($this);
 
 		$this->getServer()->getPluginManager()->registerEvents(new MainListener($this), $this);
-		$this->getServer()->getScheduler()->scheduleRepeatingTask(new MainTask($this), 20);
+		$this->getServer()->getScheduler()->scheduleRepeatingTask(new MainTask($this), 1);
 
 		//$this->getServer()->setDefaultLevel($this->getServer()->getLevelByName("m4"));
 		//$this->getServer()->unloadLevel($this->getServer()->getLevelByName("KitSpawn"));

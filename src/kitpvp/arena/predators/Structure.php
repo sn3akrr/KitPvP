@@ -66,7 +66,7 @@ class Structure{
 			"distance" => -1,
 			"x" => 3054,
 			"y" => 48,
-			"z" => 107
+			"z" => 95
 		],
 
 		"mountains-1" => [

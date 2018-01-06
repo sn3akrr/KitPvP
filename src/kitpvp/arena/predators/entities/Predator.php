@@ -127,7 +127,7 @@ class Predator extends Human{
 		}
 
 		$this->yaw = rad2deg(atan2(-$x, $z));
-		$this->pitch = rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
+		$this->pitch = 0;
 
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
 		if($this->shouldJump()){
@@ -201,11 +201,13 @@ class Predator extends Human{
 	}
 
 	public function attack(EntityDamageEvent $source){
-		parent::attack($source);
-
 		if($source instanceof EntityDamageByEntityEvent){
 			$killer = $source->getDamager();
 			if($killer instanceof Player){
+				if(KitPvP::getInstance()->getArena()->getSpectate()->isSpectating($killer)){
+					$source->setCancelled(true);
+					return;
+				}
 				if($this->target != $killer->getName() && mt_rand(1,5) == 1 || $this->target == ""){
 					$this->target = $killer->getName();
 				}
@@ -219,6 +221,8 @@ class Predator extends Human{
 				}
 			}
 		}
+
+		parent::attack($source);
 	}
 
 	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4){
@@ -243,8 +247,9 @@ class Predator extends Human{
 	public function findNewTarget(){
 		$distance = self::FIND_DISTANCE;
 		$target = null;
+		$spec = KitPvP::getInstance()->getArena()->getSpectate();
 		foreach($this->getLevel()->getPlayers() as $player){
-			if($player->distance($this) <= $distance){
+			if($player->distance($this) <= $distance && !$spec->isSpectating($player)){
 				$distance = $player->distance($this);
 				$target = $player;
 			}
@@ -254,7 +259,11 @@ class Predator extends Human{
 	}
 
 	public function hasTarget(){
-		return $this->getTarget() != null;
+		$target = $this->getTarget();
+		if($target == null) return false;
+
+		$player = $this->getTarget();
+		return !KitPvP::getInstance()->getArena()->getSpectate()->isSpectating($player);
 	}
 
 	public function getTarget(){

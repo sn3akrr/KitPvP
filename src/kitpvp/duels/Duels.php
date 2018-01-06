@@ -13,6 +13,8 @@ use kitpvp\duels\pieces\{
 };
 use kitpvp\duels\commands\DuelsCommand;
 
+use core\Core;
+
 class Duels{
 
 	public $plugin;
@@ -54,6 +56,8 @@ class Duels{
 		foreach($this->getRequests() as $name => $request){
 			$request->tick();
 		}
+		Core::getInstance()->getEntities()->getFloatingText()->getText("duels-1")->update();
+		Core::getInstance()->getEntities()->getFloatingText()->getText("duels-3")->update();
 	}
 
 	public function close(){

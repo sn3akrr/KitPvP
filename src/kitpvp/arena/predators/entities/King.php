@@ -3,6 +3,7 @@
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Skin;
+use pocketmine\item\Item;
 
 class King extends Boss{
 
@@ -24,6 +25,11 @@ class King extends Boss{
 		}else{
 			return new Pawn($level, $nbt);
 		}
+	}
+
+	public function getDrops() : array{
+		return [Item::get(Item::STEAK, 0, mt_rand(2,4))];
+
 	}
 
 }

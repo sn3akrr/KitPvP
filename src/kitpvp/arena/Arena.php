@@ -9,7 +9,8 @@ use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use kitpvp\KitPvP;
 use kitpvp\arena\{
 	envoys\Envoys,
-	predators\Predators
+	predators\Predators,
+	spectate\Spectate
 };
 
 use core\vote\Vote;
@@ -28,6 +29,7 @@ class Arena{
 
 		$this->envoys = new Envoys($plugin);
 		$this->predators = new Predators($plugin);
+		$this->spectate = new Spectate($plugin);
 
 		$this->setupRegions();
 	}
@@ -43,6 +45,10 @@ class Arena{
 
 	public function getPredators(){
 		return $this->predators;
+	}
+
+	public function getSpectate(){
+		return $this->spectate;
 	}
 
 	public function onJoin(Player $player){
@@ -259,13 +265,15 @@ class Arena{
 		$player->teleport(...$this->getSpawnPosition());
 
 		$this->plugin->getCombat()->getBodies()->removeAllBodies($player);
-		$this->plugin->getKits()->getSession($player)->removeKit();
 
 		unset($this->plugin->jump[$player->getName()]);
 
 		$pk = new GameRulesChangedPacket();
 		$pk->gameRules["showcoordinates"] = [1, false];
 		$player->dataPacket($pk);
+
+		$this->getSpectate()->removeSpectating($player);
+		$player->getInventory()->clearAll();
 	}
 
 	public function getSpawnPosition(){

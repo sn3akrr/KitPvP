@@ -24,6 +24,9 @@ class Boss extends Predator{
 
 	public $startingHealth = 300;
 
+	public $untilSpecial = 160;
+	public $specialTicks = 0;
+
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
 		$this->setScale(1.5);
@@ -100,8 +103,27 @@ class Boss extends Predator{
 		}
 	}
 
+	public function tickSpecial(){
+		if($this->untilSpecial > 0 && $this->hasTarget()){
+			$this->untilSpecial--;
+		}
+		if($this->untilSpecial === 0){
+			$this->performSpecial();
+		}
+	}
+
+	public function performSpecial(){
+		$this->specialTicks++;
+	}
+
+	public function resetSpecial(){
+		$this->untilSpecial = 160;
+		$this->specialTicks = 0;
+	}
+
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		$this->tickReinforcements();
+		$this->tickSpecial();
 		$this->tickHealer();
 
 		return parent::entityBaseTick($tickDiff);

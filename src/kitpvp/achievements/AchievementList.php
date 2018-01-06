@@ -216,7 +216,7 @@ class AchievementList{
 			"points" => self::POINTS_TIER0
 		],
 		"spy_first" => [
-			"displayName" => "Master of Stealth",
+			"displayName" => "You can't see me!",
 			"description" => "Equip the Spy kit for the first time",
 			"points" => self::POINTS_TIER0
 		],
@@ -253,6 +253,166 @@ class AchievementList{
 		"malone_first" => [
 			"displayName" => "I'm the owner!",
 			"description" => "Equip the m4l0ne23 kit for the first time",
+			"points" => self::POINTS_TIER0
+		],
+
+		"noob_use_1" => [
+			"displayName" => "I can't afford other kits...",
+			"description" => "Equip the Noob Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"noob_use_2" => [
+			"displayName" => "I love being a noob",
+			"description" => "Equip the Noob Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"noob_use_3" => [
+			"displayName" => "Professional Noob",
+			"description" => "Equip the Noob Kit 100 times",
+			"points" => self::POINTS_TIER0
+		],
+
+		"witch_use_1" => [
+			"displayName" => "*cackle noise*",
+			"description" => "Equip the Witch Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"witch_use_2" => [
+			"displayName" => "*louder cackle noise*",
+			"description" => "Equip the Witch Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"witch_use_3" => [
+			"displayName" => "*loudest cackle noise*",
+			"description" => "Equip the Witch Kit 100 times",
+			"points" => self::POINTS_TIER0
+		],
+
+		"spy_use_1" => [
+			"displayName" => "Detective",
+			"description" => "Equip the Spy Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"spy_use_2" => [
+			"displayName" => "Sherlock Holmes",
+			"description" => "Equip the Spy Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"spy_use_3" => [
+			"displayName" => "Master of Stealth",
+			"description" => "Equip the Spy Kit 100 times",
+			"points" => self::POINTS_TIER0
+		],
+
+		"scout_use_1" => [
+			"displayName" => "Run, run, run!",
+			"description" => "Equip the Scout Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"scout_use_2" => [
+			"displayName" => "Can't be caught",
+			"description" => "Equip the Scout Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"scout_use_3" => [
+			"displayName" => "Master of Flee",
+			"description" => "Equip the Scout Kit 100 times",
+			"points" => self::POINTS_TIER0
+		],
+
+		"assault_use_1" => [
+			"displayName" => "Soldier",
+			"description" => "Equip the Assault Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"assault_use_2" => [
+			"displayName" => "Gunner",
+			"description" => "Equip the Assault Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"assault_use_3" => [
+			"displayName" => "Master of Artillery",
+			"description" => "Equip the Assault Kit 100 times",
+			"points" => self::POINTS_TIER0
+		],
+
+		"medic_use_1" => [
+			"displayName" => "Pharmacist",
+			"description" => "Equip the Medic Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"medic_use_2" => [
+			"displayName" => "Doctor",
+			"description" => "Equip the Medic Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"medic_use_3" => [
+			"displayName" => "Surgeon",
+			"description" => "Equip the Medic Kit 100 times",
+			"points" => self::POINTS_TIER0
+		],
+
+		"archer_use_1" => [
+			"displayName" => "Get bow'd",
+			"description" => "Equip the Archer Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"archer_use_2" => [
+			"displayName" => "One with the forest",
+			"description" => "Equip the Archer Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"archer_use_3" => [
+			"displayName" => "Master of Nature",
+			"description" => "Equip the Archer Kit 100 times",
+			"points" => self::POINTS_TIER0
+		],
+
+		"enderman_use_1" => [
+			"displayName" => "*enderman noise*",
+			"description" => "Equip the Enderman Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"enderman_use_2" => [
+			"displayName" => "You can't shoot me!",
+			"description" => "Equip the Enderman Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"enderman_use_3" => [
+			"displayName" => "Master of Teleportation",
+			"description" => "Equip the Enderman Kit 100 times",
+			"points" => self::POINTS_TIER0
+		],
+
+		"pyromancer_use_1" => [
+			"displayName" => "I love fire",
+			"description" => "Equip the Pyromancer Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"pyromancer_use_2" => [
+			"displayName" => "FLAMES EVERYWHERE",
+			"description" => "Equip the Pyromancer Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"pyromancer_use_3" => [
+			"displayName" => "Master of Flames",
+			"description" => "Equip the Pyromancer Kit 100 times",
+			"points" => self::POINTS_TIER0
+		],
+
+		"m4l0ne23_use_1" => [
+			"displayName" => "Malone Fever",
+			"description" => "Equip the m4l0ne23 Kit 10 times",
+			"points" => self::POINTS_TIER0
+		],
+		"m4l0ne23_use_2" => [
+			"displayName" => "I'm abusive",
+			"description" => "Equip the m4l0ne23 Kit 25 times",
+			"points" => self::POINTS_TIER0
+		],
+		"m4l0ne23_use_3" => [
+			"displayName" => "Master of MALONE",
+			"description" => "Equip the m4l0ne23 Kit 100 times",
 			"points" => self::POINTS_TIER0
 		],
 

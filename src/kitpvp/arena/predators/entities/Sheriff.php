@@ -4,6 +4,8 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Skin;
 
+use kitpvp\combat\special\entities\Bullet;
+
 class Sheriff extends Boss{
 
 	public $attackDamage = 8;

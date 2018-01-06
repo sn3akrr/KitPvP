@@ -75,6 +75,16 @@ class Envoy extends Human{
 	}
 
 	public function attack(EntityDamageEvent $source){
+		if($source instanceof EntityDamageByEntityEvent){
+			$killer = $source->getDamager();
+			if($killer instanceof Player){
+				if(KitPvP::getInstance()->getArena()->getSpectate()->isSpectating($killer)){
+					$source->setCancelled(true);
+					return;
+				}
+			}
+		}
+
 		$this->setNameTag($this->getNT());
 		parent::attack($source);
 		if($source->getFinalDamage() >= $this->getHealth() && !$source->isCancelled()){

@@ -4,6 +4,8 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\entity\Skin;
 
+use pocketmine\item\Item;
+
 class Gorilla extends Boss{
 
 	public $attackDamage = 7;
@@ -24,6 +26,10 @@ class Gorilla extends Boss{
 		}else{
 			return new Jungleman($level, $nbt);
 		}
+	}
+
+	public function getDrops() : array{
+		return [Item::get(Item::COOKED_CHICKEN, 0, mt_rand(2,4))];
 	}
 
 }

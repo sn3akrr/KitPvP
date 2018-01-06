@@ -18,6 +18,9 @@ class FireAura extends Ability{
 
 	public function tick(){
 		$player = $this->player;
+
+		if(KitPvP::getInstance()->getArena()->inSpawn($player)) return true;
+
 		$dmg = false;
 		$teams = KitPvP::getInstance()->getCombat()->getTeams();
 		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->grow(5, 5, 5)) as $p){
@@ -36,6 +39,7 @@ class FireAura extends Ability{
 				$player->getLevel()->addParticle(new FlameParticle($player->add((mt_rand(-10,10)/10),(mt_rand(0,20)/10),(mt_rand(-10,10)/10))));
 			}
 		}
+		return true;
 	}
 
 }

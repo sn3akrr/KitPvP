@@ -46,7 +46,7 @@ class Leaderboard{
 	}
 
 	public function hasStats(Player $player){
-		$xuid = $player->getXboxData("XUID");
+		$xuid = $player->getXuid();
 
 		$statement = $this->database->prepare("SELECT xuid FROM leaderboard WHERE xuid=?");
 		$statement->bind_param("i", $xuid);
@@ -58,7 +58,7 @@ class Leaderboard{
 	}
 
 	public function newStats(Player $player){
-		$xuid = $player->getXboxData("XUID");
+		$xuid = $player->getXuid();
 		$z = 0;
 		foreach([
 			"INSERT INTO leaderboard(xuid) VALUES($xuid)",
@@ -111,7 +111,7 @@ class Leaderboard{
 		$type = strtolower($this->typeToName($this->getType($player))) ?? "kills";
 		if($type != "kdr"){
 			if($value == -1){
-				$xuid = $player->getXboxData("XUID");
+				$xuid = $player->getXuid();
 				$statement = $this->database->prepare("SELECT ".$type."_$date FROM leaderboard WHERE xuid=?");
 				$statement->bind_param("i", $xuid);
 				$statement->bind_result($val);
@@ -137,7 +137,7 @@ class Leaderboard{
 			return $text;
 		}
 		if($value == -1){
-			$xuid = $player->getXboxData("XUID");
+			$xuid = $player->getXuid();
 			$statement = $this->database->prepare("SELECT kills_$date / deaths_$date FROM leaderboard WHERE xuid=?");
 			$statement->bind_param("i", $xuid);
 			$statement->bind_result($val);
@@ -236,7 +236,7 @@ class Leaderboard{
 	}
 
 	public function getStreak($player, $date = "alltime"){
-		$xuid = ($player instanceof Player ? $player->getXboxData("XUID") : Core::getInstance()->getNetwork()->gamertagToXuid($player));
+		$xuid = (new User($player))->getXuid();
 
 		$statement = $this->database->prepare("SELECT streak_$date FROM leaderboard WHERE xuid=?");
 		$statement->bind_param("i", $xuid);

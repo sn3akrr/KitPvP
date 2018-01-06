@@ -1,11 +1,10 @@
 <?php namespace kitpvp\combat\logging;
 
+use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 use kitpvp\KitPvP;
 use kitpvp\combat\Combat;
-
-use core\AtPlayer as Player;
 
 class Logging{
 
@@ -27,7 +26,7 @@ class Logging{
 			if($player instanceof Player){
 				if($this->canRemoveCombat($player)){
 					$this->removeCombat($player);
-					$player->sendMessage(TextFormat::AQUA."Logging> ".TextFormat::GREEN."You are no longer in combat mode!");
+					$player->sendMessage(TextFormat::YELLOW . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You are no longer in combat mode!");
 				}
 			}else{
 				unset($this->logging[$name]);

@@ -132,6 +132,17 @@ class KitObject{
 	}
 
 	public function equip(Player $player){
+		$kits = KitPvP::getInstance()->getKits();
+		$kits->getSession($player)->addKit($this);
+
+		$arena = KitPvP::getInstance()->getArena();
+		if($arena->getSpectate()->isSpectating($player)){
+			$player->getInventory()->clearAll();
+			$player->setGamemode(0);
+			$arena->exitArena($player);
+			$arena->tpToArena($player);
+		}
+
 		foreach($this->getItems() as $item){
 			$player->getInventory()->addItem($item);
 		}
@@ -149,9 +160,6 @@ class KitObject{
 
 		Server::getInstance()->getPluginManager()->callEvent(new KitEquipEvent($player, $this));
 		$player->getLevel()->addSound(new AnvilFallSound($player), [$player]);
-
-		$kits = KitPvP::getInstance()->getKits();
-		$kits->getSession($player)->addKit($this);
 
 		foreach($kits->kits as $kit){
 			if($kit->getName() != $this->getName()){

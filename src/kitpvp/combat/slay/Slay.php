@@ -189,9 +189,11 @@ class Slay{
 							break;
 						}
 					}
-					$this->plugin->getArena()->exitArena($dead);
 					$this->resetPlayer($dead);
 					$this->killChildren($dead);
+
+					//$this->plugin->getArena()->exitArena($dead);
+					$this->plugin->getArena()->getSpectate()->setSpectating($dead);
 
 					$this->combat->getStreaks()->resetStreak($dead, $killer);
 
@@ -252,7 +254,6 @@ class Slay{
 				$dead->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You were killed by a " . TextFormat::DARK_PURPLE . $killer->getType());
 
 				$this->strikeLightning($dead);
-				$this->addDeath($dead);
 				$this->combat->getLogging()->removeCombat($dead);
 				$this->combat->getBodies()->addBody($dead);
 				foreach($dead->getInventory()->getContents() as $item){
@@ -261,9 +262,11 @@ class Slay{
 						break;
 					}
 				}
-				$this->plugin->getArena()->exitArena($dead);
 				$this->resetPlayer($dead);
 				$this->killChildren($dead);
+
+				//$this->plugin->getArena()->exitArena($dead);
+				$this->plugin->getArena()->getSpectate()->setSpectating($dead);
 
 				$this->combat->getStreaks()->resetStreak($dead, $killer);
 
@@ -289,7 +292,8 @@ class Slay{
 				break;
 			}
 		}
-		$this->plugin->getArena()->exitArena($player);
+		//$this->plugin->getArena()->exitArena($player);
+		$this->plugin->getArena()->getSpectate()->setSpectating($player);
 
 		$this->unsetAssistingPlayers($player);
 

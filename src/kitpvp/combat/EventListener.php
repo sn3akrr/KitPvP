@@ -12,15 +12,13 @@ use pocketmine\event\entity\{
 	EntityDamageByEntityEvent,
 	EntityDamageByChildEntityEvent
 };
+use pocketmine\Player;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\block\Block;
 use pocketmine\utils\TextFormat;
 use pocketmine\item\Food;
 
 use kitpvp\KitPvP;
-
-use core\AtPlayer as Player;
-use core\Core;
 
 class EventListener implements Listener{
 
@@ -95,14 +93,23 @@ class EventListener implements Listener{
 			$e->setCancelled(true);
 			return;
 		}
+		$arena = $this->plugin->getArena();
+		if($arena->getSpectate()->isSpectating($player)){
+			$e->setCancelled(true);
+			return;
+		}
 
 		if($e instanceof EntityDamageByEntityEvent){
 			$player->getLevel()->addParticle(new DestroyBlockParticle($player, Block::get(152)));
 			$killer = $e->getDamager();
 			if($killer instanceof Player){
+				if($arena->getSpectate()->isSpectating($killer)){
+					$e->setCancelled(true);
+					return;
+				}
 				if($teams->sameTeam($player, $killer)){
 					$e->setCancelled(true);
-					$killer->sendMessage(TextFormat::AQUA."Teams> ".TextFormat::RED.$player->getName()." is on your team!");
+					$killer->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::YELLOW . $player->getName() . TextFormat::GRAY . " is on your team!");
 					return;
 				}
 				if($killer == $player){
@@ -118,10 +125,10 @@ class EventListener implements Listener{
 					$combat->getSlay()->processKill($killer, $player);
 				}else{
 					if(!$combat->getLogging()->inCombat($player)){
-						$player->sendMessage(TextFormat::AQUA."Logging> ".TextFormat::GREEN."You are now in combat mode! Logging out will cause you to lose 10 Techits!");
+						$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You are now in combat mode! Logging out will cause you to lose 10 Techits!");
 					}
 					if(!$combat->getLogging()->inCombat($killer)){
-						$killer->sendMessage(TextFormat::AQUA."Logging> ".TextFormat::GREEN."You are now in combat mode! Logging out will cause you to lose 10 Techits!");
+						$killer->sendMessage(TextFormat::RED . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "You are now in combat mode! Logging out will cause you to lose 10 Techits!");
 					}
 					$combat->getLogging()->setCombat($player, $killer);
 					$combat->getLogging()->setCombat($killer, $player);

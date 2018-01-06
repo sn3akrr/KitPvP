@@ -27,7 +27,7 @@ class ConcussionGrenade extends Throwable{
 	public function concuss(Entity $victim, Player $thrower){
 		$combat = KitPvP::getInstance()->getCombat();
 		$teams = $combat->getTeams();
-		if($victim instanceof Player && $teams->sameTeam($victim, $thrower)){
+		if($victim instanceof Player && ($teams->sameTeam($victim, $thrower) || KitPvP::getInstance()->getArena()->getSpectate()->isSpectating($victim)){
 			return;
 		}
 		$combat->getSlay()->damageAs($thrower, $victim, 5);

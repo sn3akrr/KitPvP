@@ -208,6 +208,10 @@ class Predator extends Human{
 					$source->setCancelled(true);
 					return;
 				}
+				if(KitPvP::getInstance()->getSlay()->isInvincible($killer)){
+					$source->setCancelled(true);
+					return;
+				}
 				if($this->target != $killer->getName() && mt_rand(1,5) == 1 || $this->target == ""){
 					$this->target = $killer->getName();
 				}

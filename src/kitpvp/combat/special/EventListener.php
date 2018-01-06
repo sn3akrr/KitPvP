@@ -89,7 +89,7 @@ class EventListener implements Listener{
 				foreach($player->getLevel()->getEntities() as $p){
 					if($p instanceof Living){
 						if($p->distance($player) <= 10 && $p != $player){
-							if(!$p instanceof Player || (!$teams->sameTeam($player, $p) && $this->plugin->getArena()->getSpectate()->isSpectating($p))){
+							if(!$p instanceof Player || (!$teams->sameTeam($player, $p) && !$this->plugin->getArena()->getSpectate()->isSpectating($p))){
 								$spell->cast($player, $p);
 								$count++;
 							}

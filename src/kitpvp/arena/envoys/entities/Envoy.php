@@ -82,7 +82,7 @@ class Envoy extends Human{
 					$source->setCancelled(true);
 					return;
 				}
-				if(KitPvP::getInstance()->getSlay()->isInvincible($killer)){
+				if(KitPvP::getInstance()->getCombat()->getSlay()->isInvincible($killer)){
 					$source->setCancelled(true);
 					return;
 				}

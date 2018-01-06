@@ -3,6 +3,8 @@
 use pocketmine\Player;
 use pocketmine\item\Item;
 use pocketmine\entity\Entity;
+use pocketmine\utils\TextFormat;
+use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 
 use kitpvp\KitPvP;
 use kitpvp\arena\spectate\uis\SpectateChooseUi;
@@ -10,6 +12,7 @@ use kitpvp\arena\spectate\uis\SpectateChooseUi;
 class Spectate{
 
 	public $plugin;
+	public $ticks = 0;
 
 	public $spectating = [];
 
@@ -18,6 +21,7 @@ class Spectate{
 	}
 
 	public function tick(){
+		$this->ticks++;
 		foreach($this->spectating as $name => $tick){
 			$player = $this->plugin->getServer()->getPlayerExact($name);
 			if($player instanceof Player){
@@ -27,6 +31,29 @@ class Spectate{
 						$player->showModal(new SpectateChooseUi());
 					}else{
 						$this->spectating[$name]++;
+					}
+				}else{
+					if($this->ticks % 4 == 0){
+						if($player->getInventory()->getItemInHand()->getId() == Item::COMPASS){
+							$distance = 100;
+							$nearest = null;
+							foreach($player->getLevel()->getPlayers() as $p){
+								if($p != $player && $p->distance($player) <= $distance && !$this->isSpectating($p)){
+									$distance = $p->distance($player);
+									$nearest = $p;
+								}
+							}
+							if($nearest != null && $nearest != $player){ 
+								$pk = new SetSpawnPositionPacket();
+								$pk->spawnType = 1;
+								$pk->x = $nearest->getFloorX();
+								$pk->y = $nearest->getFloorY();
+								$pk->z = $nearest->getFloorZ();
+								$pk->spawnForced = true;
+								$player->dataPacket($pk);
+								$player->addActionBarMessage(TextFormat::GREEN . $nearest->getName() . ": " . round($nearest->distance($player)) . " blocks away");
+							}
+						}
 					}
 				}
 			}else{

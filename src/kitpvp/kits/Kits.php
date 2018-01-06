@@ -1,6 +1,9 @@
 <?php namespace kitpvp\kits;
 
-use pocketmine\item\Item;
+use pocketmine\item\{
+	Item,
+	Durable
+};
 use pocketmine\entity\{
 	Entity,
 	Effect
@@ -343,6 +346,13 @@ class Kits{
 			], 3),
 
 		] as $name => $class) $this->kits[$name] = $class;
+		foreach($this->kits as $kit){
+			foreach($kit->getItems() as $item){
+				if($item instanceof Durable){
+					$item->setUnbreakable(true);
+				}
+			}
+		}
 	}
 
 	public function kitExists($name){

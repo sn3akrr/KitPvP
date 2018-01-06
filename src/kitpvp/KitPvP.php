@@ -72,12 +72,6 @@ class KitPvP extends PluginBase{
 	}
 
 	public function onDisable(){
-		foreach($this->getServer()->getOnlinePlayers() as $player){
-			$session = $this->getKits()->getSession($player);
-			if($session->hasKit()){
-				$session->getKit()->refund($player);
-			}
-		}
 		$this->getDuels()->close();
 		$this->getAchievements()->close();
 		$this->getKits()->close();

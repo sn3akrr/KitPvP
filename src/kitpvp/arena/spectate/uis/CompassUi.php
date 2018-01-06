@@ -19,9 +19,9 @@ class CompassUi extends SimpleForm{
 		parent::__construct("Compass", "Select a player to teleport!");
 		$level = Server::getInstance()->getLevelByName("atm");
 		foreach($level->getPlayers() as $p){
-			if($player != $p){
+			if($player != $p && !KitPvP::getInstance()->getArena()->getSpectate()->isSpectating($p)){
 				$this->players[] = $p->getName();
-				$this->addButton(new Button($p->getName() . PHP_EOL . round($p->distance($player), 2) . " blocks away"));
+				$this->addButton(new Button($p->getName() . PHP_EOL . round($p->distance($player)) . " blocks away"));
 			}
 		}
 		$this->addButton(new Button("Exit compass"));
@@ -40,7 +40,7 @@ class CompassUi extends SimpleForm{
 					return;
 				}
 				$player->teleport($pl);
-				$player->sendMessae(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Teleported to " . TextFormat::YELLOW . $p);
+				$player->sendMessage(TextFormat::GREEN . TextFormat::BOLD . "(i) " . TextFormat::RESET . TextFormat::GRAY . "Teleported to " . TextFormat::YELLOW . $p);
 				return;
 			}
 		}

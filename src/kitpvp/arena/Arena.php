@@ -34,6 +34,11 @@ class Arena{
 		$this->setupRegions();
 	}
 
+	public function close(){
+		$this->getEnvoys()->close();
+		$this->getPredators()->close();
+	}
+
 	public function tick(){
 		$this->getEnvoys()->tick();
 		$this->getPredators()->tick();

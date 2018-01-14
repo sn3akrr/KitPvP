@@ -3,6 +3,8 @@
 use pocketmine\Player;
 use pocketmine\entity\Effect;
 
+use kitpvp\KitPvP;
+
 class LastChance extends Ability{
 
 	public function __construct(){

@@ -4,19 +4,11 @@ use pocketmine\Server;
 
 use kitpvp\KitPvP;
 
-use core\stats\User;
+use core\utils\SaveableSession;
 
-class Session{
-
-	public $user;
+class Session extends SaveableSession{
 
 	public $collected = 0;
-
-	public function __construct($user){
-		$this->user = new User($user);
-
-		$this->load();
-	}
 
 	public function load(){
 		$xuid = $this->getXuid();
@@ -32,18 +24,6 @@ class Session{
 		if($collected == null) return;
 
 		$this->collected = $collected;
-	}
-
-	public function getUser(){
-		return $this->user;
-	}
-
-	public function getPlayer(){
-		return $this->getUser()->getPlayer();
-	}
-
-	public function getXuid(){
-		return $this->getUser()->getXuid();
 	}
 
 	public function getCollected(){

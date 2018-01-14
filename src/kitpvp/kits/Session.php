@@ -5,11 +5,9 @@ use pocketmine\Server;
 use kitpvp\KitPvP;
 use kitpvp\kits\event\KitUnequipEvent;
 
-use core\stats\User;
+use core\utils\SaveableSession;
 
-class Session{
-
-	public $user;
+class Session extends SaveableSession{
 
 	public $activeKit = null;
 
@@ -42,11 +40,6 @@ class Session{
 		"pyromancer" => 0,
 		"m4l0ne23" => 0,
 	];
-
-	public function __construct($user){
-		$this->user = new User($user);
-		$this->load();
-	}
 
 	public function load(){
 		$xuid = $this->getXuid();
@@ -98,18 +91,6 @@ class Session{
 			"pyromancer" => $pyromancer,
 			"m4l0ne23" => $malone
 		];
-	}
-
-	public function getUser(){
-		return $this->user;
-	}
-
-	public function getPlayer(){
-		return $this->getUser()->getPlayer();
-	}
-
-	public function getXuid(){
-		return $this->getUser()->getXuid();
 	}
 
 	public function hasKit(){

@@ -40,6 +40,12 @@ class Envoys{
 		$this->setup();
 	}
 
+	public function close(){
+		foreach($this->sessions as $name => $session){
+			$session->save();
+		}
+	}
+
 	public function tick(){
 		$this->nextDrop--;
 		$drop = $this->getNextDrop();

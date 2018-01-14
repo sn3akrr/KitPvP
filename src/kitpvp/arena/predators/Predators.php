@@ -43,6 +43,12 @@ class Predators{
 		$this->setup();
 	}
 
+	public function close(){
+		foreach($this->sessions as $name => $session){
+			$session->save();
+		}
+	}
+
 	public function tick(){
 		foreach($this->getSpawners() as $spawner){
 			$spawner->tick();

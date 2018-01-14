@@ -1,8 +1,13 @@
 <?php namespace kitpvp\kits\abilities;
 
 use pocketmine\Player;
-use pocketmine\entity\Effect;
+use pocketmine\entity\{
+	Effect,
+	Living
+};
 use pocketmine\level\sound\EndermanTeleportSound;
+
+use kitpvp\KitPvP;
 
 class Slender extends Ability{
 
@@ -17,8 +22,10 @@ class Slender extends Ability{
 	public function activate(Player $player, $target = null){
 		$player->addEffect(Effect::getEffect(Effect::INVISIBILITY)->setDuration(20 * 5));
 		$player->getLevel()->addSound(new EndermanTeleportSound($player));
+		$teams = KitPvP::getInstance()->getCombat()->getTeams();
+		$spec = KitPvP::getInstance()->getArena()->getSpectate();
 		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->grow(4, 4, 4)) as $p){
-			if($p != $player){
+			if($p != $player && $p instanceof Living && (!$p instanceof Player || (!$teams->sameTeam($player, $p) && !$spec->isSpectating($p)))){
 				$dv = $p->getDirectionVector();
 				$p->knockback($p, 0 -$dv->x, -$dv->z, 0.8);
 				$p->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 7));

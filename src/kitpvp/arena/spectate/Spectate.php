@@ -31,6 +31,10 @@ class Spectate{
 						$player->showModal(new SpectateChooseUi());
 					}else{
 						$this->spectating[$name]++;
+						if($this->spectating[$name] % 10 == 0 && !$player->isFlying()){
+							$player->setAllowFlight(true);
+							$player->setFlying(true);
+						}
 					}
 				}else{
 					if($this->ticks % 4 == 0){
@@ -68,27 +72,24 @@ class Spectate{
 
 	public function setSpectating(Player $player){
 		$this->plugin->getKits()->getSession($player)->removeKit();
-
 		$player->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);
-		$player->setAllowFlight(true);
-		$player->setFlying(true);
 
 		$player->addTitle("You died!", "Spectating...", 5, 30, 5);
 
 		$this->spectating[$player->getName()] = 0;
-		$player->setMotion($player->getMotion()->add(0,0.5));
+		$player->setMotion($player->getMotion()->add(0,0.75));
 
 		//$options = Item::get(Item::PAPER, 0, 1);
 		//$options->setCustomName("Spectator options");
 
 		$compass = Item::get(Item::COMPASS);
-		$compass->setCustomName("Track players");
+		$compass->setCustomName(TextFormat::RESET . TextFormat::BOLD . TextFormat::GREEN . "Track players");
 
 		$star = Item::get(Item::NETHER_STAR);
-		$star->setCustomName("Play again!");
+		$star->setCustomName(TextFormat::RESET . TextFormat::BOLD . TextFormat::YELLOW . "Fight again!");
 
-		$bed = Item::get(Item::BED);
-		$bed->setCustomName("Leave spectator mode");
+		$bed = Item::get(Item::BED, 14);
+		$bed->setCustomName(TextFormat::RESET . TextFormat::BOLD . TextFormat::RED . "Exit Arena");
 
 		
 		//$player->getInventory()->setItem(1, $options);

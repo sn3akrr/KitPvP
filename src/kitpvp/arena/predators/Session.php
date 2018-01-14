@@ -4,22 +4,14 @@ use pocketmine\Server;
 
 use kitpvp\KitPvP;
 
-use core\stats\User;
+use core\utils\SaveableSession;
 
-class Session{
-
-	public $user;
+class Session extends SaveableSession{
 
 	public $kills = [];
 
 	public $normaldeaths = 0;
 	public $bossdeaths = 0;
-
-	public function __construct($user){
-		$this->user = new User($user);
-
-		$this->load();
-	}
 
 	public function load(){
 		foreach(KitPvP::getInstance()->getArena()->getPredators()->getPredatorTypes() as $type){
@@ -59,18 +51,6 @@ class Session{
 
 		$this->normaldeaths = $normaldeaths;
 		$this->bossdeaths = $bossdeaths;
-	}
-
-	public function getUser(){
-		return $this->user;
-	}
-
-	public function getPlayer(){
-		return $this->getUser()->getPlayer();
-	}
-
-	public function getXuid(){
-		return $this->getUser()->getXuid();
 	}
 
 	public function getKills($type){

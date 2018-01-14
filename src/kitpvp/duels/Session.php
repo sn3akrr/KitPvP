@@ -4,27 +4,15 @@ use pocketmine\Player;
 
 use kitpvp\KitPvP;
 
-use core\stats\User;
+use core\utils\SaveableSession;
 
-class Session{
-
-	public $user;
-	public $player;
-	public $xuid;
+class Session extends SaveableSession{
 
 	public $wins = 0;
 	public $losses = 0;
 	public $draws = 0;
 
 	public $preferredArena = null;
-
-	public function __construct($user){
-		$this->user = new User($user);
-		$this->player = $this->user->getPlayer();
-		$this->xuid = $this->user->getXuid();
-
-		$this->load();
-	}
 
 	public function load(){
 		$xuid = $this->getXuid();
@@ -41,18 +29,6 @@ class Session{
 		$this->wins = (int) $wins;
 		$this->losses = (int) $losses;
 		$this->draws = (int) $draws;
-	}
-
-	public function getUser(){
-		return $this->user;
-	}
-
-	public function getPlayer(){
-		return $this->player;
-	}
-
-	public function getXuid(){
-		return $this->xuid;
 	}
 
 	public function getWins(){

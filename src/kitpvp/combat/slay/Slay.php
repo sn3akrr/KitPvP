@@ -318,7 +318,7 @@ class Slay{
 	public function strikeLightning(Position $pos){
 		$pk = new AddEntityPacket();
 		$pk->type = 93;
-		$pk->entityRuntimeId = $eid = Entity::$entityCount++;
+		$pk->entityRuntimeId = Entity::$entityCount++;
 		$pk->position = $pos->asVector3();
 		$pk->yaw = $pk->pitch = 0;
 		foreach($pos->getLevel()->getPlayers() as $p){

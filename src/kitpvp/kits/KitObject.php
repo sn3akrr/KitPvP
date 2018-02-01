@@ -146,7 +146,7 @@ class KitObject{
 		foreach($this->getItems() as $item){
 			$player->getInventory()->addItem($item);
 		}
-		$player->getInventory()->setArmorContents($this->getArmorContents());
+		$player->getArmorInventory()->setContents($this->getArmorContents());
 		foreach($this->getEffects() as $effect){
 			$effect->setDuration(20 * 999999);
 			$player->addEffect($effect);

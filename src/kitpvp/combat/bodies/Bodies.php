@@ -49,7 +49,7 @@ class Bodies{
 			$uuid = UUID::fromRandom();
 			$skin = $thing->getSkin();
 			$item = $thing->getInventory()->getItemInHand();
-			$armor = $thing->getInventory()->getArmorContents();
+			$armor = $thing->getArmorInventory()->getContents();
 			$x = (int) $thing->x;
 			$y = (int) $thing->y;
 			$z = (int) $thing->z;

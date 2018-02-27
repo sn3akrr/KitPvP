@@ -2,7 +2,7 @@ name: KitPvP
 author: mal0ne_23
 description: KitPvP for AvengeTech
 version: 2.0.0
-api: 3.0.0-ALPHA10
+api: 3.0.0-ALPHA11
 main: kitpvp\KitPvP
 depend: Core
 

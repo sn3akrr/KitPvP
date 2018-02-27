@@ -427,7 +427,8 @@ class Kits{
 				foreach($player->getLevel()->getPlayers() as $p){
 					$pk = new MobArmorEquipmentPacket();
 					$pk->entityRuntimeId = $player->getId();
-					$pk->slots = $player->getInventory()->getArmorContents();
+					$ai = $player->getArmorInventory();
+					$pk->slots = [$ai->getHelmet(), $ai->getChestplate(), $ai->getLeggings(), $ai->getBoots()];
 					$p->dataPacket($pk);
 
 					if($p != $player){

@@ -313,6 +313,7 @@ class Slay{
 		$player->setHealth(20);
 		$player->removeAllEffects();
 		$player->getInventory()->clearAll();
+		$player->getArmorInventory()->clearAll();
 	}
 
 	public function strikeLightning(Position $pos){

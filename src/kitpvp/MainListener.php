@@ -1,9 +1,11 @@
-<?php namespace KitPvP;
+<?php namespace kitpvp;
 
 use pocketmine\Player;
 
 use pocketmine\event\Listener;
 use pocketmine\event\player\{
+	PlayerCreationEvent,
+
 	PlayerJoinEvent,
 	PlayerMoveEvent,
 	PlayerDropItemEvent,
@@ -50,6 +52,10 @@ class MainListener implements Listener{
 
 	public function __construct(KitPvP $plugin){
 		$this->plugin = $plugin;
+	}
+
+	public function onCreate(PlayerCreationEvent $e){
+		$e->setPlayerClass(KitPvPPlayer::class);
 	}
 
 	public function onJoin(PlayerJoinEvent $e){

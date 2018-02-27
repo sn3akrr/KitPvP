@@ -3,7 +3,7 @@
 use pocketmine\network\mcpe\protocol\{
 	AddPlayerPacket,
 	MobArmorEquipmentPacket,
-	PlayerListPacket,
+	PlayerSkinPacket,
 	types\PlayerListEntry,
 	RemoveEntityPacket
 };
@@ -96,13 +96,9 @@ class Bodies{
 		$pk2->entityRuntimeId = $eid;
 		$pk2->slots = $armor;
 
-		$pk3 = new PlayerListPacket();
-		$pk3->type = PlayerListPacket::TYPE_ADD;
-		$pk3->entries[] = PlayerListEntry::createAdditionEntry($uuid, $eid, "", $skin);
-
-		$pk4 = new PlayerListPacket();
-		$pk4->type = PlayerListPacket::TYPE_REMOVE;
-		$pk4->entries[] = PlayerListEntry::createRemovalEntry($uuid);
+		$pk3 = new PlayerSkinPacket();
+		$pk3->uuid = $uuid;
+		$pk3->skin = $skin;
 
 		if(empty($players)){
 			foreach($this->plugin->getServer()->getOnlinePlayers() as $pl){
@@ -110,7 +106,6 @@ class Bodies{
 					$pl->dataPacket($pk);
 					$pl->dataPacket($pk2);
 					$pl->dataPacket($pk3);
-					$pl->dataPacket($pk4);
 				}
 			}
 			$this->bodies[$eid] = [
@@ -131,7 +126,6 @@ class Bodies{
 					$pl->dataPacket($pk);
 					$pl->dataPacket($pk2);
 					$pl->dataPacket($pk3);
-					$pl->dataPacket($pk4);
 				}
 			}
 		}

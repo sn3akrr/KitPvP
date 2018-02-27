@@ -11,7 +11,8 @@ use kitpvp\{
 	combat\Combat,
 	duels\Duels,
 	kits\Kits,
-	leaderboard\Leaderboard
+	leaderboard\Leaderboard,
+	techits\Techits
 };
 
 class KitPvP extends PluginBase{
@@ -27,6 +28,7 @@ class KitPvP extends PluginBase{
 	public $duels;
 	public $kits;
 	public $leaderboard;
+	public $techits;
 
 	public $jump = [];
 
@@ -63,6 +65,7 @@ class KitPvP extends PluginBase{
 		$this->duels = new Duels($this);
 		$this->combat = new Combat($this);
 		$this->kits = new Kits($this);
+		$this->techits = new Techits($this);
 
 		$this->getServer()->getPluginManager()->registerEvents(new MainListener($this), $this);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new MainTask($this), 1);
@@ -77,6 +80,7 @@ class KitPvP extends PluginBase{
 		$this->getKits()->close();
 
 		$this->getCombat()->close();
+		$this->getTechits()->close();
 		$this->database->close();
 	}
 
@@ -106,6 +110,10 @@ class KitPvP extends PluginBase{
 
 	public function getLeaderboard(){
 		return $this->leaderboard;
+	}
+
+	public function getTechits(){
+		return $this->techits;
 	}
 
 }

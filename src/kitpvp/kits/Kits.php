@@ -6,7 +6,8 @@ use pocketmine\item\{
 };
 use pocketmine\entity\{
 	Entity,
-	Effect
+	Effect,
+	EffectInstance
 };
 use pocketmine\utils\{
 	TextFormat,
@@ -101,7 +102,7 @@ class Kits{
 		$this->registerKits();
 
 		$plugin->getServer()->getPluginManager()->registerEvents(new AbilityListener($plugin, $this), $plugin);
-		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new AbilityTask($plugin), 1);
+		$plugin->getScheduler()->scheduleRepeatingTask(new AbilityTask($plugin), 1);
 	}
 
 	public function close(){
@@ -188,7 +189,7 @@ class Kits{
 				Item::get(304),
 				Item::get(301)
 			], [
-				Effect::getEffect(Effect::FIRE_RESISTANCE)
+				new EffectInstance(Effect::getEffect(Effect::FIRE_RESISTANCE))
 			], [
 				$this->getAbility("curse"),
 			], [
@@ -205,8 +206,8 @@ class Kits{
 				Item::get(0),
 				Item::get(309)
 			], [
-				Effect::getEffect(Effect::HASTE),
-				Effect::getEffect(Effect::SPEED),
+				new EffectInstance(Effect::getEffect(Effect::HASTE)),
+				new EffectInstance(Effect::getEffect(Effect::SPEED)),
 			], [
 				$this->getAbility("stealth mode"),
 				$this->getAbility("last chance"),
@@ -224,8 +225,8 @@ class Kits{
 				Item::get(0),
 				Item::get(313)
 			], [
-				Effect::getEffect(Effect::HASTE),
-				Effect::getEffect(Effect::SPEED)->setAmplifier(3),
+				new EffectInstance(Effect::getEffect(Effect::HASTE)),
+				new EffectInstance(Effect::getEffect(Effect::SPEED), 0, 3),
 			], [
 				$this->getAbility("double jump"),
 				$this->getAbility("bounceback"),
@@ -243,8 +244,8 @@ class Kits{
 				Item::get(300),
 				Item::get(0),
 			], [
-				Effect::getEffect(Effect::SPEED)->setAmplifier(1),
-				Effect::getEffect(Effect::DAMAGE_RESISTANCE)
+				new EffectInstance(Effect::getEffect(Effect::SPEED), 0, 1),
+				new EffectInstance(Effect::getEffect(Effect::DAMAGE_RESISTANCE))
 			], [
 				$this->getAbility("adrenaline"),
 			], [
@@ -280,8 +281,8 @@ class Kits{
 				Item::get(308),
 				Item::get(301)
 			], [
-				Effect::getEffect(Effect::SPEED),
-				Effect::getEffect(Effect::JUMP)
+				new EffectInstance(Effect::getEffect(Effect::SPEED)),
+				new EffectInstance(Effect::getEffect(Effect::JUMP))
 			], [
 				$this->getAbility("aim assist"),
 			], [
@@ -298,9 +299,9 @@ class Kits{
 				Item::get(312),
 				Item::get(0),
 			], [
-				Effect::getEffect(Effect::SPEED)->setAmplifier(1),
-				Effect::getEffect(Effect::MINING_FATIGUE)->setAmplifier(1),
-				Effect::getEffect(Effect::STRENGTH),
+				new EffectInstance(Effect::getEffect(Effect::SPEED), 0, 1),
+				new EffectInstance(Effect::getEffect(Effect::MINING_FATIGUE), 0, 1),
+				new EffectInstance(Effect::getEffect(Effect::STRENGTH)),
 			], [
 				$this->getAbility("slender"),
 				$this->getAbility("arrow dodge"),
@@ -317,9 +318,9 @@ class Kits{
 				Item::get(300),
 				Item::get(309)
 			], [
-				Effect::getEffect(Effect::SLOWNESS),
-				Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setAmplifier(1),
-				Effect::getEffect(Effect::FIRE_RESISTANCE)
+				new EffectInstance(Effect::getEffect(Effect::SLOWNESS)),
+				new EffectInstance(Effect::getEffect(Effect::DAMAGE_RESISTANCE), 0, 1),
+				new EffectInstance(Effect::getEffect(Effect::FIRE_RESISTANCE))
 			], [
 				$this->getAbility("fire aura"),
 			], [
@@ -336,8 +337,8 @@ class Kits{
 				Item::get(0),
 				Item::get(0)
 			], [
-				Effect::getEffect(Effect::SPEED)->setAmplifier(2),
-				Effect::getEffect(Effect::MINING_FATIGUE)->setAmplifier(1)
+				new EffectInstance(Effect::getEffect(Effect::SPEED), 0, 2),
+				new EffectInstance(Effect::getEffect(Effect::MINING_FATIGUE), 0, 1)
 			], [
 				$this->getAbility("health boost"),
 				$this->getAbility("bounceback"),

@@ -1,15 +1,14 @@
 <?php namespace kitpvp\combat\special;
 
-use pocketmine\scheduler\PluginTask;
+use pocketmine\scheduler\Task;
 
 use kitpvp\KitPvP;
 
-class SpecialTask extends PluginTask{
+class SpecialTask extends Task{
 
 	public $plugin;
 
 	public function __construct(KitPvP $plugin){
-		parent::__construct($plugin);
 		$this->plugin = $plugin;
 		$this->runs = 0;
 	}

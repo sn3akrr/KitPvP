@@ -1,7 +1,10 @@
 <?php namespace kitpvp\combat\special\other;
 
 use pocketmine\Player;
-use pocketmine\entity\Effect;
+use pocketmine\entity\{
+	Effect,
+	EffectInstance
+};
 use pocketmine\entity\Entity;
 use pocketmine\utils\TextFormat;
 

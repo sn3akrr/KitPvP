@@ -223,7 +223,7 @@ class KitObject{
 			$string .= "\n\n";
 			$string .= "\n  ".TextFormat::RESET.TextFormat::BOLD."Effects:".TextFormat::RESET."\n    ";
 			foreach($this->getEffects() as $effect){
-				$string .= TextFormat::AQUA.$effect->getName()." ".TextFormat::YELLOW.$this->toRN($effect->getEffectLevel()).TextFormat::GRAY.", ";
+				$string .= TextFormat::AQUA.$effect->getType()->getName()." ".TextFormat::YELLOW.$this->toRN($effect->getEffectLevel()).TextFormat::GRAY.", ";
 			}
 			$string .= "\n\n";
 		}

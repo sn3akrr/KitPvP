@@ -74,7 +74,7 @@ class Envoy extends Human{
 		return true;
 	}
 
-	public function attack(EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source) : void{
 		if($source instanceof EntityDamageByEntityEvent){
 			$killer = $source->getDamager();
 			if($killer instanceof Player){
@@ -103,7 +103,7 @@ class Envoy extends Human{
 		}
 	}
 
-	public function kill(){
+	public function kill() : void{
 		parent::kill();
 		$killer = $this->killer;
 		if($killer instanceof Player){
@@ -119,7 +119,7 @@ class Envoy extends Human{
 		return KitPvP::getInstance()->getArena()->getEnvoys()->getRandomItems();
 	}
 
-	public function knockBack(Entity $attacker, float $damage, float $x, float $z, $base = 0.4){
+	public function knockBack(Entity $attacker, float $damage, float $x, float $z, $base = 0.4) : void{
 		//Plz no knockback
 	}
 

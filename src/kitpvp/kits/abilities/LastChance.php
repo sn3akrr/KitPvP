@@ -1,7 +1,10 @@
 <?php namespace kitpvp\kits\abilities;
 
 use pocketmine\Player;
-use pocketmine\entity\Effect;
+use pocketmine\entity\{
+	Effect,
+	EffectInstance
+};
 
 use kitpvp\KitPvP;
 
@@ -16,8 +19,8 @@ class LastChance extends Ability{
 	}
 
 	public function activate(Player $player, $target = null){
-		$player->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 5));
-		$player->addEffect(Effect::getEffect(Effect::INVISIBILITY)->setDuration(20 * 5));
+		$player->addEffect(new EffectInstance(Effect::getEffect(Effect::BLINDNESS), 20 * 5));
+		$player->addEffect(new EffectInstance(Effect::getEffect(Effect::INVISIBILITY), 20 * 5));
 		$teams = KitPvP::getInstance()->getCombat()->getTeams();
 		$spec = KitPvP::getInstance()->getArena()->getSpectate();
 		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->grow(4, 4, 4)) as $p){

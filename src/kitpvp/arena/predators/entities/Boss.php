@@ -32,7 +32,7 @@ class Boss extends Predator{
 		$this->setScale(1.5);
 	}
 
-	public function getNametag(){
+	public function getNametag() : string{
 		return TextFormat::YELLOW . TextFormat::BOLD . "[BOSS] " .  TextFormat::RESET . parent::getNametag();
 	}
 
@@ -129,13 +129,13 @@ class Boss extends Predator{
 		return parent::entityBaseTick($tickDiff);
 	}
 
-	public function attack(EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source) : void{
 		$this->healCooldown = 300;
 		parent::attack($source);
 	}
 
 	public function whistle(){
-		foreach($this->getLevel()->getNearbyEntities($this->getBoundingBox()->grow(15, 15, 15)) as $entity){
+		foreach($this->getLevel()->getNearbyEntities($this->getBoundingBox()->expandedCopy(15, 15, 15)) as $entity){
 			if($entity instanceof Predator && $entity->canWhistle){
 				$entity->target = $this->target;
 				$entity->canWhistle = false;
@@ -143,7 +143,7 @@ class Boss extends Predator{
 		}
 	}
 
-	public function spawnToAll(){
+	public function spawnToAll() : void{
 		parent::spawnToAll();
 		foreach(Server::getInstance()->getOnlinePlayers() as $player){
 			$player->sendMessage(TextFormat::RED . TextFormat::BOLD . "(!) " . TextFormat::RESET . TextFormat::GRAY . "A " . TextFormat::DARK_PURPLE . $this->getType() . " Boss" . TextFormat::GRAY . " has spawned! Kill it for a big prize.");

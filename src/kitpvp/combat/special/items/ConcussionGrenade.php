@@ -5,7 +5,8 @@ use kitpvp\combat\special\items\types\Throwable;
 use pocketmine\Player;
 use pocketmine\entity\{
 	Effect,
-	Entity
+	Entity,
+	EffectInstance
 };
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
@@ -38,8 +39,8 @@ class ConcussionGrenade extends Throwable{
 		$pk->data = 0;
 		foreach($victim->getViewers() as $p) $p->dataPacket($pk);
 
-		$victim->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 8)->setAmplifier(3));
-		$victim->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 8));
+		$victim->addEffect(new EffectInstance(Effect::getEffect(Effect::SLOWNESS), 20 * 8, 3));
+		$victim->addEffect(new EffectInstance(Effect::getEffect(Effect::BLINDNESS), 20 * 8));
 
 		if($victim instanceof Player){
 			$session = KitPvP::getInstance()->getKits()->getSession($victim);

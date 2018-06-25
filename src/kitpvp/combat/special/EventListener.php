@@ -29,6 +29,7 @@ use pocketmine\entity\{
 	Living,
 	Entity,
 	Effect,
+	EffectInstance,
 	Arrow
 };
 use pocketmine\item\Item;
@@ -202,8 +203,8 @@ class EventListener implements Listener{
 						}
 						if($child instanceof Bullet){
 							if($killer instanceof Player){
-								$e->setDamage(3);
-								$e->setDamage(3, 4);
+								$e->setBaseDamage(3);
+								$e->setBaseDamage(3, 4);
 								if($player instanceof Predator){
 									switch($player->getType()){
 										case "Caveman":
@@ -217,7 +218,7 @@ class EventListener implements Listener{
 									}
 								}
 							}else{
-								$e->setDamage(2);
+								$e->setBaseDamage(2);
 							}
 							if($player instanceof Player){
 								$ks = $this->plugin->getKits()->getSession($player);
@@ -233,8 +234,8 @@ class EventListener implements Listener{
 
 						}
 						if($child instanceof ThrownKunai){
-							$e->setDamage(mt_rand(1,6));
-							$e->setDamage(mt_rand(1,6), 4);
+							$e->setBaseDamage(mt_rand(1,6));
+							$e->setBaseDamage(mt_rand(1,6), 4);
 							$dv = $killer->asVector3()->subtract($player->asVector3())->normalize();
 							$player->knockback($killer, 0, $dv->x, $dv->z, 3);
 						}
@@ -264,7 +265,7 @@ class EventListener implements Listener{
 					switch($ticker->getName()){
 						case "fryingpan":
 							$e->setKnockback(0.50);
-							$e->setDamage(mt_rand(1,3));
+							$e->setBaseDamage(mt_rand(1,3));
 							if(mt_rand(1,3) == 1){
 								$player->getLevel()->addSound(new AnvilFallSound($player));
 							}
@@ -278,56 +279,56 @@ class EventListener implements Listener{
 						break;*/
 						case "brassknuckles":
 							$e->setKnockback(0.75);
-							$e->setDamage(mt_rand(2,4));
-							$e->setDamage(mt_rand(1,2), 4);
+							$e->setBaseDamage(mt_rand(2,4));
+							$e->setBaseDamage(mt_rand(1,2), 4);
 							if(mt_rand(1,3) == 1){
 								$player->getLevel()->addSound(new AnvilFallSound($player));
 							}
 						break;
 						case "reflexhammer":
 							$e->setKnockback(0.65);
-							$e->setDamage(mt_rand(2,3));
-							$e->setDamage(mt_rand(1,2), 4);
+							$e->setBaseDamage(mt_rand(2,3));
+							$e->setBaseDamage(mt_rand(1,2), 4);
 						break;
 						case "defibrillator":
 							$ticker->use($killer);
 							$this->plugin->getCombat()->getSlay()->strikeLightning($player);
 							if($player instanceof Player) $player->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
 							$killer->addTitle(TextFormat::OBFUSCATED."KK".TextFormat::RESET.TextFormat::AQUA." CLEAR! ".TextFormat::OBFUSCATED."KK", TextFormat::YELLOW."ZAPPED!", 5, 20, 5);
-							$e->setDamage(3);
-							$e->setDamage(2, 4);
-							$player->addEffect(Effect::getEffect(Effect::SLOWNESS)->setDuration(20 * 10)->setAmplifier(1));
-							$player->addEffect(Effect::getEffect(Effect::NAUSEA)->setDuration(20 * 10)->setAmplifier(5));
+							$e->setBaseDamage(3);
+							$e->setBaseDamage(2, 4);
+							$player->addEffect(new EffectInstance(Effect::getEffect(Effect::SLOWNESS), 20 * 10, 1));
+							$player->addEffect(new EffectInstance(Effect::getEffect(Effect::NAUSEA), 20 * 10, 5));
 						break;
 						case "syringe":
-							$e->setDamage(5);
-							$e->setDamage(2, 4);
-							$player->addEffect(Effect::getEffect(Effect::NAUSEA)->setDuration(20 * 15));
-							$player->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(1)->setDuration(20 * 5));
+							$e->setBaseDamage(5);
+							$e->setBaseDamage(2, 4);
+							$player->addEffect(new EffectInstance(Effect::getEffect(Effect::NAUSEA), 20 * 15));
+							$player->addEffect(new EffectInstance(Effect::getEffect(Effect::POISON), 20 * 5, 1));
 							$ticker->use($killer);
 						break;
 						case "spikedclub":
-							$e->setDamage(mt_rand(2,3));
-							$e->setDamage(mt_rand(1,2), 4);
+							$e->setBaseDamage(mt_rand(2,3));
+							$e->setBaseDamage(mt_rand(1,2), 4);
 							$e->setKnockback(0.65);
 							if($player instanceof Player) $this->special->bleed($player, $killer, mt_rand(3,8));
 						break;
 						case "fireaxe":
-							$e->setDamage(mt_rand(2,4));
-							$e->setDamage(mt_rand(1,3), 4);
+							$e->setBaseDamage(mt_rand(2,4));
+							$e->setBaseDamage(mt_rand(1,3), 4);
 							$player->setOnFire(1);
 						break;
 						case "malonesword":
 							$e->setKnockback(0.15);
-							$e->setDamage(mt_rand(2,5));
-							$e->setDamage(mt_rand(1,3), 4);
+							$e->setBaseDamage(mt_rand(2,5));
+							$e->setBaseDamage(mt_rand(1,3), 4);
 							$fire_chance = mt_rand(0,100);
 							if($fire_chance <= 5){
 								$player->setOnFire(1);
 							}
 							$wither_chance = mt_rand(0,100);
 							if($wither_chance <= 2){
-								$player->addEffect(Effect::getEffect(Effect::WITHER)->setAmplifier(1)->setDuration(20 * 2));
+								$player->addEffect(new EffectInstance(Effect::getEffect(Effect::WITHER), 20 * 2, 1));
 							}
 						break;
 					}

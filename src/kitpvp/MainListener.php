@@ -205,7 +205,7 @@ class MainListener implements Listener{
 				$target = $e->getDamager();
 				if($target instanceof Player){
 					if($this->plugin->getArena()->inSpawn($target)){
-						if($target->getName() == "m4l0ne23") $target->showModal(new MainUi($player));
+						//if($target->getName() == "m4l0ne23") $target->showModal(new MainUi($player));
 					}
 				}
 			}

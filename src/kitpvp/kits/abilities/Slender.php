@@ -3,6 +3,7 @@
 use pocketmine\Player;
 use pocketmine\entity\{
 	Effect,
+	EffectInstance,
 	Living
 };
 use pocketmine\level\sound\EndermanTeleportSound;
@@ -20,15 +21,15 @@ class Slender extends Ability{
 	}
 
 	public function activate(Player $player, $target = null){
-		$player->addEffect(Effect::getEffect(Effect::INVISIBILITY)->setDuration(20 * 5));
+		$player->addEffect(new EffectInstance(Effect::getEffect(Effect::INVISIBILITY), 20 * 5));
 		$player->getLevel()->addSound(new EndermanTeleportSound($player));
 		$teams = KitPvP::getInstance()->getCombat()->getTeams();
 		$spec = KitPvP::getInstance()->getArena()->getSpectate();
-		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->grow(4, 4, 4)) as $p){
+		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->expandedCopy(4, 4, 4)) as $p){
 			if($p != $player && $p instanceof Living && (!$p instanceof Player || (!$teams->sameTeam($player, $p) && !$spec->isSpectating($p)))){
 				$dv = $p->getDirectionVector();
 				$p->knockback($p, 0 -$dv->x, -$dv->z, 0.8);
-				$p->addEffect(Effect::getEffect(Effect::BLINDNESS)->setDuration(20 * 7));
+				$p->addEffect(new EffectInstance(Effect::getEffect(Effect::BLINDNESS), 20 * 7));
 			}
 		}
 	}

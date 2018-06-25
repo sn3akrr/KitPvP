@@ -63,7 +63,7 @@ class Predator extends Human{
 		return "Predator";
 	}
 
-	public function getNametag(){
+	public function getNametag() : string{
 		return TextFormat::RED . $this->getType() . " " . TextFormat::GREEN . "(" . $this->getHealth() . "/" . $this->getMaxHealth() . ")";
 	}
 
@@ -94,15 +94,15 @@ class Predator extends Human{
 		}
 
 		if(!$this->isOnGround()){
-			if($this->motionY > -$this->gravity * 4){
-				$this->motionY = -$this->gravity * 4;
+			if($this->motion->y > -$this->gravity * 4){
+				$this->motion->y = -$this->gravity * 4;
 			}else{
-				$this->motionY += $this->isInsideOfWater() ? $this->gravity : -$this->gravity;
+				$this->motion->y += $this->isUnderwater() ? $this->gravity : -$this->gravity;
 			}
 		}else{
-			$this->motionY -= $this->gravity;
+			$this->motion->y -= $this->gravity;
 		}
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
+		$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 		if($this->shouldJump()){
 			$this->jump();
 		}
@@ -119,17 +119,17 @@ class Predator extends Human{
 		$z = $position->z - $this->getZ();
 
 		if($x * $x + $z * $z < 4 + $this->getScale()) {
-			$this->motionX = 0;
-			$this->motionZ = 0;
+			$this->motion->x = 0;
+			$this->motion->z = 0;
 		} else {
-			$this->motionX = $this->getSpeed() * 0.15 * ($x / (abs($x) + abs($z)));
-			$this->motionZ = $this->getSpeed() * 0.15 * ($z / (abs($x) + abs($z)));
+			$this->motion->x = $this->getSpeed() * 0.15 * ($x / (abs($x) + abs($z)));
+			$this->motion->z = $this->getSpeed() * 0.15 * ($z / (abs($x) + abs($z)));
 		}
 
 		$this->yaw = rad2deg(atan2(-$x, $z));
 		$this->pitch = 0;
 
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
+		$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 		if($this->shouldJump()){
 			$this->jump();
 		}
@@ -150,15 +150,15 @@ class Predator extends Human{
 		}
 
 		if(!$this->isOnGround()) {
-			if($this->motionY > -$this->gravity * 4){
-				$this->motionY = -$this->gravity * 4;
+			if($this->motion->y > -$this->gravity * 4){
+				$this->motion->y = -$this->gravity * 4;
 			}else{
-				$this->motionY += $this->isInsideOfWater() ? $this->gravity : -$this->gravity;
+				$this->motion->y += $this->isUnderwater() ? $this->gravity : -$this->gravity;
 			}
 		}else{
-			$this->motionY -= $this->gravity;
+			$this->motion->y -= $this->gravity;
 		}
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
+		$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 		if($this->shouldJump()){
 			$this->jump();
 		}
@@ -168,16 +168,16 @@ class Predator extends Human{
 		$z = $target->z - $this->z;
 
 		if($x * $x + $z * $z < 1.2){
-			$this->motionX = 0;
-			$this->motionZ = 0;
+			$this->motion->x = 0;
+			$this->motion->z = 0;
 		} else {
-			$this->motionX = $this->getSpeed() * 0.15 * ($x / (abs($x) + abs($z)));
-			$this->motionZ = $this->getSpeed() * 0.15 * ($z / (abs($x) + abs($z)));
+			$this->motion->x = $this->getSpeed() * 0.15 * ($x / (abs($x) + abs($z)));
+			$this->motion->z = $this->getSpeed() * 0.15 * ($z / (abs($x) + abs($z)));
 		}
 		$this->yaw = rad2deg(atan2(-$x, $z));
 		$this->pitch = rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
 
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
+		$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 		if($this->shouldJump()){
 			$this->jump();
 		}
@@ -200,7 +200,7 @@ class Predator extends Human{
 		return $this->isAlive();
 	}
 
-	public function attack(EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source) : void{
 		if($source instanceof EntityDamageByEntityEvent){
 			$killer = $source->getDamager();
 			if($killer instanceof Player){
@@ -229,12 +229,12 @@ class Predator extends Human{
 		parent::attack($source);
 	}
 
-	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4){
+	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4) : void{
 		parent::knockBack($attacker, $damage, $x, $z, $base * 2);
 	}
 
 	public function whistle(){
-		foreach($this->getLevel()->getNearbyEntities($this->getBoundingBox()->grow(15, 15, 15)) as $entity){
+		foreach($this->getLevel()->getNearbyEntities($this->getBoundingBox()->expandedCopy(15, 15, 15)) as $entity){
 			if($entity instanceof $this && !$entity->hasTarget() && $entity->canWhistle){
 				$entity->target = $this->target;
 				$entity->canWhistle = false;
@@ -242,7 +242,7 @@ class Predator extends Human{
 		}
 	}
 
-	public function kill(){
+	public function kill() : void{
 		if($this->getTarget() != null) KitPvP::getInstance()->getCombat()->getSlay()->processKill($this->getTarget(), $this);
 		parent::kill();
 	}
@@ -316,7 +316,7 @@ class Predator extends Human{
 	}
 
 	public function getSpeed(){
-		return ($this->isInsideOfWater() ? $this->speed / 2 : $this->speed);
+		return ($this->isUnderwater() ? $this->speed / 2 : $this->speed);
 	}
 
 	public function getBaseAttackDamage(){
@@ -353,6 +353,7 @@ class Predator extends Human{
 	}
 
 	public function getJumpMultiplier(){
+		return 16;
 		if(
 			$this->getFrontBlock() instanceof Slab ||
 			$this->getFrontBlock() instanceof Stair ||
@@ -368,9 +369,9 @@ class Predator extends Human{
 		return 8;
 	}
 
-	public function jump(){
+	public function jump() : void{
 		$this->motionY = $this->gravity * $this->getJumpMultiplier();
-		$this->move($this->motionX * 1.25, $this->motionY, $this->motionZ * 1.25);
+		$this->move($this->motion->x * 1.25, $this->motion->y, $this->motion->z * 1.25);
 		$this->jumpTicks = 5; //($this->getJumpMultiplier() == 4 ? 2 : 5);
 	}
 

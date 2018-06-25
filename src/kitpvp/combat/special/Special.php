@@ -3,7 +3,8 @@
 use pocketmine\item\Item;
 use pocketmine\entity\{
 	Entity,
-	Effect
+	Effect,
+	EffectInstance
 };
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
@@ -57,7 +58,7 @@ class Special{
 		$this->registerTickers();
 
 		$plugin->getServer()->getPluginManager()->registerEvents(new EventListener($plugin, $this), $plugin);
-		$plugin->getServer()->getScheduler()->scheduleRepeatingTask(new SpecialTask($plugin), 10);
+		$plugin->getScheduler()->scheduleRepeatingTask(new SpecialTask($plugin), 10);
 
 		Entity::registerEntity(ThrownConcussionGrenade::class);
 		Entity::registerEntity(Bullet::class);
@@ -88,13 +89,13 @@ class Special{
 	public function registerSpells(){
 		foreach([
 			"Spell of Flames" => "burn",
-			"Spell of Weight" => Effect::getEffect(Effect::SLOWNESS),
-			"Spell of Illness" => Effect::getEffect(Effect::NAUSEA),
-			"Spell of Toxins" => Effect::getEffect(Effect::POISON),
-			"Spell of Exhaustion" => Effect::getEffect(Effect::MINING_FATIGUE),
-			"Spell of Darkness" => Effect::getEffect(Effect::BLINDNESS),
-			"Spell of Decay" => Effect::getEffect(Effect::WITHER),
-			"Spell of Deficiency" => Effect::getEffect(Effect::WEAKNESS)
+			"Spell of Weight" => new EffectInstance(Effect::getEffect(Effect::SLOWNESS)),
+			"Spell of Illness" => new EffectInstance(Effect::getEffect(Effect::NAUSEA)),
+			"Spell of Toxins" => new EffectInstance(Effect::getEffect(Effect::POISON)),
+			"Spell of Exhaustion" => new EffectInstance(Effect::getEffect(Effect::MINING_FATIGUE)),
+			"Spell of Darkness" => new EffectInstance(Effect::getEffect(Effect::BLINDNESS)),
+			"Spell of Decay" => new EffectInstance(Effect::getEffect(Effect::WITHER)),
+			"Spell of Deficiency" => new EffectInstance(Effect::getEffect(Effect::WEAKNESS))
 		] as $name => $spell) $this->spells[] = new Spell($name, $spell);
 	}
 

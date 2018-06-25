@@ -1,6 +1,6 @@
 <?php namespace kitpvp\kits\abilities\components;
 
-use pocketmine\scheduler\PluginTask;
+use pocketmine\scheduler\Task;
 use pocketmine\level\{
 	sound\GhastShootSound,
 
@@ -13,12 +13,11 @@ use pocketmine\Player;
 
 use kitpvp\KitPvP;
 
-class AbilityTask extends PluginTask{
+class AbilityTask extends Task{
 
 	public $plugin;
 
 	public function __construct(KitPvP $plugin){
-		parent::__construct($plugin);
 		$this->plugin = $plugin;
 		$this->runs = 0;
 	}

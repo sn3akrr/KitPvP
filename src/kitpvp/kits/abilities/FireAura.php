@@ -24,7 +24,7 @@ class FireAura extends Ability{
 		$dmg = false;
 		$teams = KitPvP::getInstance()->getCombat()->getTeams();
 		$spec = KitPvP::getInstance()->getArena()->getSpectate();
-		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->grow(5, 5, 5)) as $p){
+		foreach($player->getLevel()->getNearbyEntities($player->getBoundingBox()->expandedCopy(5, 5, 5)) as $p){
 			if($p != $player && $p instanceof Living && (!$p instanceof Player || (!$teams->sameTeam($player, $p) && !$spec->isSpectating($p)))){
 				if($p->getHealth() - 2 <= 0){}else{
 					$dmg = true;

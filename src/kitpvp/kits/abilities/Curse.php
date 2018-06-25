@@ -1,7 +1,10 @@
 <?php namespace kitpvp\kits\abilities;
 
 use pocketmine\Player;
-use pocketmine\entity\Effect;
+use pocketmine\entity\{
+	Effect,
+	EffectInstance
+};
 
 class Curse extends Ability{
 
@@ -14,7 +17,7 @@ class Curse extends Ability{
 
 	public function activate(Player $player, $target = null){
 		if($target == null) return;
-		$target->addEffect(Effect::getEffect(Effect::POISON)->setDuration(20 * 4)->setAmplifier(2));
+		$target->addEffect(new EffectInstance(Effect::getEffect(Effect::POISON), 20 * 4, 2));
 		parent::activate($player, $target);
 	}
 

@@ -68,7 +68,7 @@ class KitPvP extends PluginBase{
 		$this->techits = new Techits($this);
 
 		$this->getServer()->getPluginManager()->registerEvents(new MainListener($this), $this);
-		$this->getServer()->getScheduler()->scheduleRepeatingTask(new MainTask($this), 1);
+		$this->getScheduler()->scheduleRepeatingTask(new MainTask($this), 1);
 
 		//$this->getServer()->setDefaultLevel($this->getServer()->getLevelByName("m4"));
 		//$this->getServer()->unloadLevel($this->getServer()->getLevelByName("KitSpawn"));
@@ -78,9 +78,9 @@ class KitPvP extends PluginBase{
 		$this->getDuels()->close();
 		$this->getAchievements()->close();
 		$this->getKits()->close();
-
 		$this->getCombat()->close();
 		$this->getTechits()->close();
+
 		$this->database->close();
 	}
 

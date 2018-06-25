@@ -1,7 +1,10 @@
 <?php namespace kitpvp\kits\abilities;
 
 use pocketmine\Player;
-use pocketmine\entity\Effect;
+use pocketmine\entity\{
+	Effect,
+	EffectInstance
+};
 
 class Adrenaline extends Ability{
 
@@ -14,8 +17,8 @@ class Adrenaline extends Ability{
 	}
 
 	public function activate(Player $player, $target = null){
-		$player->addEffect(Effect::getEffect(Effect::JUMP)->setAmplifier(2)->setDuration(20 * 10));
-		$player->addEffect(Effect::getEffect(Effect::SPEED)->setAmplifier(4)->setDuration(20 * 10));
+		$player->addEffect(new EffectInstance(Effect::getEffect(Effect::JUMP), 20 * 10, 2));
+		$player->addEffect(new EffectInstance(Effect::getEffect(Effect::SPEED), 20 * 10, 4));
 		$player->setHealth($player->getHealth() + 15);
 
 		parent::activate($player, $target);
